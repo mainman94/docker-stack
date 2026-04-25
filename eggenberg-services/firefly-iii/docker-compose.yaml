@@ -3,6 +3,8 @@ services:
     image: mariadb:lts
     container_name: firefly_iii_db
     restart: always
+    labels:
+      - docker-volume-backup.stop-during-backup=true
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_USER=firefly
@@ -15,6 +17,8 @@ services:
     image: fireflyiii/core:latest
     container_name: firefly_iii_core
     restart: always
+    labels:
+      - docker-volume-backup.stop-during-backup=true
     env_file: .env
     ports:
       - "30666:8080"
@@ -27,6 +31,8 @@ services:
     image: fireflyiii/data-importer:latest
     container_name: firefly_iii_importer
     restart: always
+    labels:
+      - docker-volume-backup.stop-during-backup=true
     ports:
       - "30667:8080"
     env_file: .env
@@ -35,4 +41,6 @@ services:
 
 volumes:
   firefly_iii_upload:
+    name: firefly_iii_upload
   firefly_iii_db:
+    name: firefly_iii_db

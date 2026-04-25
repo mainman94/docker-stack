@@ -1,0 +1,59 @@
+services:
+  firefly_iii_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: firefly_iii_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: firefly-iii-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: firefly-iii-backup-
+    volumes:
+      - firefly_iii_db:/backup/firefly_iii_db:ro
+      - firefly_iii_upload:/backup/firefly_iii_upload:ro
+      - /mnt/default_pool/dockge/back/firefly-iii:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  bambuddy_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: bambuddy_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: bambuddy-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: bambuddy-backup-
+    volumes:
+      - bambuddy_data:/backup/bambuddy_data:ro
+      - bambuddy_logs:/backup/bambuddy_logs:ro
+      - ../../eggenberg-services/bambuddy/virtual_printer:/backup/bambuddy_virtual_printer:ro
+      - /mnt/default_pool/dockge/back/bambuddy:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  swiparr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: swiparr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: swiparr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: swiparr-backup-
+    volumes:
+      - ../../eggenberg-services/swiparr/swiparr-data:/backup/swiparr_data:ro
+      - /mnt/default_pool/dockge/back/swiparr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  firefly_iii_db:
+    external: true
+    name: firefly_iii_db
+  firefly_iii_upload:
+    external: true
+    name: firefly_iii_upload
+  bambuddy_data:
+    external: true
+    name: bambuddy_data
+  bambuddy_logs:
+    external: true
+    name: bambuddy_logs
