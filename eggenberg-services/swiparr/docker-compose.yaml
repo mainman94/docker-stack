@@ -1,0 +1,15 @@
+services:
+  swiparr:
+    image: ghcr.io/m3sserstudi0s/swiparr:latest
+    container_name: swiparr
+    restart: unless-stopped
+    environment:
+      - JELLYFIN_URL=${JELLYFIN_URL}
+      - JELLYFIN_PUBLIC_URL=${JELLYFIN_PUBLIC_URL}
+      - USE_SECURE_COOKIES=${USE_SECURE_COOKIES}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+    volumes:
+      - ./swiparr-data:/app/data
+    ports:
+      - 4321:4321
+networks: {}
