@@ -53,6 +53,4 @@ services:
 
 volumes:
   bambuddy_data:
-    name: bambuddy_data
   bambuddy_logs:
-    name: bambuddy_logs

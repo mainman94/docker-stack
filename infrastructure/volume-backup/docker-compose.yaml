@@ -11,7 +11,7 @@ services:
     volumes:
       - firefly_iii_db:/backup/firefly_iii_db:ro
       - firefly_iii_upload:/backup/firefly_iii_upload:ro
-      - /mnt/default_pool/dockge/back/firefly-iii:/archive
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/firefly-iii:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   bambuddy_backup:
@@ -27,7 +27,7 @@ services:
       - bambuddy_data:/backup/bambuddy_data:ro
       - bambuddy_logs:/backup/bambuddy_logs:ro
       - ../../eggenberg-services/bambuddy/virtual_printer:/backup/bambuddy_virtual_printer:ro
-      - /mnt/default_pool/dockge/back/bambuddy:/archive
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bambuddy:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   swiparr_backup:
@@ -41,19 +41,19 @@ services:
       BACKUP_PRUNING_PREFIX: swiparr-backup-
     volumes:
       - ../../eggenberg-services/swiparr/swiparr-data:/backup/swiparr_data:ro
-      - /mnt/default_pool/dockge/back/swiparr:/archive
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/swiparr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
 volumes:
   firefly_iii_db:
     external: true
-    name: firefly_iii_db
+    name: ${FIREFLY_DB_VOLUME:-firefly-iii_firefly_iii_db}
   firefly_iii_upload:
     external: true
-    name: firefly_iii_upload
+    name: ${FIREFLY_UPLOAD_VOLUME:-firefly-iii_firefly_iii_upload}
   bambuddy_data:
     external: true
-    name: bambuddy_data
+    name: ${BAMBUDDY_DATA_VOLUME:-bambuddy_bambuddy_data}
   bambuddy_logs:
     external: true
-    name: bambuddy_logs
+    name: ${BAMBUDDY_LOGS_VOLUME:-bambuddy_bambuddy_logs}
