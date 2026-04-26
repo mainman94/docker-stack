@@ -1,6 +1,6 @@
 services:
   swiparr:
-    image: ghcr.io/m3sserstudi0s/swiparr:latest
+    image: ghcr.io/m3sserstudi0s/swiparr:1.3.5
     container_name: swiparr
     restart: unless-stopped
     labels:

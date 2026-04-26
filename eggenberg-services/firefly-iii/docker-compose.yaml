@@ -14,7 +14,7 @@ services:
       - firefly_iii_db:/var/lib/mysql
 
   app:
-    image: fireflyiii/core:latest
+    image: fireflyiii/core:version-6.6.1
     container_name: firefly_iii_core
     restart: always
     labels:
@@ -28,7 +28,7 @@ services:
       - db
 
   importer:
-    image: fireflyiii/data-importer:latest
+    image: fireflyiii/data-importer:version-2.3.2
     container_name: firefly_iii_importer
     restart: always
     labels:
