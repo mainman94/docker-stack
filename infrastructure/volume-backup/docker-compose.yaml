@@ -30,6 +30,21 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bambuddy:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  jellyfin_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: jellyfin_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: jellyfin-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: jellyfin-backup-
+    volumes:
+      - ../../eggenberg-services/jellyfin/jellyfin/config:/backup/jellyfin_config:ro
+      - ../../eggenberg-services/jellyfin/jellyfin/cache:/backup/jellyfin_cache:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellyfin:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
 volumes:
   firefly_iii_db:
     external: true
