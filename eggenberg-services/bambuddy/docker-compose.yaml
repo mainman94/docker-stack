@@ -34,12 +34,12 @@ services:
     #  - "2024-2026:2024-2026"        # Virtual printer proprietary ports (A1/P1S)
     #  - "50000-50100:50000-50100"    # Virtual printer FTP passive data
     volumes:
-      - bambuddy_data:/app/data
-      - bambuddy_logs:/app/logs
+      - ./bambuddy/data:/app/data
+      - ./bambuddy/logs:/app/logs
       #
       # Share virtual printer certs with native installation
       # This ensures the slicer only needs to trust one CA certificate.
-      - ./virtual_printer:/app/data/virtual_printer
+      - ./bambuddy/virtual_printer:/app/data/virtual_printer
     environment:
       - TZ=${TZ:-Europe/Berlin}
       # Port BamBuddy runs on (default: 8000)
@@ -50,7 +50,3 @@ services:
       # Example: VIRTUAL_PRINTER_PASV_ADDRESS=192.168.1.100
       #- VIRTUAL_PRINTER_PASV_ADDRESS=
     restart: unless-stopped
-
-volumes:
-  bambuddy_data:
-  bambuddy_logs:

@@ -11,7 +11,7 @@ services:
       - USE_SECURE_COOKIES=${USE_SECURE_COOKIES}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
     volumes:
-      - ./swiparr-data:/app/data
+      - ./swiparr/data:/app/data
     ports:
       - 4321:4321
 networks: {}
