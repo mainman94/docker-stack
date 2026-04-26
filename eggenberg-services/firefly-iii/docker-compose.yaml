@@ -6,10 +6,10 @@ services:
     labels:
       - docker-volume-backup.stop-during-backup=true
     environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
-      - MYSQL_USER=firefly
-      - MYSQL_DATABASE=firefly
-      - MYSQL_PASSWORD=rH0U2mwiM8TQWkoS
+      MYSQL_RANDOM_ROOT_PASSWORD: ${MYSQL_RANDOM_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - firefly_iii_db:/var/lib/mysql
 
@@ -19,9 +19,15 @@ services:
     restart: always
     labels:
       - docker-volume-backup.stop-during-backup=true
-    env_file: .env
+    env_file:
+      - path: .env.example
+        required: true
+      - path: .env
+        required: false
+    environment:
+      APP_URL: ${APP_URL}
     ports:
-      - "30666:8080"
+      - "${APP_PORT:-30666}:8080"
     volumes:
       - firefly_iii_upload:/var/www/html/storage/upload
     depends_on:
@@ -34,8 +40,17 @@ services:
     labels:
       - docker-volume-backup.stop-during-backup=true
     ports:
-      - "30667:8080"
-    env_file: .env
+      - "${IMPORTER_PORT:-30667}:8080"
+    env_file:
+      - path: .env.example
+        required: true
+      - path: .env
+        required: false
+    environment:
+      FIREFLY_III_URL: ${FIREFLY_III_URL}
+      VANITY_URL: ${VANITY_URL}
+      FIREFLY_III_ACCESS_TOKEN: ${FIREFLY_III_ACCESS_TOKEN}
+      SEND_TELEMETRY: ${SEND_TELEMETRY}
     depends_on:
       - app
 
