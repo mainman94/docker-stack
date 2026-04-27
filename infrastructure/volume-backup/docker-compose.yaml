@@ -26,7 +26,6 @@ services:
     volumes:
       - bambuddy_data:/backup/bambuddy_data:ro
       - bambuddy_logs:/backup/bambuddy_logs:ro
-      - ../../eggenberg-services/bambuddy/virtual_printer:/backup/bambuddy_virtual_printer:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bambuddy:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -40,8 +39,6 @@ services:
       BACKUP_FILENAME: jellyfin-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: jellyfin-backup-
     volumes:
-      - ../../eggenberg-services/jellyfin/jellyfin/config:/backup/jellyfin_config:ro
-      - ../../eggenberg-services/jellyfin/jellyfin/cache:/backup/jellyfin_cache:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellyfin:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
