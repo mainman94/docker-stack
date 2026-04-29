@@ -14,7 +14,7 @@ services:
       - ./firefly-iii/db:/var/lib/mysql
 
   app:
-    image: fireflyiii/core:version-6.6.1
+    image: fireflyiii/core:version-6.6.2
     container_name: firefly_iii_core
     restart: always
     labels:
