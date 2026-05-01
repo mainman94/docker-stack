@@ -1,7 +1,6 @@
 services:
   bambuddy:
     image: ghcr.io/maziggy/bambuddy:0.2.3.2
-    build: .
     # Usage:
     #   docker compose up -d          → pulls pre-built image from ghcr.io
     #   docker compose up -d --build  → builds locally from source

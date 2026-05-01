@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:lts
+    image: docker.io/library/mariadb:lts
     container_name: firefly_iii_db
     restart: always
     labels:
@@ -14,7 +14,7 @@ services:
       - ./firefly-iii/db:/var/lib/mysql
 
   app:
-    image: fireflyiii/core:version-6.6.2
+    image: docker.io/fireflyiii/core:version-6.6.2
     container_name: firefly_iii_core
     restart: always
     labels:
