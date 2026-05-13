@@ -4,6 +4,11 @@ services:
     container_name: jellyfin
     user: "${JELLYFIN_UID}:${JELLYFIN_GID}"
     restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "render"
+      - "video"
     labels:
       - docker-volume-backup.stop-during-backup=true
     env_file:
@@ -13,6 +18,7 @@ services:
       TZ: ${JELLYFIN_TZ}
       JELLYFIN_PublishedServerUrl: ${JELLYFIN_PUBLISHED_SERVER_URL}
       JELLYFIN_CACHE_DIR: ${JELLYFIN_CACHE_DIR}
+      LIBVA_DRIVER_NAME: iHD
     ports:
       - "${JELLYFIN_WEB_PORT}:8096"
       - "${JELLYFIN_HTTPS_PORT}:8920"
