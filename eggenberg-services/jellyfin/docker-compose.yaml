@@ -5,29 +5,26 @@ services:
     user: "${JELLYFIN_UID}:${JELLYFIN_GID}"
     restart: unless-stopped
     devices:
-      - /dev/dri:/dev/dri
+      - ${JELLYFIN_GPU_DEVICE_HOST_PATH}:${JELLYFIN_GPU_DEVICE_CONTAINER_PATH}
     group_add:
-      - "44"
-      - "107"
+      - "${JELLYFIN_VIDEO_GROUP_ID}"
+      - "${JELLYFIN_RENDER_GROUP_ID}"
     labels:
       - docker-volume-backup.stop-during-backup=true
-    env_file:
-      - path: .env
-        required: false
     environment:
       TZ: ${JELLYFIN_TZ}
       JELLYFIN_PublishedServerUrl: ${JELLYFIN_PUBLISHED_SERVER_URL}
-      JELLYFIN_CACHE_DIR: ${JELLYFIN_CACHE_DIR}
+      JELLYFIN_CACHE_DIR: ${JELLYFIN_CACHE_CONTAINER_PATH}
       LIBVA_DRIVER_NAME: iHD
     ports:
       - "${JELLYFIN_WEB_PORT}:8096"
       - "${JELLYFIN_HTTPS_PORT}:8920"
     volumes:
-      - ${JELLYFIN_CONFIG_PATH}:/config
-      - ${JELLYFIN_CACHE_PATH}:${JELLYFIN_CACHE_DIR}
-      - ${JELLYFIN_MOVIES_SOURCE}:${JELLYFIN_MOVIES_TARGET}
-      - ${JELLYFIN_SERIES_SOURCE}:${JELLYFIN_SERIES_TARGET}
+      - ${JELLYFIN_CONFIG_HOST_PATH}:${JELLYFIN_CONFIG_CONTAINER_PATH}
+      - ${JELLYFIN_CACHE_HOST_PATH}:${JELLYFIN_CACHE_CONTAINER_PATH}
+      - ${JELLYFIN_MOVIES_HOST_PATH}:${JELLYFIN_MOVIES_CONTAINER_PATH}
+      - ${JELLYFIN_SERIES_HOST_PATH}:${JELLYFIN_SERIES_CONTAINER_PATH}
     tmpfs:
-      - ${JELLYFIN_TRANSCODE_TMPFS_PATH}
+      - ${JELLYFIN_TRANSCODE_CONTAINER_PATH}
     cpus: ${JELLYFIN_CPUS}
     mem_limit: ${JELLYFIN_MEM_LIMIT}
