@@ -1,0 +1,19 @@
+services:
+  sonarr:
+    image: linuxserver/sonarr:4.0.17
+    container_name: sonarr
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      PUID: ${SONARR_UID}
+      PGID: ${SONARR_GID}
+      TZ: ${SONARR_TZ}
+    ports:
+      - "${SONARR_WEB_PORT}:8989"
+    volumes:
+      - ${SONARR_CONFIG_HOST_PATH}:${SONARR_CONFIG_CONTAINER_PATH}
+      - ${SONARR_SERIES_HOST_PATH}:${SONARR_SERIES_CONTAINER_PATH}
+      - ${SONARR_DOWNLOADS_HOST_PATH}:${SONARR_DOWNLOADS_CONTAINER_PATH}
+    cpus: ${SONARR_CPUS}
+    mem_limit: ${SONARR_MEM_LIMIT}

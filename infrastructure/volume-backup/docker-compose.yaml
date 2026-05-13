@@ -42,6 +42,77 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellyfin:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  sabnzbd_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: sabnzbd_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: sabnzbd-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: sabnzbd-backup-
+    volumes:
+      - ../../eggenberg-services/sabnzbd/sabnzbd/config:/backup/sabnzbd_config:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sabnzbd:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  seer_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: seer_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: seer-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: seer-backup-
+    volumes:
+      - ../../eggenberg-services/seer/seer/config:/backup/seer_config:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/seer:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  radarr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: radarr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: radarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: radarr-backup-
+    volumes:
+      - ../../eggenberg-services/radarr/radarr/config:/backup/radarr_config:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/radarr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  sonarr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: sonarr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: sonarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: sonarr-backup-
+    volumes:
+      - ../../eggenberg-services/sonarr/sonarr/config:/backup/sonarr_config:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sonarr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  jellystat_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: jellystat_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: jellystat-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: jellystat-backup-
+    volumes:
+      - ../../eggenberg-services/jellystat/jellystat/backup-data:/backup/jellystat_backup_data:ro
+      - ../../eggenberg-services/jellystat/jellystat/postgres-data:/backup/jellystat_postgres_data:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellystat:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
 volumes:
   firefly_iii_db:
     external: true

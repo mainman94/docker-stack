@@ -1,0 +1,42 @@
+services:
+  jellystat-db:
+    image: postgres:${JELLYSTAT_POSTGRES_VERSION}
+    container_name: jellystat-db
+    restart: unless-stopped
+    shm_size: 1gb
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      POSTGRES_DB: ${JELLYSTAT_POSTGRES_DATABASE}
+      POSTGRES_USER: ${JELLYSTAT_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${JELLYSTAT_POSTGRES_PASSWORD}
+      TZ: ${JELLYSTAT_TZ}
+    volumes:
+      - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}:${JELLYSTAT_POSTGRES_DATA_CONTAINER_PATH}
+
+  jellystat:
+    image: cyfershepard/jellystat:1.1.10
+    container_name: jellystat
+    restart: unless-stopped
+    depends_on:
+      - jellystat-db
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      TZ: ${JELLYSTAT_TZ}
+      POSTGRES_USER: ${JELLYSTAT_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${JELLYSTAT_POSTGRES_PASSWORD}
+      POSTGRES_IP: jellystat-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ${JELLYSTAT_POSTGRES_DATABASE}
+      JWT_SECRET: ${JELLYSTAT_JWT_SECRET}
+      IS_EMBY_API: ${JELLYSTAT_IS_EMBY_API}
+    ports:
+      - "${JELLYSTAT_WEB_PORT}:3000"
+    volumes:
+      - ${JELLYSTAT_BACKUP_HOST_PATH}:${JELLYSTAT_BACKUP_CONTAINER_PATH}
+    cpus: ${JELLYSTAT_CPUS}
+    mem_limit: ${JELLYSTAT_MEM_LIMIT}
+
+networks:
+  default:

@@ -1,0 +1,19 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:version-6.1.1
+    container_name: radarr
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      PUID: ${RADARR_UID}
+      PGID: ${RADARR_GID}
+      TZ: ${RADARR_TZ}
+    ports:
+      - "${RADARR_WEB_PORT}:7878"
+    volumes:
+      - ${RADARR_CONFIG_HOST_PATH}:${RADARR_CONFIG_CONTAINER_PATH}
+      - ${RADARR_MOVIES_HOST_PATH}:${RADARR_MOVIES_CONTAINER_PATH}
+      - ${RADARR_DOWNLOADS_HOST_PATH}:${RADARR_DOWNLOADS_CONTAINER_PATH}
+    cpus: ${RADARR_CPUS}
+    mem_limit: ${RADARR_MEM_LIMIT}
