@@ -1,0 +1,25 @@
+services:
+  seerr:
+    image: ghcr.io/seerr-team/seerr:v3.2.0
+    init: true
+    container_name: seerr
+    user: "${SEERR_UID}:${SEERR_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      TZ: ${SEERR_TZ}
+      LOG_LEVEL: ${SEERR_LOG_LEVEL}
+      PORT: ${SEERR_CONTAINER_PORT}
+    ports:
+      - "${SEERR_WEB_PORT}:${SEERR_CONTAINER_PORT}"
+    volumes:
+      - ${SEERR_CONFIG_HOST_PATH}:${SEERR_CONFIG_CONTAINER_PATH}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${SEERR_CONTAINER_PORT}/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    cpus: ${SEERR_CPUS}
+    mem_limit: ${SEERR_MEM_LIMIT}

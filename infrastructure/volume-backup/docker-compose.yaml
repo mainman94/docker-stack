@@ -56,18 +56,18 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sabnzbd:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  seer_backup:
+  seerr_backup:
     image: offen/docker-volume-backup:v2.48.0
-    container_name: seer_volume_backup
+    container_name: seerr_volume_backup
     restart: unless-stopped
     env_file:
       - backup.env
     environment:
-      BACKUP_FILENAME: seer-backup-%Y-%m-%dT%H-%M-%S.tar.gz
-      BACKUP_PRUNING_PREFIX: seer-backup-
+      BACKUP_FILENAME: seerr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: seerr-backup-
     volumes:
-      - ../../eggenberg-services/seer/seer/config:/backup/seer_config:ro
-      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/seer:/archive
+      - ../../eggenberg-services/seerr/seerr/config:/backup/seerr_config:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/seerr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   radarr_backup:
