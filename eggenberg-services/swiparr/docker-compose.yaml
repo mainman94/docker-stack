@@ -2,6 +2,7 @@ services:
   swiparr:
     image: ghcr.io/m3sserstudi0s/swiparr:1.4.0
     container_name: swiparr
+    user: "${SWIPARR_UID}:${SWIPARR_GID}"
     restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=true

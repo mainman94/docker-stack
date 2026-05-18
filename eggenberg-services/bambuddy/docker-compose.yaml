@@ -8,7 +8,7 @@ services:
     labels:
       - docker-volume-backup.stop-during-backup=true
     # Run as current user to avoid permission issues with mounted volumes
-    # Override with: PUID=$(id -u) PGID=$(id -g) docker compose up -d
+    # Override with: BAMBUDDY_UID=$(id -u) BAMBUDDY_GID=$(id -g) docker compose up -d
     user: "${BAMBUDDY_UID}:${BAMBUDDY_GID}"
     #
     # Proxy mode: allow binding to privileged ports (322, 990) as non-root user.

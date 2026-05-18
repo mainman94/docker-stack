@@ -2,6 +2,7 @@ services:
   jellystat-db:
     image: postgres:${JELLYSTAT_POSTGRES_VERSION}
     container_name: jellystat-db
+    user: "${JELLYSTAT_UID}:${JELLYSTAT_GID}"
     restart: unless-stopped
     shm_size: 1gb
     labels:
@@ -17,6 +18,7 @@ services:
   jellystat:
     image: cyfershepard/jellystat:1.1.10
     container_name: jellystat
+    user: "${JELLYSTAT_UID}:${JELLYSTAT_GID}"
     restart: unless-stopped
     depends_on:
       - jellystat-db

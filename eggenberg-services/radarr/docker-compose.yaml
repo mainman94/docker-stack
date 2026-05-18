@@ -2,6 +2,7 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:version-6.1.1
     container_name: radarr
+    user: "${RADARR_UID}:${RADARR_GID}"
     restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=true
