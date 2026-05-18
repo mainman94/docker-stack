@@ -9,8 +9,8 @@ services:
       BACKUP_FILENAME: firefly-iii-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: firefly-iii-backup-
     volumes:
-      - firefly_iii_db:/backup/firefly_iii_db:ro
-      - firefly_iii_upload:/backup/firefly_iii_upload:ro
+      - ../../eggenberg-services/firefly-iii/firefly-iii/db:/backup/firefly_iii_db:ro
+      - ../../eggenberg-services/firefly-iii/firefly-iii/upload:/backup/firefly_iii_upload:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/firefly-iii:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -24,8 +24,9 @@ services:
       BACKUP_FILENAME: bambuddy-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: bambuddy-backup-
     volumes:
-      - bambuddy_data:/backup/bambuddy_data:ro
-      - bambuddy_logs:/backup/bambuddy_logs:ro
+      - ../../eggenberg-services/bambuddy/bambuddy/data:/backup/bambuddy_data:ro
+      - ../../eggenberg-services/bambuddy/bambuddy/logs:/backup/bambuddy_logs:ro
+      - ../../eggenberg-services/bambuddy/bambuddy/virtual_printer:/backup/bambuddy_virtual_printer:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bambuddy:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -39,7 +40,22 @@ services:
       BACKUP_FILENAME: jellyfin-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: jellyfin-backup-
     volumes:
+      - ../../eggenberg-services/jellyfin/jellyfin/config:/backup/jellyfin_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellyfin:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  swiparr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: swiparr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: swiparr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: swiparr-backup-
+    volumes:
+      - ../../eggenberg-services/swiparr/swiparr/data:/backup/swiparr_data:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/swiparr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   sabnzbd_backup:
@@ -113,16 +129,16 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellystat:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-volumes:
-  firefly_iii_db:
-    external: true
-    name: ${FIREFLY_DB_VOLUME:-firefly-iii_firefly_iii_db}
-  firefly_iii_upload:
-    external: true
-    name: ${FIREFLY_UPLOAD_VOLUME:-firefly-iii_firefly_iii_upload}
-  bambuddy_data:
-    external: true
-    name: ${BAMBUDDY_DATA_VOLUME:-bambuddy_bambuddy_data}
-  bambuddy_logs:
-    external: true
-    name: ${BAMBUDDY_LOGS_VOLUME:-bambuddy_bambuddy_logs}
+  home_assistant_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: home_assistant_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: home-assistant-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: home-assistant-backup-
+    volumes:
+      - ../../eggenberg-services/home-assistant/home-assistant/config:/backup/home_assistant_config:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/home-assistant:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
