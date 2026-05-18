@@ -1,9 +1,32 @@
 services:
+  jellystat-init:
+    image: alpine:3.22
+    container_name: jellystat-init
+    user: "0:0"
+    restart: "no"
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /mnt/postgres /mnt/backup
+        chown -R ${JELLYSTAT_POSTGRES_UID}:${JELLYSTAT_POSTGRES_GID} /mnt/postgres
+        chown -R ${JELLYSTAT_UID}:${JELLYSTAT_GID} /mnt/backup
+    volumes:
+      - type: bind
+        source: ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}
+        target: /mnt/postgres
+      - type: bind
+        source: ${JELLYSTAT_BACKUP_HOST_PATH}
+        target: /mnt/backup
+
   jellystat-db:
     image: postgres:${JELLYSTAT_POSTGRES_VERSION}
     shm_size: 1gb
     container_name: jellystat-db
     restart: unless-stopped
+    depends_on:
+      jellystat-init:
+        condition: service_completed_successfully
     logging:
       driver: json-file
       options:
@@ -21,8 +44,6 @@ services:
       - type: bind
         source: ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}
         target: ${JELLYSTAT_POSTGRES_DATA_CONTAINER_PATH}
-        bind:
-          create_host_path: false
     healthcheck:
       test:
         - CMD-SHELL
@@ -59,8 +80,6 @@ services:
       - type: bind
         source: ${JELLYSTAT_BACKUP_HOST_PATH}
         target: ${JELLYSTAT_BACKUP_CONTAINER_PATH}
-        bind:
-          create_host_path: false
     ports:
       - "${JELLYSTAT_WEB_PORT}:3000"
     healthcheck:
