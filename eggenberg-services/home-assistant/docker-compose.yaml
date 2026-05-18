@@ -4,11 +4,12 @@ services:
     container_name: home-assistant
     user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
     restart: unless-stopped
-    network_mode: host
     labels:
       - docker-volume-backup.stop-during-backup=true
     environment:
       TZ: ${HOME_ASSISTANT_TZ}
+    ports:
+      - "${HOME_ASSISTANT_WEB_PORT}:8123"
     volumes:
       - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:${HOME_ASSISTANT_CONFIG_CONTAINER_PATH}
     cpus: ${HOME_ASSISTANT_CPUS}
