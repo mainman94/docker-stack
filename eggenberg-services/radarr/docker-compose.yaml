@@ -18,3 +18,7 @@ services:
       - ${RADARR_DOWNLOADS_HOST_PATH}:${RADARR_DOWNLOADS_CONTAINER_PATH}
     cpus: ${RADARR_CPUS}
     mem_limit: ${RADARR_MEM_LIMIT}
+
+networks:
+  default:
+    name: radarr_network

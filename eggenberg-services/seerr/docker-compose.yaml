@@ -23,3 +23,7 @@ services:
       retries: 3
     cpus: ${SEERR_CPUS}
     mem_limit: ${SEERR_MEM_LIMIT}
+
+networks:
+  default:
+    name: seerr_network

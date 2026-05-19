@@ -58,8 +58,6 @@ services:
     ports:
       - "${IMPORTER_PORT:-30667}:8080"
     env_file:
-      - path: .env.example
-        required: true
       - path: .env
         required: false
     environment:
@@ -70,3 +68,7 @@ services:
       SEND_TELEMETRY: ${SEND_TELEMETRY}
     depends_on:
       - app
+
+networks:
+  default:
+    name: firefly_iii_network

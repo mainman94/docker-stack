@@ -40,7 +40,7 @@ services:
       BACKUP_FILENAME: jellyfin-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: jellyfin-backup-
     volumes:
-      - ../../eggenberg-services/jellyfin/jellyfin/config:/backup/jellyfin_config:ro
+      - ${JELLYFIN_CONFIG_HOST_PATH}:/backup/jellyfin_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellyfin:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -54,7 +54,7 @@ services:
       BACKUP_FILENAME: swiparr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: swiparr-backup-
     volumes:
-      - ../../eggenberg-services/swiparr/swiparr/data:/backup/swiparr_data:ro
+      - ${SWIPARR_DATA_HOST_PATH}:/backup/swiparr_data:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/swiparr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -68,7 +68,7 @@ services:
       BACKUP_FILENAME: sabnzbd-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: sabnzbd-backup-
     volumes:
-      - ../../eggenberg-services/sabnzbd/sabnzbd/config:/backup/sabnzbd_config:ro
+      - ${SABNZBD_CONFIG_HOST_PATH}:/backup/sabnzbd_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sabnzbd:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -82,7 +82,7 @@ services:
       BACKUP_FILENAME: seerr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: seerr-backup-
     volumes:
-      - ../../eggenberg-services/seerr/seerr/config:/backup/seerr_config:ro
+      - ${SEERR_CONFIG_HOST_PATH}:/backup/seerr_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/seerr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -96,7 +96,7 @@ services:
       BACKUP_FILENAME: radarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: radarr-backup-
     volumes:
-      - ../../eggenberg-services/radarr/radarr/config:/backup/radarr_config:ro
+      - ${RADARR_CONFIG_HOST_PATH}:/backup/radarr_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/radarr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -110,7 +110,7 @@ services:
       BACKUP_FILENAME: sonarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: sonarr-backup-
     volumes:
-      - ../../eggenberg-services/sonarr/sonarr/config:/backup/sonarr_config:ro
+      - ${SONARR_CONFIG_HOST_PATH}:/backup/sonarr_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sonarr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -124,8 +124,8 @@ services:
       BACKUP_FILENAME: jellystat-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: jellystat-backup-
     volumes:
-      - ../../eggenberg-services/jellystat/jellystat/backup-data:/backup/jellystat_backup_data:ro
-      - ../../eggenberg-services/jellystat/jellystat/postgres-data:/backup/jellystat_postgres_data:ro
+      - ${JELLYSTAT_BACKUP_HOST_PATH}:/backup/jellystat_backup_data:ro
+      - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}:/backup/jellystat_postgres_data:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellystat:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -139,6 +139,6 @@ services:
       BACKUP_FILENAME: home-assistant-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: home-assistant-backup-
     volumes:
-      - ../../eggenberg-services/home-assistant/home-assistant/config:/backup/home_assistant_config:ro
+      - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:/backup/home_assistant_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/home-assistant:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro

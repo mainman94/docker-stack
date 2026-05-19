@@ -12,7 +12,12 @@ services:
       - USE_SECURE_COOKIES=${USE_SECURE_COOKIES}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
     volumes:
-      - ./swiparr/data:/app/data
+      - ${SWIPARR_DATA_HOST_PATH}:${SWIPARR_DATA_CONTAINER_PATH}
     ports:
-      - 4321:4321
-networks: {}
+      - "${SWIPARR_WEB_PORT}:4321"
+    cpus: ${SWIPARR_CPUS}
+    mem_limit: ${SWIPARR_MEM_LIMIT}
+
+networks:
+  default:
+    name: swiparr_network

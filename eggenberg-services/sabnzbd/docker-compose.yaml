@@ -17,3 +17,7 @@ services:
       - ${SABNZBD_DOWNLOADS_HOST_PATH}:${SABNZBD_DOWNLOADS_CONTAINER_PATH}
     cpus: ${SABNZBD_CPUS}
     mem_limit: ${SABNZBD_MEM_LIMIT}
+
+networks:
+  default:
+    name: sabnzbd_network

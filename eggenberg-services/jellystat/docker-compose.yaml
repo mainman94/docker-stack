@@ -53,7 +53,7 @@ services:
       retries: 5
 
   jellystat:
-    image: cyfershepard/jellystat:${JELLYSTAT_VERSION}
+    image: cyfershepard/jellystat:1.1.10
     container_name: jellystat
     user: "${JELLYSTAT_UID}:${JELLYSTAT_GID}"
     restart: unless-stopped
@@ -93,3 +93,4 @@ services:
 
 networks:
   default:
+    name: jellystat_network

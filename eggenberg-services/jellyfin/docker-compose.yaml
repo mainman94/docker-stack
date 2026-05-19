@@ -28,3 +28,7 @@ services:
       - ${JELLYFIN_TRANSCODE_CONTAINER_PATH}
     cpus: ${JELLYFIN_CPUS}
     mem_limit: ${JELLYFIN_MEM_LIMIT}
+
+networks:
+  default:
+    name: jellyfin_network

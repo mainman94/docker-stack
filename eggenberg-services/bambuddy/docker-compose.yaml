@@ -49,3 +49,7 @@ services:
       # Example: VIRTUAL_PRINTER_PASV_ADDRESS=192.168.1.100
       #- VIRTUAL_PRINTER_PASV_ADDRESS=
     restart: unless-stopped
+
+networks:
+  default:
+    name: bambuddy_network

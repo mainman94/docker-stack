@@ -14,3 +14,7 @@ services:
       - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:${HOME_ASSISTANT_CONFIG_CONTAINER_PATH}
     cpus: ${HOME_ASSISTANT_CPUS}
     mem_limit: ${HOME_ASSISTANT_MEM_LIMIT}
+
+networks:
+  default:
+    name: home_assistant_network
