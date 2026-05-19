@@ -2,7 +2,6 @@ services:
   db:
     image: docker.io/library/mariadb:lts
     container_name: firefly_iii_db
-    user: "${FIREFLY_III_UID}:${FIREFLY_III_GID}"
     restart: always
     labels:
       - docker-volume-backup.stop-during-backup=true
