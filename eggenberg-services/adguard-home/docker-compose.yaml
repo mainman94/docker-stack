@@ -11,11 +11,11 @@ services:
       - ${ADGUARD_HOME_WORK_HOST_PATH}:${ADGUARD_HOME_WORK_CONTAINER_PATH}
       - ${ADGUARD_HOME_CONF_HOST_PATH}:${ADGUARD_HOME_CONF_CONTAINER_PATH}
     ports:
-      - "${ADGUARD_HOME_DNS_PORT}:53/tcp"
-      - "${ADGUARD_HOME_DNS_PORT}:53/udp"
-      - "${ADGUARD_HOME_WEB_PORT}:${ADGUARD_HOME_WEB_PORT}/tcp"
+      - "${ADGUARD_HOME_HOST_IP}:${ADGUARD_HOME_DNS_PORT}:53/tcp"
+      - "${ADGUARD_HOME_HOST_IP}:${ADGUARD_HOME_DNS_PORT}:53/udp"
+      - "${ADGUARD_HOME_WEB_PORT}:3000/tcp"
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:${ADGUARD_HOME_WEB_PORT}/ || exit 1
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
       interval: 30s
       timeout: 5s
       retries: 5
