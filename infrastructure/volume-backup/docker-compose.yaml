@@ -1,4 +1,19 @@
 services:
+  adguard_home_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: adguard_home_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: adguard-home-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: adguard-home-backup-
+    volumes:
+      - ${ADGUARD_HOME_WORK_HOST_PATH}:/backup/adguard_home_work:ro
+      - ${ADGUARD_HOME_CONF_HOST_PATH}:/backup/adguard_home_conf:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/adguard-home:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   firefly_iii_backup:
     image: offen/docker-volume-backup:v2.48.0
     container_name: firefly_iii_volume_backup
@@ -24,9 +39,9 @@ services:
       BACKUP_FILENAME: bambuddy-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: bambuddy-backup-
     volumes:
-      - ../../eggenberg-services/bambuddy/bambuddy/data:/backup/bambuddy_data:ro
-      - ../../eggenberg-services/bambuddy/bambuddy/logs:/backup/bambuddy_logs:ro
-      - ../../eggenberg-services/bambuddy/bambuddy/virtual_printer:/backup/bambuddy_virtual_printer:ro
+      - ${BAMBUDDY_DATA_HOST_PATH}:/backup/bambuddy_data:ro
+      - ${BAMBUDDY_LOGS_HOST_PATH}:/backup/bambuddy_logs:ro
+      - ${BAMBUDDY_VIRTUAL_PRINTER_HOST_PATH}:/backup/bambuddy_virtual_printer:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bambuddy:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -141,4 +156,33 @@ services:
     volumes:
       - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:/backup/home_assistant_config:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/home-assistant:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  umami_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: umami_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: umami-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: umami-backup-
+    volumes:
+      - ${UMAMI_POSTGRES_DATA_HOST_PATH}:/backup/umami_postgres_data:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/umami:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  gitea_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: gitea_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: gitea-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: gitea-backup-
+    volumes:
+      - ${GITEA_DATA_HOST_PATH}:/backup/gitea_data:ro
+      - ${GITEA_POSTGRES_DATA_HOST_PATH}:/backup/gitea_postgres_data:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/gitea:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro

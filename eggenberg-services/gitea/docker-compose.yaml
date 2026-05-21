@@ -1,0 +1,63 @@
+services:
+  gitea-db:
+    image: postgres:${GITEA_POSTGRES_VERSION}
+    container_name: gitea-db
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      POSTGRES_DB: ${GITEA_POSTGRES_DATABASE}
+      POSTGRES_USER: ${GITEA_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${GITEA_POSTGRES_PASSWORD}
+      TZ: ${GITEA_TZ}
+    volumes:
+      - ${GITEA_POSTGRES_DATA_HOST_PATH}:${GITEA_POSTGRES_DATA_CONTAINER_PATH}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cpus: ${GITEA_POSTGRES_CPUS}
+    mem_limit: ${GITEA_POSTGRES_MEM_LIMIT}
+
+  gitea:
+    image: docker.gitea.com/gitea:${GITEA_VERSION}
+    container_name: gitea
+    restart: unless-stopped
+    depends_on:
+      gitea-db:
+        condition: service_healthy
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      USER_UID: ${GITEA_UID}
+      USER_GID: ${GITEA_GID}
+      GITEA__database__DB_TYPE: postgres
+      GITEA__database__HOST: gitea-db:5432
+      GITEA__database__NAME: ${GITEA_POSTGRES_DATABASE}
+      GITEA__database__USER: ${GITEA_POSTGRES_USER}
+      GITEA__database__PASSWD: ${GITEA_POSTGRES_PASSWORD}
+      GITEA__server__DOMAIN: ${GITEA_DOMAIN}
+      GITEA__server__ROOT_URL: ${GITEA_ROOT_URL}
+      GITEA__server__SSH_PORT: ${GITEA_SSH_PORT}
+      GITEA__server__SSH_LISTEN_PORT: 22
+      TZ: ${GITEA_TZ}
+    volumes:
+      - ${GITEA_DATA_HOST_PATH}:${GITEA_DATA_CONTAINER_PATH}
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${GITEA_WEB_PORT}:3000"
+      - "${GITEA_SSH_PORT}:22"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${GITEA_CPUS}
+    mem_limit: ${GITEA_MEM_LIMIT}
+
+networks:
+  default:
+    name: gitea_network

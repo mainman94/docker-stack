@@ -10,6 +10,7 @@
 - Compose variables should be consumed via `${VAR_NAME}` syntax in the compose file.
 - If a value must exist inside the container, explicitly pass it via the service `environment:` section; compose interpolation alone does not inject variables into the container.
 - When validating a variable-driven compose file from outside the stack directory, pass `--env-file <stack>/.env.example` or `--env-file <stack>/.env`; service-level `env_file` entries do not satisfy compose interpolation on their own.
+- Each stack should define an explicit default network named `<stack>_network`, replacing hyphens in stack directory names with underscores.
 
 ## Backup conventions
 
@@ -20,3 +21,4 @@
 - Each backup service writes archives to `${BACKUP_ROOT}/<stack>/`.
 - If a stack uses external named Docker volumes, the real host volume names must be documented in `infrastructure/volume-backup/.env` and `.env.example`.
 - Re-creatable caches may still live under `./<service-name>/...` for consistency, but they should be excluded from backups unless there is a specific restore need.
+- Run `infrastructure/volume-backup/check-backup-paths.sh` before deploying backup changes to catch missing bind-mount sources.

@@ -1,0 +1,49 @@
+services:
+  umami-db:
+    image: postgres:${UMAMI_POSTGRES_VERSION}
+    container_name: umami-db
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      POSTGRES_DB: ${UMAMI_POSTGRES_DATABASE}
+      POSTGRES_USER: ${UMAMI_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${UMAMI_POSTGRES_PASSWORD}
+      TZ: ${UMAMI_TZ}
+    volumes:
+      - ${UMAMI_POSTGRES_DATA_HOST_PATH}:${UMAMI_POSTGRES_DATA_CONTAINER_PATH}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cpus: ${UMAMI_POSTGRES_CPUS}
+    mem_limit: ${UMAMI_POSTGRES_MEM_LIMIT}
+
+  umami:
+    image: ghcr.io/umami-software/umami:${UMAMI_VERSION}
+    container_name: umami
+    init: true
+    restart: unless-stopped
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${UMAMI_POSTGRES_USER}:${UMAMI_POSTGRES_PASSWORD}@umami-db:5432/${UMAMI_POSTGRES_DATABASE}
+      APP_SECRET: ${UMAMI_APP_SECRET}
+      DISABLE_TELEMETRY: ${UMAMI_DISABLE_TELEMETRY}
+      TZ: ${UMAMI_TZ}
+    ports:
+      - "${UMAMI_WEB_PORT}:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${UMAMI_CPUS}
+    mem_limit: ${UMAMI_MEM_LIMIT}
+
+networks:
+  default:
+    name: umami_network
