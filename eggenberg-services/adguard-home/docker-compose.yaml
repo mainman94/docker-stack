@@ -1,6 +1,6 @@
 services:
   adguard-home:
-    image: adguard/adguardhome:${ADGUARD_HOME_VERSION}
+    image: adguard/adguardhome:v0.107.75
     container_name: adguard-home
     restart: unless-stopped
     cap_add:
