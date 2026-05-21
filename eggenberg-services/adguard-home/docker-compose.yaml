@@ -3,6 +3,7 @@ services:
     image: adguard/adguardhome:v0.107.75
     container_name: adguard-home
     restart: unless-stopped
+    user: "${ADGUARD_HOME_UID}:${ADGUARD_HOME_GID}"
     cap_add:
       - NET_ADMIN
     labels:
