@@ -1,6 +1,6 @@
 services:
   gitea-db:
-    image: postgres:${GITEA_POSTGRES_VERSION}
+    image: postgres:17-alpine
     container_name: gitea-db
     restart: unless-stopped
     labels:
@@ -21,7 +21,7 @@ services:
     mem_limit: ${GITEA_POSTGRES_MEM_LIMIT}
 
   gitea:
-    image: docker.gitea.com/gitea:${GITEA_VERSION}
+    image: docker.gitea.com/gitea:1.26.2
     container_name: gitea
     restart: unless-stopped
     depends_on:
