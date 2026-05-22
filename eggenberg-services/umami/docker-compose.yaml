@@ -3,7 +3,6 @@ services:
     image: postgres:18-alpine
     container_name: umami-db
     restart: unless-stopped
-    user: "${UMAMI_POSTGRES_UID}:${UMAMI_POSTGRES_GID}"
     labels:
       - docker-volume-backup.stop-during-backup=true
     environment:
@@ -12,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${UMAMI_POSTGRES_PASSWORD}
       TZ: ${UMAMI_TZ}
     volumes:
-      - ${UMAMI_POSTGRES_DATA_HOST_PATH}:${UMAMI_POSTGRES_DATA_CONTAINER_PATH}
+      - ${UMAMI_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
