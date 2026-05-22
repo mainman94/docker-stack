@@ -1,8 +1,9 @@
 services:
   umami-db:
-    image: postgres:${UMAMI_POSTGRES_VERSION}
+    image: postgres:18-alpine
     container_name: umami-db
     restart: unless-stopped
+    user: "${UMAMI_POSTGRES_UID}:${UMAMI_POSTGRES_GID}"
     labels:
       - docker-volume-backup.stop-during-backup=true
     environment:
@@ -21,10 +22,11 @@ services:
     mem_limit: ${UMAMI_POSTGRES_MEM_LIMIT}
 
   umami:
-    image: ghcr.io/umami-software/umami:${UMAMI_VERSION}
+    image: ghcr.io/umami-software/umami:3.1
     container_name: umami
     init: true
     restart: unless-stopped
+    user: "${UMAMI_UID}:${UMAMI_GID}"
     depends_on:
       umami-db:
         condition: service_healthy
