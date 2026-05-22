@@ -1,10 +1,10 @@
 services:
   paperless-redis:
-    image: redis:8-alpine
+    image: valkey/valkey:9.1-alpine
     container_name: paperless-redis
     restart: unless-stopped
     command: >
-      redis-server
+      valkey-server
       --save 60 1
       --loglevel warning
       --maxmemory 128mb
@@ -12,7 +12,7 @@ services:
     volumes:
       - ${PAPERLESS_REDIS_DATA_HOST_PATH}:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5

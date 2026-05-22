@@ -21,14 +21,14 @@ services:
     mem_limit: ${AUTHELIA_POSTGRES_MEM_LIMIT}
 
   authelia-redis:
-    image: redis:8-alpine
+    image: valkey/valkey:9.1-alpine
     container_name: authelia-redis
     restart: unless-stopped
     command: --requirepass ${AUTHELIA_REDIS_PASSWORD}
     volumes:
       - ${AUTHELIA_REDIS_DATA_HOST_PATH}:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${AUTHELIA_REDIS_PASSWORD}", "ping"]
+      test: ["CMD", "valkey-cli", "-a", "${AUTHELIA_REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
