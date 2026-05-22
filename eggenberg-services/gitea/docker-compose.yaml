@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${GITEA_POSTGRES_PASSWORD}
       TZ: ${GITEA_TZ}
     volumes:
-      - ${GITEA_POSTGRES_DATA_HOST_PATH}:${GITEA_POSTGRES_DATA_CONTAINER_PATH}
+      - ${GITEA_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
