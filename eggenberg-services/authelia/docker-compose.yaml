@@ -1,0 +1,72 @@
+services:
+  authelia-db:
+    image: postgres:18-alpine
+    container_name: authelia-db
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      POSTGRES_DB: ${AUTHELIA_POSTGRES_DATABASE}
+      POSTGRES_USER: ${AUTHELIA_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AUTHELIA_POSTGRES_PASSWORD}
+      TZ: ${AUTHELIA_TZ}
+    volumes:
+      - ${AUTHELIA_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cpus: ${AUTHELIA_POSTGRES_CPUS}
+    mem_limit: ${AUTHELIA_POSTGRES_MEM_LIMIT}
+
+  authelia-redis:
+    image: redis:8-alpine
+    container_name: authelia-redis
+    restart: unless-stopped
+    command: --requirepass ${AUTHELIA_REDIS_PASSWORD}
+    volumes:
+      - ${AUTHELIA_REDIS_DATA_HOST_PATH}:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${AUTHELIA_REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cpus: ${AUTHELIA_REDIS_CPUS}
+    mem_limit: ${AUTHELIA_REDIS_MEM_LIMIT}
+
+  authelia:
+    image: authelia/authelia:4
+    container_name: authelia
+    restart: unless-stopped
+    depends_on:
+      authelia-db:
+        condition: service_healthy
+      authelia-redis:
+        condition: service_healthy
+    environment:
+      TZ: ${AUTHELIA_TZ}
+      AUTHELIA_JWT_SECRET: ${AUTHELIA_JWT_SECRET}
+      AUTHELIA_SESSION_SECRET: ${AUTHELIA_SESSION_SECRET}
+      AUTHELIA_STORAGE_ENCRYPTION_KEY: ${AUTHELIA_STORAGE_ENCRYPTION_KEY}
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD: ${AUTHELIA_POSTGRES_PASSWORD}
+      AUTHELIA_SESSION_REDIS_PASSWORD: ${AUTHELIA_REDIS_PASSWORD}
+      AUTHELIA_NOTIFIER_SMTP_PASSWORD: ${AUTHELIA_SMTP_PASSWORD}
+    volumes:
+      - ${AUTHELIA_CONFIG_HOST_PATH}:/config
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${AUTHELIA_WEB_PORT}:9091"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9091/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${AUTHELIA_CPUS}
+    mem_limit: ${AUTHELIA_MEM_LIMIT}
+
+networks:
+  default:
+    name: authelia_network

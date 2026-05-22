@@ -1,0 +1,59 @@
+---
+# Alle example.invalid-Domains durch echte Domains ersetzen!
+
+server:
+  address: "tcp://0.0.0.0:9091"
+
+log:
+  level: info
+
+totp:
+  issuer: example.invalid
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    watch: true
+    password:
+      algorithm: argon2id
+      iterations: 3
+      memory: 65536
+      parallelism: 4
+      key_length: 32
+      salt_length: 16
+
+access_control:
+  default_policy: two_factor
+  rules:
+    - domain: "auth.example.invalid"
+      policy: bypass
+
+session:
+  name: authelia_session
+  same_site: lax
+  inactivity: 5m
+  expiration: 1h
+  remember_me: 1M
+  cookies:
+    - domain: example.invalid
+      authelia_url: https://auth.example.invalid
+      default_redirection_url: https://example.invalid
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  postgres:
+    address: "tcp://authelia-db:5432"
+    database: authelia
+    username: authelia
+
+notifier:
+  smtp:
+    address: "smtp://smtp.example.invalid:587"
+    username: authelia@example.invalid
+    sender: "Authelia <authelia@example.invalid>"
+    subject: "[Authelia] {title}"
+    startup_check_address: authelia@example.invalid

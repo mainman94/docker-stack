@@ -1,0 +1,63 @@
+services:
+  vaultwarden-db:
+    image: postgres:18-alpine
+    container_name: vaultwarden-db
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      POSTGRES_DB: ${VAULTWARDEN_POSTGRES_DATABASE}
+      POSTGRES_USER: ${VAULTWARDEN_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${VAULTWARDEN_POSTGRES_PASSWORD}
+      TZ: ${VAULTWARDEN_TZ}
+    volumes:
+      - ${VAULTWARDEN_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cpus: ${VAULTWARDEN_POSTGRES_CPUS}
+    mem_limit: ${VAULTWARDEN_POSTGRES_MEM_LIMIT}
+
+  vaultwarden:
+    image: ghcr.io/dani-garcia/vaultwarden:1.36.0
+    container_name: vaultwarden
+    restart: unless-stopped
+    depends_on:
+      vaultwarden-db:
+        condition: service_healthy
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      TZ: ${VAULTWARDEN_TZ}
+      DATABASE_URL: postgresql://${VAULTWARDEN_POSTGRES_USER}:${VAULTWARDEN_POSTGRES_PASSWORD}@vaultwarden-db:5432/${VAULTWARDEN_POSTGRES_DATABASE}
+      DOMAIN: ${VAULTWARDEN_DOMAIN}
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+      SIGNUPS_ALLOWED: ${VAULTWARDEN_SIGNUPS_ALLOWED}
+      INVITATIONS_ALLOWED: ${VAULTWARDEN_INVITATIONS_ALLOWED}
+      SMTP_HOST: ${VAULTWARDEN_SMTP_HOST}
+      SMTP_PORT: ${VAULTWARDEN_SMTP_PORT}
+      SMTP_SECURITY: ${VAULTWARDEN_SMTP_SECURITY}
+      SMTP_USERNAME: ${VAULTWARDEN_SMTP_USERNAME}
+      SMTP_PASSWORD: ${VAULTWARDEN_SMTP_PASSWORD}
+      SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
+      SMTP_FROM_NAME: ${VAULTWARDEN_SMTP_FROM_NAME}
+    volumes:
+      - ${VAULTWARDEN_DATA_HOST_PATH}:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${VAULTWARDEN_WEB_PORT}:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/alive"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${VAULTWARDEN_CPUS}
+    mem_limit: ${VAULTWARDEN_MEM_LIMIT}
+
+networks:
+  default:
+    name: vaultwarden_network
