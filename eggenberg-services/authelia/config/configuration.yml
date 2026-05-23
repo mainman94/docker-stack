@@ -1,6 +1,4 @@
 ---
-# Alle example.invalid-Domains durch echte Domains ersetzen!
-
 server:
   address: "tcp://0.0.0.0:9091"
 
@@ -8,7 +6,7 @@ log:
   level: info
 
 totp:
-  issuer: example.invalid
+  issuer: {{ env "AUTHELIA_DOMAIN" }}
 
 authentication_backend:
   file:
@@ -25,7 +23,7 @@ authentication_backend:
 access_control:
   default_policy: two_factor
   rules:
-    - domain: "auth.example.invalid"
+    - domain: '{{ (urlParse (env "AUTHELIA_AUTH_URL")).Host }}'
       policy: bypass
 
 session:
@@ -35,9 +33,9 @@ session:
   expiration: 1h
   remember_me: 1M
   cookies:
-    - domain: example.invalid
-      authelia_url: https://auth.example.invalid
-      default_redirection_url: https://example.invalid
+    - domain: {{ env "AUTHELIA_DOMAIN" }}
+      authelia_url: {{ env "AUTHELIA_AUTH_URL" }}
+      default_redirection_url: https://{{ env "AUTHELIA_DOMAIN" }}
 
 regulation:
   max_retries: 3
@@ -47,13 +45,13 @@ regulation:
 storage:
   postgres:
     address: "tcp://authelia-db:5432"
-    database: authelia
-    username: authelia
+    database: {{ env "AUTHELIA_POSTGRES_DATABASE" }}
+    username: {{ env "AUTHELIA_POSTGRES_USER" }}
 
 notifier:
   smtp:
-    address: "smtp://smtp.example.invalid:587"
-    username: authelia@example.invalid
-    sender: "Authelia <authelia@example.invalid>"
+    address: 'smtp://{{ env "AUTHELIA_SMTP_HOST" }}:{{ env "AUTHELIA_SMTP_PORT" }}'
+    username: {{ env "AUTHELIA_SMTP_USERNAME" }}
+    sender: 'Authelia <{{ env "AUTHELIA_SMTP_FROM" }}>'
     subject: "[Authelia] {title}"
-    startup_check_address: authelia@example.invalid
+    startup_check_address: {{ env "AUTHELIA_SMTP_FROM" }}
