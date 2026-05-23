@@ -9,6 +9,8 @@ services:
       - "host.docker.internal:host-gateway"
     entrypoint: ["/container/label-run"]
     command: ["--port", "9090"]
+    tmpfs:
+      - /tmp:exec,size=64m
     ports:
       - "${COCKPIT_WEB_PORT}:9090"
     healthcheck:
