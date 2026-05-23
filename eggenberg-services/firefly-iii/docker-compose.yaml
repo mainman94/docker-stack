@@ -22,7 +22,6 @@ services:
   app:
     image: docker.io/fireflyiii/core:version-6.6.2
     container_name: firefly_iii_core
-    user: "${FIREFLY_III_UID}:${FIREFLY_III_GID}"
     restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=true
@@ -66,7 +65,6 @@ services:
   importer:
     image: fireflyiii/data-importer:version-2.3.2
     container_name: firefly_iii_importer
-    user: "${FIREFLY_III_UID}:${FIREFLY_III_GID}"
     restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=true
