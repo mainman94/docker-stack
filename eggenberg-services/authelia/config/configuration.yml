@@ -52,6 +52,7 @@ storage:
     username: authelia
 
 notifier:
+  disable_startup_check: true
   smtp:
     address: "smtp://smtp.example.invalid:587"
     username: authelia@example.invalid
