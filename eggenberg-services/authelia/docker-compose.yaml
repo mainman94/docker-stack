@@ -39,7 +39,7 @@ services:
     image: authelia/authelia:4
     container_name: authelia
     restart: unless-stopped
-    command: ["--config.experimental.filters", "template"]
+    command: ["authelia", "--config.experimental.filters", "template"]
     depends_on:
       authelia-db:
         condition: service_healthy
