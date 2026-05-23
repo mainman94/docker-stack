@@ -1,0 +1,25 @@
+services:
+  cockpit:
+    image: quay.io/cockpit/ws:361
+    container_name: cockpit
+    restart: unless-stopped
+    # cockpit-ws connects to the host via host-gateway (not D-Bus), so no privileged mode needed.
+    # Requires cockpit-bridge installed on the host: apt install cockpit-bridge
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    entrypoint: ["/container/label-run"]
+    command: ["--port", "9090"]
+    ports:
+      - "${COCKPIT_WEB_PORT}:9090"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9090/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${COCKPIT_CPUS}
+    mem_limit: ${COCKPIT_MEM_LIMIT}
+
+networks:
+  default:
+    name: cockpit_network
