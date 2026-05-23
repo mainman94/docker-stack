@@ -9,8 +9,7 @@ services:
       BACKUP_FILENAME: adguard-home-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: adguard-home-backup-
     volumes:
-      - ${ADGUARD_HOME_WORK_HOST_PATH}:/backup/adguard_home_work:ro
-      - ${ADGUARD_HOME_CONF_HOST_PATH}:/backup/adguard_home_conf:ro
+      - ${ADGUARD_HOME_STACK_HOST_PATH}:/backup/adguard_home_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/adguard-home:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -24,8 +23,7 @@ services:
       BACKUP_FILENAME: firefly-iii-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: firefly-iii-backup-
     volumes:
-      - ../../eggenberg-services/firefly-iii/firefly-iii/db:/backup/firefly_iii_db:ro
-      - ../../eggenberg-services/firefly-iii/firefly-iii/upload:/backup/firefly_iii_upload:ro
+      - ${FIREFLY_III_STACK_HOST_PATH}:/backup/firefly_iii_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/firefly-iii:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -39,9 +37,7 @@ services:
       BACKUP_FILENAME: bambuddy-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: bambuddy-backup-
     volumes:
-      - ${BAMBUDDY_DATA_HOST_PATH}:/backup/bambuddy_data:ro
-      - ${BAMBUDDY_LOGS_HOST_PATH}:/backup/bambuddy_logs:ro
-      - ${BAMBUDDY_VIRTUAL_PRINTER_HOST_PATH}:/backup/bambuddy_virtual_printer:ro
+      - ${BAMBUDDY_STACK_HOST_PATH}:/backup/bambuddy_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bambuddy:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -55,7 +51,7 @@ services:
       BACKUP_FILENAME: jellyfin-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: jellyfin-backup-
     volumes:
-      - ${JELLYFIN_CONFIG_HOST_PATH}:/backup/jellyfin_config:ro
+      - ${JELLYFIN_STACK_HOST_PATH}:/backup/jellyfin_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellyfin:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -69,7 +65,7 @@ services:
       BACKUP_FILENAME: swiparr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: swiparr-backup-
     volumes:
-      - ${SWIPARR_DATA_HOST_PATH}:/backup/swiparr_data:ro
+      - ${SWIPARR_STACK_HOST_PATH}:/backup/swiparr_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/swiparr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -83,7 +79,7 @@ services:
       BACKUP_FILENAME: sabnzbd-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: sabnzbd-backup-
     volumes:
-      - ${SABNZBD_CONFIG_HOST_PATH}:/backup/sabnzbd_config:ro
+      - ${SABNZBD_STACK_HOST_PATH}:/backup/sabnzbd_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sabnzbd:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -97,7 +93,7 @@ services:
       BACKUP_FILENAME: seerr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: seerr-backup-
     volumes:
-      - ${SEERR_CONFIG_HOST_PATH}:/backup/seerr_config:ro
+      - ${SEERR_STACK_HOST_PATH}:/backup/seerr_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/seerr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -111,7 +107,7 @@ services:
       BACKUP_FILENAME: radarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: radarr-backup-
     volumes:
-      - ${RADARR_CONFIG_HOST_PATH}:/backup/radarr_config:ro
+      - ${RADARR_STACK_HOST_PATH}:/backup/radarr_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/radarr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -125,7 +121,7 @@ services:
       BACKUP_FILENAME: sonarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: sonarr-backup-
     volumes:
-      - ${SONARR_CONFIG_HOST_PATH}:/backup/sonarr_config:ro
+      - ${SONARR_STACK_HOST_PATH}:/backup/sonarr_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sonarr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -139,8 +135,7 @@ services:
       BACKUP_FILENAME: jellystat-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: jellystat-backup-
     volumes:
-      - ${JELLYSTAT_BACKUP_HOST_PATH}:/backup/jellystat_backup_data:ro
-      - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}:/backup/jellystat_postgres_data:ro
+      - ${JELLYSTAT_STACK_HOST_PATH}:/backup/jellystat_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellystat:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -154,7 +149,7 @@ services:
       BACKUP_FILENAME: home-assistant-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: home-assistant-backup-
     volumes:
-      - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:/backup/home_assistant_config:ro
+      - ${HOME_ASSISTANT_STACK_HOST_PATH}:/backup/home_assistant_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/home-assistant:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -168,7 +163,7 @@ services:
       BACKUP_FILENAME: umami-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: umami-backup-
     volumes:
-      - ${UMAMI_POSTGRES_DATA_HOST_PATH}:/backup/umami_postgres_data:ro
+      - ${UMAMI_STACK_HOST_PATH}:/backup/umami_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/umami:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -182,8 +177,7 @@ services:
       BACKUP_FILENAME: gitea-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: gitea-backup-
     volumes:
-      - ${GITEA_DATA_HOST_PATH}:/backup/gitea_data:ro
-      - ${GITEA_POSTGRES_DATA_HOST_PATH}:/backup/gitea_postgres_data:ro
+      - ${GITEA_STACK_HOST_PATH}:/backup/gitea_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/gitea:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -197,9 +191,7 @@ services:
       BACKUP_FILENAME: authelia-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: authelia-backup-
     volumes:
-      - ${AUTHELIA_POSTGRES_DATA_HOST_PATH}:/backup/authelia_postgres_data:ro
-      - ${AUTHELIA_REDIS_DATA_HOST_PATH}:/backup/authelia_redis_data:ro
-      - ${AUTHELIA_CONFIG_HOST_PATH}:/backup/authelia_config:ro
+      - ${AUTHELIA_STACK_HOST_PATH}:/backup/authelia_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/authelia:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -213,10 +205,7 @@ services:
       BACKUP_FILENAME: paperless-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: paperless-backup-
     volumes:
-      - ${PAPERLESS_POSTGRES_DATA_HOST_PATH}:/backup/paperless_postgres_data:ro
-      - ${PAPERLESS_REDIS_DATA_HOST_PATH}:/backup/paperless_redis_data:ro
-      - ${PAPERLESS_DATA_HOST_PATH}:/backup/paperless_data:ro
-      - ${PAPERLESS_MEDIA_HOST_PATH}:/backup/paperless_media:ro
+      - ${PAPERLESS_STACK_HOST_PATH}:/backup/paperless_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/paperless:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
@@ -230,7 +219,6 @@ services:
       BACKUP_FILENAME: vaultwarden-backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: vaultwarden-backup-
     volumes:
-      - ${VAULTWARDEN_POSTGRES_DATA_HOST_PATH}:/backup/vaultwarden_postgres_data:ro
-      - ${VAULTWARDEN_DATA_HOST_PATH}:/backup/vaultwarden_data:ro
+      - ${VAULTWARDEN_STACK_HOST_PATH}:/backup/vaultwarden_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/vaultwarden:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
