@@ -186,3 +186,51 @@ services:
       - ${GITEA_POSTGRES_DATA_HOST_PATH}:/backup/gitea_postgres_data:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/gitea:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  authelia_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: authelia_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: authelia-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: authelia-backup-
+    volumes:
+      - ${AUTHELIA_POSTGRES_DATA_HOST_PATH}:/backup/authelia_postgres_data:ro
+      - ${AUTHELIA_REDIS_DATA_HOST_PATH}:/backup/authelia_redis_data:ro
+      - ${AUTHELIA_CONFIG_HOST_PATH}:/backup/authelia_config:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/authelia:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  paperless_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: paperless_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: paperless-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: paperless-backup-
+    volumes:
+      - ${PAPERLESS_POSTGRES_DATA_HOST_PATH}:/backup/paperless_postgres_data:ro
+      - ${PAPERLESS_REDIS_DATA_HOST_PATH}:/backup/paperless_redis_data:ro
+      - ${PAPERLESS_DATA_HOST_PATH}:/backup/paperless_data:ro
+      - ${PAPERLESS_MEDIA_HOST_PATH}:/backup/paperless_media:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/paperless:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  vaultwarden_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: vaultwarden_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: vaultwarden-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: vaultwarden-backup-
+    volumes:
+      - ${VAULTWARDEN_POSTGRES_DATA_HOST_PATH}:/backup/vaultwarden_postgres_data:ro
+      - ${VAULTWARDEN_DATA_HOST_PATH}:/backup/vaultwarden_data:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/vaultwarden:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro

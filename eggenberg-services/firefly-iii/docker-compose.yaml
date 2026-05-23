@@ -2,7 +2,7 @@ services:
   db:
     image: docker.io/library/mariadb:lts
     container_name: firefly_iii_db
-    restart: always
+    restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=true
     environment:
@@ -12,11 +12,18 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./firefly-iii/db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   app:
     image: docker.io/fireflyiii/core:version-6.6.2
     container_name: firefly_iii_core
-    restart: always
+    user: "${FIREFLY_III_UID}:${FIREFLY_III_GID}"
+    restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=true
     env_file:
@@ -47,12 +54,20 @@ services:
     volumes:
       - ./firefly-iii/upload:/var/www/html/storage/upload
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   importer:
     image: fireflyiii/data-importer:version-2.3.2
     container_name: firefly_iii_importer
-    restart: always
+    user: "${FIREFLY_III_UID}:${FIREFLY_III_GID}"
+    restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=true
     ports:
@@ -67,7 +82,8 @@ services:
       FIREFLY_III_ACCESS_TOKEN: ${FIREFLY_III_ACCESS_TOKEN}
       SEND_TELEMETRY: ${SEND_TELEMETRY}
     depends_on:
-      - app
+      app:
+        condition: service_healthy
 
 networks:
   default:

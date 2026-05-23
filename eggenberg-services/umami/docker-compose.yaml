@@ -26,6 +26,8 @@ services:
     init: true
     restart: unless-stopped
     user: "${UMAMI_UID}:${UMAMI_GID}"
+    labels:
+      - docker-volume-backup.stop-during-backup=true
     depends_on:
       umami-db:
         condition: service_healthy

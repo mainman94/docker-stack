@@ -2,7 +2,10 @@ services:
   paperless-redis:
     image: valkey/valkey:9.1-alpine
     container_name: paperless-redis
+    user: "${PAPERLESS_REDIS_UID}:${PAPERLESS_REDIS_GID}"
     restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
     command: >
       valkey-server
       --save 60 1

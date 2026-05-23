@@ -23,7 +23,10 @@ services:
   authelia-redis:
     image: valkey/valkey:9.1-alpine
     container_name: authelia-redis
+    user: "${AUTHELIA_REDIS_UID}:${AUTHELIA_REDIS_GID}"
     restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
     command: --requirepass ${AUTHELIA_REDIS_PASSWORD}
     volumes:
       - ${AUTHELIA_REDIS_DATA_HOST_PATH}:/data
@@ -38,6 +41,7 @@ services:
   authelia:
     image: authelia/authelia:4
     container_name: authelia
+    user: "${AUTHELIA_UID}:${AUTHELIA_GID}"
     restart: unless-stopped
     command: ["authelia", "--config.experimental.filters", "template"]
     depends_on:
