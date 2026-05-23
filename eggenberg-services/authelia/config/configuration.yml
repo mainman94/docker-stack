@@ -6,7 +6,7 @@ log:
   level: info
 
 totp:
-  issuer: {{ env "AUTHELIA_DOMAIN" }}
+  issuer: example.invalid
 
 authentication_backend:
   file:
@@ -23,7 +23,7 @@ authentication_backend:
 access_control:
   default_policy: two_factor
   rules:
-    - domain: '{{ (urlParse (env "AUTHELIA_AUTH_URL")).Host }}'
+    - domain: '{{ env "AUTHELIA_AUTH_HOST" }}'
       policy: bypass
 
 session:
@@ -48,13 +48,13 @@ regulation:
 storage:
   postgres:
     address: "tcp://authelia-db:5432"
-    database: {{ env "AUTHELIA_POSTGRES_DATABASE" }}
-    username: {{ env "AUTHELIA_POSTGRES_USER" }}
+    database: authelia
+    username: authelia
 
 notifier:
   smtp:
-    address: 'smtp://{{ env "AUTHELIA_SMTP_HOST" }}:{{ env "AUTHELIA_SMTP_PORT" }}'
-    username: {{ env "AUTHELIA_SMTP_USERNAME" }}
-    sender: 'Authelia <{{ env "AUTHELIA_SMTP_FROM" }}>'
+    address: "smtp://smtp.example.invalid:587"
+    username: authelia@example.invalid
+    sender: "Authelia <authelia@example.invalid>"
     subject: "[Authelia] {title}"
-    startup_check_address: {{ env "AUTHELIA_SMTP_FROM" }}
+    startup_check_address: authelia@example.invalid
