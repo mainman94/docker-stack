@@ -11,7 +11,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - ./firefly-iii/db:/var/lib/mysql
+      - ${FIREFLY_III_DB_HOST_PATH}:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
       interval: 10s
@@ -51,7 +51,7 @@ services:
     ports:
       - "${APP_PORT:-30666}:8080"
     volumes:
-      - ./firefly-iii/upload:/var/www/html/storage/upload
+      - ${FIREFLY_III_UPLOAD_HOST_PATH}:/var/www/html/storage/upload
     depends_on:
       db:
         condition: service_healthy
