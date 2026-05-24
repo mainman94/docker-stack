@@ -1,0 +1,23 @@
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:2.35.0
+    container_name: audiobookshelf
+    user: "${AUDIOBOOKSHELF_UID}:${AUDIOBOOKSHELF_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=true
+    environment:
+      TZ: ${AUDIOBOOKSHELF_TZ}
+    ports:
+      - "${AUDIOBOOKSHELF_WEB_HOST_IP}:${AUDIOBOOKSHELF_WEB_PORT}:80"
+    volumes:
+      - ${AUDIOBOOKSHELF_CONFIG_HOST_PATH}:/config
+      - ${AUDIOBOOKSHELF_METADATA_HOST_PATH}:/metadata
+      - ${AUDIOBOOKSHELF_BOOKS_HOST_PATH}:/books:ro
+      - ${AUDIOBOOKSHELF_BACKUP_HOST_PATH}:/backup:ro
+    cpus: ${AUDIOBOOKSHELF_CPUS}
+    mem_limit: ${AUDIOBOOKSHELF_MEM_LIMIT}
+
+networks:
+  default:
+    name: audiobookshelf_network
