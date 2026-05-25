@@ -223,6 +223,20 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/vaultwarden:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  audiobookshelf_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: audiobookshelf_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: audiobookshelf-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: audiobookshelf-backup-
+    volumes:
+      - ${AUDIOBOOKSHELF_STACK_HOST_PATH}:/backup/audiobookshelf_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/audiobookshelf:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   navidrome_backup:
     image: offen/docker-volume-backup:v2.48.0
     container_name: navidrome_volume_backup
