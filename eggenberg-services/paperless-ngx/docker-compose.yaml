@@ -77,6 +77,10 @@ services:
       PAPERLESS_OCR_LANGUAGE: ${PAPERLESS_OCR_LANGUAGE}
       PAPERLESS_OCR_PAGES: 5
 
+      PAPERLESS_TIKA_ENABLED: ${PAPERLESS_TIKA_ENABLED}
+      PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
+
       # Low RAM tuning for single-user homelab
       PAPERLESS_TASK_WORKERS: 1
       PAPERLESS_THREADS_PER_WORKER: 1
@@ -102,6 +106,23 @@ services:
       start_period: 60s
     cpus: ${PAPERLESS_CPUS}
     mem_limit: ${PAPERLESS_MEM_LIMIT}
+
+  paperless-gotenberg:
+    image: gotenberg/gotenberg:8.20
+    container_name: paperless-gotenberg
+    restart: unless-stopped
+    command:
+      - gotenberg
+      - --chromium-disable-routes=true
+    cpus: ${PAPERLESS_GOTENBERG_CPUS}
+    mem_limit: ${PAPERLESS_GOTENBERG_MEM_LIMIT}
+
+  paperless-tika:
+    image: ghcr.io/paperless-ngx/tika:latest
+    container_name: paperless-tika
+    restart: unless-stopped
+    cpus: ${PAPERLESS_TIKA_CPUS}
+    mem_limit: ${PAPERLESS_TIKA_MEM_LIMIT}
 
 networks:
   default:
