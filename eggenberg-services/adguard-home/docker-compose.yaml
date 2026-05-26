@@ -1,0 +1,30 @@
+services:
+  adguard-home:
+    image: adguard/adguardhome:v0.107.76
+    container_name: adguard-home
+    restart: unless-stopped
+    user: "${ADGUARD_HOME_UID}:${ADGUARD_HOME_GID}"
+    cap_add:
+      - NET_ADMIN
+    labels:
+      - docker-volume-backup.stop-during-backup=adguard-home
+    volumes:
+      - ${ADGUARD_HOME_WORK_HOST_PATH}:${ADGUARD_HOME_WORK_CONTAINER_PATH}
+      - ${ADGUARD_HOME_CONF_HOST_PATH}:${ADGUARD_HOME_CONF_CONTAINER_PATH}
+    ports:
+      - "${ADGUARD_HOME_HOST_IP}:${ADGUARD_HOME_DNS_PORT}:53/tcp"
+      - "${ADGUARD_HOME_HOST_IP}:${ADGUARD_HOME_DNS_PORT}:53/udp"
+      - "${ADGUARD_HOME_WEB_PORT}:3000/tcp"
+      - "${ADGUARD_HOME_WEB_UI_PORT}:80/tcp"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    cpus: ${ADGUARD_HOME_CPUS}
+    mem_limit: ${ADGUARD_HOME_MEM_LIMIT}
+
+networks:
+  default:
+    name: adguard_home_network

@@ -1,0 +1,301 @@
+services:
+  unhealthy_container_restart:
+    image: docker:cli
+    container_name: unhealthy_container_restart
+    restart: unless-stopped
+    environment:
+      UNHEALTHY_RESTART_INTERVAL_SECONDS: ${UNHEALTHY_RESTART_INTERVAL_SECONDS:-60}
+    command: >
+      sh -c 'while :; do
+        /usr/local/bin/restart-unhealthy-containers.sh --backup-labeled;
+        sleep "$${UNHEALTHY_RESTART_INTERVAL_SECONDS}";
+      done'
+    volumes:
+      - ./restart-unhealthy-containers.sh:/usr/local/bin/restart-unhealthy-containers.sh:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  adguard_home_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: adguard_home_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: adguard-home-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: adguard-home-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: adguard-home
+    volumes:
+      - ${ADGUARD_HOME_STACK_HOST_PATH}:/backup/adguard_home_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/adguard-home:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  firefly_iii_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: firefly_iii_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: firefly-iii-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: firefly-iii-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: firefly-iii
+    volumes:
+      - ${FIREFLY_III_STACK_HOST_PATH}:/backup/firefly_iii_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/firefly-iii:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  bambuddy_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: bambuddy_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: bambuddy-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: bambuddy-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: bambuddy
+    volumes:
+      - ${BAMBUDDY_STACK_HOST_PATH}:/backup/bambuddy_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bambuddy:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  jellyfin_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: jellyfin_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: jellyfin-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: jellyfin-backup-
+      BACKUP_EXCLUDE_REGEXP: "^/backup/jellyfin_stack/jellyfin/config/(metadata|data)(/.*)?$"
+      BACKUP_STOP_DURING_BACKUP_LABEL: jellyfin
+    volumes:
+      - ${JELLYFIN_STACK_HOST_PATH}:/backup/jellyfin_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellyfin:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  swiparr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: swiparr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: swiparr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: swiparr-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: swiparr
+    volumes:
+      - ${SWIPARR_STACK_HOST_PATH}:/backup/swiparr_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/swiparr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  sabnzbd_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: sabnzbd_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: sabnzbd-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: sabnzbd-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: sabnzbd
+    volumes:
+      - ${SABNZBD_STACK_HOST_PATH}:/backup/sabnzbd_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sabnzbd:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  seerr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: seerr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: seerr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: seerr-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: seerr
+    volumes:
+      - ${SEERR_STACK_HOST_PATH}:/backup/seerr_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/seerr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  radarr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: radarr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: radarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: radarr-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: radarr
+    volumes:
+      - ${RADARR_STACK_HOST_PATH}:/backup/radarr_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/radarr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  sonarr_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: sonarr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: sonarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: sonarr-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: sonarr
+    volumes:
+      - ${SONARR_STACK_HOST_PATH}:/backup/sonarr_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/sonarr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  tailscale_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: tailscale_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: tailscale-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: tailscale-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: tailscale
+    volumes:
+      - ${TAILSCALE_STACK_HOST_PATH}:/backup/tailscale_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/tailscale:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  jellystat_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: jellystat_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: jellystat-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: jellystat-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: jellystat
+    volumes:
+      - ${JELLYSTAT_STACK_HOST_PATH}:/backup/jellystat_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/jellystat:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  home_assistant_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: home_assistant_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: home-assistant-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: home-assistant-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: home-assistant
+    volumes:
+      - ${HOME_ASSISTANT_STACK_HOST_PATH}:/backup/home_assistant_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/home-assistant:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  umami_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: umami_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: umami-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: umami-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: umami
+    volumes:
+      - ${UMAMI_STACK_HOST_PATH}:/backup/umami_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/umami:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  gitea_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: gitea_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: gitea-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: gitea-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: gitea
+    volumes:
+      - ${GITEA_STACK_HOST_PATH}:/backup/gitea_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/gitea:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  authelia_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: authelia_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: authelia-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: authelia-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: authelia
+    volumes:
+      - ${AUTHELIA_STACK_HOST_PATH}:/backup/authelia_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/authelia:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  paperless_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: paperless_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: paperless-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: paperless-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: paperless
+    volumes:
+      - ${PAPERLESS_STACK_HOST_PATH}:/backup/paperless_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/paperless:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  vaultwarden_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: vaultwarden_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: vaultwarden-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: vaultwarden-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: vaultwarden
+    volumes:
+      - ${VAULTWARDEN_STACK_HOST_PATH}:/backup/vaultwarden_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/vaultwarden:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  audiobookshelf_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: audiobookshelf_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: audiobookshelf-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: audiobookshelf-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: audiobookshelf
+    volumes:
+      - ${AUDIOBOOKSHELF_STACK_HOST_PATH}:/backup/audiobookshelf_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/audiobookshelf:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  navidrome_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: navidrome_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: navidrome-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: navidrome-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: navidrome
+    volumes:
+      - ${NAVIDROME_STACK_HOST_PATH}:/backup/navidrome_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/navidrome:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro

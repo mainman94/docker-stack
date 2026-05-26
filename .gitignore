@@ -1,0 +1,4 @@
+.idea
+eggenberg-services/firefly-iii/.env
+eggenberg-services/jellyfin/.env
+.claude

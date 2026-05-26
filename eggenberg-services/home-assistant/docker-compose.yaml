@@ -1,0 +1,20 @@
+services:
+  home-assistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.5.4
+    container_name: home-assistant
+    user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=home-assistant
+    environment:
+      TZ: ${HOME_ASSISTANT_TZ}
+    ports:
+      - "${HOME_ASSISTANT_WEB_PORT}:8123"
+    volumes:
+      - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:${HOME_ASSISTANT_CONFIG_CONTAINER_PATH}
+    cpus: ${HOME_ASSISTANT_CPUS}
+    mem_limit: ${HOME_ASSISTANT_MEM_LIMIT}
+
+networks:
+  default:
+    name: home_assistant_network

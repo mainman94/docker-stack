@@ -1,0 +1,96 @@
+services:
+  jellystat-init:
+    image: alpine:3.23
+    container_name: jellystat-init
+    user: "0:0"
+    restart: "no"
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /mnt/postgres /mnt/backup
+        chown -R ${JELLYSTAT_POSTGRES_UID}:${JELLYSTAT_POSTGRES_GID} /mnt/postgres
+        chown -R ${JELLYSTAT_UID}:${JELLYSTAT_GID} /mnt/backup
+    volumes:
+      - type: bind
+        source: ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}
+        target: /mnt/postgres
+      - type: bind
+        source: ${JELLYSTAT_BACKUP_HOST_PATH}
+        target: /mnt/backup
+
+  jellystat-db:
+    image: postgres:${JELLYSTAT_POSTGRES_VERSION}
+    shm_size: 1gb
+    container_name: jellystat-db
+    restart: unless-stopped
+    depends_on:
+      jellystat-init:
+        condition: service_completed_successfully
+    logging:
+      driver: json-file
+      options:
+        max-file: "${JELLYSTAT_LOG_MAX_FILE}"
+        max-size: "${JELLYSTAT_LOG_MAX_SIZE}"
+    labels:
+      - docker-volume-backup.stop-during-backup=jellystat
+    environment:
+      POSTGRES_USER: ${JELLYSTAT_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${JELLYSTAT_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${JELLYSTAT_POSTGRES_DATABASE}
+      PGDATA: ${JELLYSTAT_POSTGRES_PGDATA}
+      TZ: ${JELLYSTAT_TZ}
+    volumes:
+      - type: bind
+        source: ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}
+        target: ${JELLYSTAT_POSTGRES_DATA_CONTAINER_PATH}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready --dbname=${JELLYSTAT_POSTGRES_DATABASE} --username=${JELLYSTAT_POSTGRES_USER}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  jellystat:
+    image: cyfershepard/jellystat:1.1.10
+    container_name: jellystat
+    user: "${JELLYSTAT_UID}:${JELLYSTAT_GID}"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-file: "${JELLYSTAT_LOG_MAX_FILE}"
+        max-size: "${JELLYSTAT_LOG_MAX_SIZE}"
+    depends_on:
+      jellystat-db:
+        condition: service_healthy
+    labels:
+      - docker-volume-backup.stop-during-backup=jellystat
+    environment:
+      POSTGRES_USER: ${JELLYSTAT_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${JELLYSTAT_POSTGRES_PASSWORD}
+      POSTGRES_IP: jellystat-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ${JELLYSTAT_POSTGRES_DATABASE}
+      JWT_SECRET: ${JELLYSTAT_JWT_SECRET}
+      TZ: ${JELLYSTAT_TZ}
+      IS_EMBY_API: ${JELLYSTAT_IS_EMBY_API}
+    volumes:
+      - type: bind
+        source: ${JELLYSTAT_BACKUP_HOST_PATH}
+        target: ${JELLYSTAT_BACKUP_CONTAINER_PATH}
+    ports:
+      - "${JELLYSTAT_WEB_PORT}:3000"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/auth/isConfigured || exit 1
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    cpus: ${JELLYSTAT_CPUS}
+    mem_limit: ${JELLYSTAT_MEM_LIMIT}
+
+networks:
+  default:
+    name: jellystat_network

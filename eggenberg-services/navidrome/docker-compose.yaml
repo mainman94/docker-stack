@@ -1,0 +1,24 @@
+services:
+  navidrome:
+    image: ghcr.io/navidrome/navidrome:0.61.2
+    container_name: navidrome
+    user: "${NAVIDROME_UID}:${NAVIDROME_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=navidrome
+    environment:
+      TZ: ${NAVIDROME_TZ}
+      ND_MUSICFOLDER: ${NAVIDROME_MUSIC_CONTAINER_PATH}
+      ND_DATAFOLDER: ${NAVIDROME_DATA_CONTAINER_PATH}
+      ND_WELCOMEMESSAGE: ${NAVIDROME_WELCOME_MESSAGE}
+    ports:
+      - "${NAVIDROME_WEB_PORT}:4533"
+    volumes:
+      - ${NAVIDROME_DATA_HOST_PATH}:${NAVIDROME_DATA_CONTAINER_PATH}
+      - ${NAVIDROME_MUSIC_HOST_PATH}:${NAVIDROME_MUSIC_CONTAINER_PATH}:ro
+    cpus: ${NAVIDROME_CPUS}
+    mem_limit: ${NAVIDROME_MEM_LIMIT}
+
+networks:
+  default:
+    name: navidrome_network

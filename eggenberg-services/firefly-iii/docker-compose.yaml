@@ -1,0 +1,88 @@
+services:
+  db:
+    image: docker.io/library/mariadb:lts
+    container_name: firefly_iii_db
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=firefly-iii
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: ${MYSQL_RANDOM_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ${FIREFLY_III_DB_HOST_PATH}:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  app:
+    image: fireflyiii/core:version-6.6.2
+    container_name: firefly_iii_core
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=firefly-iii
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      APP_NAME: ${APP_NAME}
+      APP_ENV: ${APP_ENV}
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: ${APP_DEBUG}
+      SITE_OWNER: ${SITE_OWNER}
+      TZ: ${TZ}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      APP_URL: ${APP_URL}
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      STATIC_CRON_TOKEN: ${STATIC_CRON_TOKEN}
+      CACHE_DRIVER: ${CACHE_DRIVER}
+      SESSION_DRIVER: ${SESSION_DRIVER}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION}
+      MAIL_MAILER: ${MAIL_MAILER}
+    ports:
+      - "${APP_PORT:-30666}:8080"
+    volumes:
+      - ${FIREFLY_III_UPLOAD_HOST_PATH}:/var/www/html/storage/upload
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  importer:
+    image: fireflyiii/data-importer:version-2.3.2
+    container_name: firefly_iii_importer
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=firefly-iii
+    ports:
+      - "${IMPORTER_PORT:-30667}:8080"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TZ: ${TZ}
+      FIREFLY_III_URL: ${FIREFLY_III_URL}
+      VANITY_URL: ${VANITY_URL}
+      FIREFLY_III_ACCESS_TOKEN: ${FIREFLY_III_ACCESS_TOKEN}
+      SEND_TELEMETRY: ${SEND_TELEMETRY}
+    depends_on:
+      app:
+        condition: service_healthy
+
+networks:
+  default:
+    name: firefly_iii_network

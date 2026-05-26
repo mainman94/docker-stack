@@ -1,0 +1,23 @@
+services:
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:5.0.3
+    container_name: sabnzbd
+    user: "${SABNZBD_UID}:${SABNZBD_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=sabnzbd
+    environment:
+      PUID: ${SABNZBD_UID}
+      PGID: ${SABNZBD_GID}
+      TZ: ${SABNZBD_TZ}
+    ports:
+      - "${SABNZBD_WEB_PORT}:8080"
+    volumes:
+      - ${SABNZBD_CONFIG_HOST_PATH}:${SABNZBD_CONFIG_CONTAINER_PATH}
+      - ${SABNZBD_DOWNLOADS_HOST_PATH}:${SABNZBD_DOWNLOADS_CONTAINER_PATH}
+    cpus: ${SABNZBD_CPUS}
+    mem_limit: ${SABNZBD_MEM_LIMIT}
+
+networks:
+  default:
+    name: sabnzbd_network

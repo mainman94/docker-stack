@@ -1,0 +1,33 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:v1.98.3
+    container_name: tailscale
+    restart: unless-stopped
+    # Intentionally run as root for kernel networking: Tailscale needs to manage
+    # /dev/net/tun, interfaces, and routes when TS_USERSPACE=false.
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    labels:
+      - docker-volume-backup.stop-during-backup=tailscale
+    environment:
+      TZ: ${TAILSCALE_TZ}
+      TS_AUTHKEY: ${TAILSCALE_AUTHKEY}
+      TS_AUTH_ONCE: ${TAILSCALE_AUTH_ONCE}
+      TS_HOSTNAME: ${TAILSCALE_HOSTNAME}
+      TS_ACCEPT_DNS: ${TAILSCALE_ACCEPT_DNS}
+      TS_STATE_DIR: ${TAILSCALE_STATE_DIR}
+      TS_USERSPACE: ${TAILSCALE_USERSPACE}
+      TS_EXTRA_ARGS: ${TAILSCALE_EXTRA_ARGS}
+      TS_TAILSCALED_EXTRA_ARGS: ${TAILSCALE_DAEMON_EXTRA_ARGS}
+    volumes:
+      - ${TAILSCALE_STATE_HOST_PATH}:${TAILSCALE_STATE_DIR}
+    cpus: ${TAILSCALE_CPUS}
+    mem_limit: ${TAILSCALE_MEM_LIMIT}
+
+networks:
+  default:
+    name: tailscale_network

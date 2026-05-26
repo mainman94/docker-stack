@@ -1,0 +1,129 @@
+services:
+  paperless-redis:
+    image: valkey/valkey:9.1-alpine
+    container_name: paperless-redis
+    user: "${PAPERLESS_REDIS_UID}:${PAPERLESS_REDIS_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=paperless
+    command: >
+      valkey-server
+      --save 60 1
+      --loglevel warning
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - ${PAPERLESS_REDIS_DATA_HOST_PATH}:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cpus: ${PAPERLESS_REDIS_CPUS}
+    mem_limit: ${PAPERLESS_REDIS_MEM_LIMIT}
+
+  paperless-db:
+    image: postgres:18-alpine
+    container_name: paperless-db
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=paperless
+    environment:
+      POSTGRES_DB: ${PAPERLESS_POSTGRES_DATABASE}
+      POSTGRES_USER: ${PAPERLESS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${PAPERLESS_POSTGRES_PASSWORD}
+      TZ: ${PAPERLESS_TZ}
+    volumes:
+      - ${PAPERLESS_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
+    shm_size: 128mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    cpus: ${PAPERLESS_POSTGRES_CPUS}
+    mem_limit: ${PAPERLESS_POSTGRES_MEM_LIMIT}
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.20
+    container_name: paperless
+    user: "${PAPERLESS_USERMAP_UID}:${PAPERLESS_USERMAP_GID}"
+    restart: unless-stopped
+    depends_on:
+      paperless-db:
+        condition: service_healthy
+      paperless-redis:
+        condition: service_healthy
+    labels:
+      - docker-volume-backup.stop-during-backup=paperless
+    environment:
+      TZ: ${PAPERLESS_TZ}
+      USERMAP_UID: ${PAPERLESS_USERMAP_UID}
+      USERMAP_GID: ${PAPERLESS_USERMAP_GID}
+
+      PAPERLESS_URL: ${PAPERLESS_URL}
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
+
+      PAPERLESS_ADMIN_USER: ${PAPERLESS_ADMIN_USER}
+      PAPERLESS_ADMIN_PASSWORD: ${PAPERLESS_ADMIN_PASSWORD}
+      PAPERLESS_ADMIN_MAIL: ${PAPERLESS_ADMIN_MAIL}
+
+      PAPERLESS_REDIS: redis://paperless-redis:6379
+      PAPERLESS_DBHOST: paperless-db
+      PAPERLESS_DBNAME: ${PAPERLESS_POSTGRES_DATABASE}
+      PAPERLESS_DBUSER: ${PAPERLESS_POSTGRES_USER}
+      PAPERLESS_DBPASS: ${PAPERLESS_POSTGRES_PASSWORD}
+
+      PAPERLESS_OCR_LANGUAGE: ${PAPERLESS_OCR_LANGUAGE}
+      PAPERLESS_OCR_PAGES: 5
+
+      PAPERLESS_TIKA_ENABLED: ${PAPERLESS_TIKA_ENABLED}
+      PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
+
+      # Low RAM tuning for single-user homelab
+      PAPERLESS_TASK_WORKERS: 1
+      PAPERLESS_THREADS_PER_WORKER: 1
+      PAPERLESS_WEBSERVER_WORKERS: 1
+      PAPERLESS_ENABLE_DOCUMENT_MATCHING: false
+      PAPERLESS_CONSUMER_ENABLE_BARCODES: false
+    volumes:
+      - ${PAPERLESS_DATA_HOST_PATH}:/usr/src/paperless/data
+      - ${PAPERLESS_MEDIA_HOST_PATH}:/usr/src/paperless/media
+      - ${PAPERLESS_EXPORT_HOST_PATH}:/usr/src/paperless/export
+      - ${PAPERLESS_TRASH_HOST_PATH}:/usr/src/paperless/trash
+      - ${PAPERLESS_CONSUME_HOST_PATH}:/usr/src/paperless/consume
+      - ${PAPERLESS_BACKUP_HOST_PATH}:/backup
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${PAPERLESS_WEB_PORT}:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    cpus: ${PAPERLESS_CPUS}
+    mem_limit: ${PAPERLESS_MEM_LIMIT}
+
+  paperless-gotenberg:
+    image: gotenberg/gotenberg:8
+    container_name: paperless-gotenberg
+    restart: unless-stopped
+    command:
+      - gotenberg
+      - --chromium-disable-routes=true
+    cpus: ${PAPERLESS_GOTENBERG_CPUS}
+    mem_limit: ${PAPERLESS_GOTENBERG_MEM_LIMIT}
+
+  paperless-tika:
+    image: apache/tika:3.3.0.0
+    container_name: paperless-tika
+    restart: unless-stopped
+    cpus: ${PAPERLESS_TIKA_CPUS}
+    mem_limit: ${PAPERLESS_TIKA_MEM_LIMIT}
+
+networks:
+  default:
+    name: paperless_network
