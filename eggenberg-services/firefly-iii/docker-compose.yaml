@@ -20,7 +20,7 @@ services:
       start_period: 30s
 
   app:
-    image: docker.io/fireflyiii/core:version-6.6.2
+    image: fireflyiii/core:version-6.6.2
     container_name: firefly_iii_core
     restart: unless-stopped
     labels:
