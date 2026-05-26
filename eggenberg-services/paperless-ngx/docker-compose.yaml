@@ -47,6 +47,7 @@ services:
   paperless:
     image: ghcr.io/paperless-ngx/paperless-ngx:2.20
     container_name: paperless
+    user: "${PAPERLESS_USERMAP_UID}:${PAPERLESS_USERMAP_GID}"
     restart: unless-stopped
     depends_on:
       paperless-db:
