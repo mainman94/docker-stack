@@ -1,24 +1,4 @@
 services:
-  jellystat-init:
-    image: alpine:3.23
-    container_name: jellystat-init
-    user: "0:0"
-    restart: "no"
-    command:
-      - sh
-      - -c
-      - |
-        mkdir -p /mnt/postgres /mnt/backup
-        chown -R 70:70 /mnt/postgres
-        chown -R ${JELLYSTAT_UID}:${JELLYSTAT_GID} /mnt/backup
-    volumes:
-      - type: bind
-        source: ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}
-        target: /mnt/postgres
-      - type: bind
-        source: ${JELLYSTAT_BACKUP_HOST_PATH}
-        target: /mnt/backup
-
   jellystat-db:
     image: postgres:18-alpine
     shm_size: 1gb
