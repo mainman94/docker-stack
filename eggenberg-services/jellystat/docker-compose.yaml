@@ -4,9 +4,6 @@ services:
     shm_size: 1gb
     container_name: jellystat-db
     restart: unless-stopped
-    depends_on:
-      jellystat-init:
-        condition: service_completed_successfully
     logging:
       driver: json-file
       options:
