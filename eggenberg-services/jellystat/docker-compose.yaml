@@ -1,4 +1,4 @@
-services:
+ervices:
   jellystat-init:
     image: alpine:3.23
     container_name: jellystat-init
@@ -9,7 +9,7 @@ services:
       - -c
       - |
         mkdir -p /mnt/postgres /mnt/backup
-        chown -R 70:70 /mnt/postgres
+        chown -R ${JELLYSTAT_POSTGRES_UID}:${JELLYSTAT_POSTGRES_GID} /mnt/postgres
         chown -R ${JELLYSTAT_UID}:${JELLYSTAT_GID} /mnt/backup
     volumes:
       - type: bind
@@ -20,7 +20,7 @@ services:
         target: /mnt/backup
 
   jellystat-db:
-    image: postgres:18-alpine
+    image: postgres:17-alpine
     shm_size: 1gb
     container_name: jellystat-db
     restart: unless-stopped
