@@ -20,7 +20,7 @@ services:
         target: /mnt/backup
 
   jellystat-db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     shm_size: 1gb
     container_name: jellystat-db
     restart: unless-stopped
@@ -38,12 +38,9 @@ services:
       POSTGRES_USER: ${JELLYSTAT_POSTGRES_USER}
       POSTGRES_PASSWORD: ${JELLYSTAT_POSTGRES_PASSWORD}
       POSTGRES_DB: ${JELLYSTAT_POSTGRES_DATABASE}
-      PGDATA: ${JELLYSTAT_POSTGRES_PGDATA}
       TZ: ${JELLYSTAT_TZ}
     volumes:
-      - type: bind
-        source: ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}
-        target: ${JELLYSTAT_POSTGRES_DATA_CONTAINER_PATH}
+      - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
     healthcheck:
       test:
         - CMD-SHELL
