@@ -9,7 +9,7 @@ services:
       - -c
       - |
         mkdir -p /mnt/postgres /mnt/backup
-        chown -R ${JELLYSTAT_POSTGRES_UID}:${JELLYSTAT_POSTGRES_GID} /mnt/postgres
+        chown -R 70:70 /mnt/postgres
         chown -R ${JELLYSTAT_UID}:${JELLYSTAT_GID} /mnt/backup
     volumes:
       - type: bind
