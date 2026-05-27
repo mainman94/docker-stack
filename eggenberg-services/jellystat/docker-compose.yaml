@@ -1,4 +1,4 @@
-ervices:
+services:
   jellystat-init:
     image: alpine:3.23
     container_name: jellystat-init
