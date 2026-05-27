@@ -20,7 +20,7 @@ services:
         target: /mnt/backup
 
   jellystat-db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     shm_size: 1gb
     container_name: jellystat-db
     restart: unless-stopped
