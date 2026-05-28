@@ -1,6 +1,6 @@
 services:
   audiobookshelf:
-    image: ghcr.io/advplyr/audiobookshelf:2.35.0
+    image: ghcr.io/advplyr/audiobookshelf:2.35.1
     container_name: audiobookshelf
     user: "${AUDIOBOOKSHELF_UID}:${AUDIOBOOKSHELF_GID}"
     restart: unless-stopped
