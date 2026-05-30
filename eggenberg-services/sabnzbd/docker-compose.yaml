@@ -2,7 +2,6 @@ services:
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:5.0.3
     container_name: sabnzbd
-    user: "${SABNZBD_UID}:${SABNZBD_GID}"
     restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=sabnzbd
