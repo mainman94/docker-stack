@@ -1,6 +1,6 @@
 services:
   umami-db:
-    image: postgres:18-alpine
+    image: postgres:18.4-alpine3.23
     container_name: umami-db
     restart: unless-stopped
     labels:
