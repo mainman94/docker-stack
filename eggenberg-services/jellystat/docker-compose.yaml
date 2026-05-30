@@ -17,7 +17,7 @@ services:
       POSTGRES_DB: ${JELLYSTAT_POSTGRES_DATABASE}
       TZ: ${JELLYSTAT_TZ}
     volumes:
-      - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
+      - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}/data:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD-SHELL
