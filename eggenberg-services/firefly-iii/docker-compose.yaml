@@ -1,6 +1,6 @@
 services:
   db:
-    image: docker.io/library/mariadb:lts
+    image: docker.io/library/mariadb:11.8.8-noble
     container_name: firefly_iii_db
     restart: unless-stopped
     labels:
