@@ -54,6 +54,10 @@ services:
         condition: service_healthy
       paperless-redis:
         condition: service_healthy
+      paperless-gotenberg:
+        condition: service_healthy
+      paperless-tika:
+        condition: service_healthy
     labels:
       - docker-volume-backup.stop-during-backup=paperless
     environment:
@@ -75,7 +79,7 @@ services:
       PAPERLESS_DBPASS: ${PAPERLESS_POSTGRES_PASSWORD}
 
       PAPERLESS_OCR_LANGUAGE: ${PAPERLESS_OCR_LANGUAGE}
-      PAPERLESS_OCR_PAGES: 5
+      PAPERLESS_OCR_PAGES: ${PAPERLESS_OCR_PAGES:-5}
 
       PAPERLESS_TIKA_ENABLED: ${PAPERLESS_TIKA_ENABLED}
       PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
@@ -114,6 +118,12 @@ services:
     command:
       - gotenberg
       - --chromium-disable-routes=true
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     cpus: ${PAPERLESS_GOTENBERG_CPUS}
     mem_limit: ${PAPERLESS_GOTENBERG_MEM_LIMIT}
 
@@ -121,6 +131,12 @@ services:
     image: apache/tika:3.3.1.0
     container_name: paperless-tika
     restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9998/tika || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     cpus: ${PAPERLESS_TIKA_CPUS}
     mem_limit: ${PAPERLESS_TIKA_MEM_LIMIT}
 

@@ -15,6 +15,12 @@ services:
     volumes:
       - ${SABNZBD_CONFIG_HOST_PATH}:${SABNZBD_CONFIG_CONTAINER_PATH}
       - ${SABNZBD_DOWNLOADS_HOST_PATH}:${SABNZBD_DOWNLOADS_CONTAINER_PATH}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     cpus: ${SABNZBD_CPUS}
     mem_limit: ${SABNZBD_MEM_LIMIT}
 

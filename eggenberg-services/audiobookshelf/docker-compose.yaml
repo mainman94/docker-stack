@@ -15,6 +15,12 @@ services:
       - ${AUDIOBOOKSHELF_METADATA_HOST_PATH}:/metadata
       - ${AUDIOBOOKSHELF_BOOKS_HOST_PATH}:/books:ro
       - ${AUDIOBOOKSHELF_BACKUP_HOST_PATH}:/backup:ro
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     cpus: ${AUDIOBOOKSHELF_CPUS}
     mem_limit: ${AUDIOBOOKSHELF_MEM_LIMIT}
 

@@ -12,6 +12,12 @@ services:
       - "${HOME_ASSISTANT_WEB_PORT}:8123"
     volumes:
       - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:${HOME_ASSISTANT_CONFIG_CONTAINER_PATH}
+    healthcheck:
+      test: curl -sf http://localhost:8123/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     cpus: ${HOME_ASSISTANT_CPUS}
     mem_limit: ${HOME_ASSISTANT_MEM_LIMIT}
 

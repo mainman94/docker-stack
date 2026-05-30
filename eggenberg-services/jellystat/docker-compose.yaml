@@ -1,7 +1,7 @@
 services:
   jellystat-db:
     image: postgres:18-alpine
-    shm_size: 1gb
+    shm_size: ${JELLYSTAT_SHM_SIZE:-1gb}
     container_name: jellystat-db
     restart: unless-stopped
     logging:
