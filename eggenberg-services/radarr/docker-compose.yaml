@@ -1,6 +1,6 @@
 services:
   radarr:
-    image: lscr.io/linuxserver/radarr:6.1.1
+    image: lscr.io/linuxserver/radarr:6.1.1.10360-ls304
     container_name: radarr
     restart: unless-stopped
     labels:
