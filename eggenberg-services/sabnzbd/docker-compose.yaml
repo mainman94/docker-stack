@@ -1,6 +1,6 @@
 services:
   sabnzbd:
-    image: lscr.io/linuxserver/sabnzbd:5.0.3
+    image: lscr.io/linuxserver/sabnzbd:5.0.3-ls256
     container_name: sabnzbd
     restart: unless-stopped
     labels:
