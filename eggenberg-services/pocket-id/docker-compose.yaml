@@ -1,0 +1,30 @@
+services:
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:v2.8.0
+    container_name: pocket-id
+    user: "${POCKET_ID_UID}:${POCKET_ID_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=pocket-id
+    environment:
+      TZ: ${POCKET_ID_TZ}
+      PUBLIC_APP_URL: ${POCKET_ID_PUBLIC_APP_URL}
+      TRUST_PROXY: ${POCKET_ID_TRUST_PROXY}
+    volumes:
+      - ${POCKET_ID_DATA_HOST_PATH}:/app/backend/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${POCKET_ID_WEB_PORT}:1411"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1411/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${POCKET_ID_CPUS}
+    mem_limit: ${POCKET_ID_MEM_LIMIT}
+
+networks:
+  default:
+    name: pocket-id_network

@@ -299,3 +299,18 @@ services:
       - ${NAVIDROME_STACK_HOST_PATH}:/backup/navidrome_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/navidrome:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  pocket_id_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: pocket_id_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: pocket-id-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: pocket-id-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: pocket-id
+    volumes:
+      - ${POCKET_ID_STACK_HOST_PATH}:/backup/pocket_id_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/pocket-id:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
