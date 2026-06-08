@@ -1,6 +1,6 @@
 services:
   unhealthy_container_restart:
-    image: docker:29-cli
+    image: docker:29.5.3-cli-alpine3.23
     container_name: unhealthy_container_restart
     restart: unless-stopped
     environment:
