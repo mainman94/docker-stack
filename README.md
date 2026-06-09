@@ -16,6 +16,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | jellyfin | Media server | 30013 |
 | jellystat | Jellyfin analytics | 30176 |
 | navidrome | Music streaming server | 30043 |
+| opencloud | Cloud file storage | 30080 |
 | paperless-ngx | Document management | 30070 |
 | pocket-id | OIDC identity provider | 30411 |
 | radarr | Movie collection manager | 30025 |

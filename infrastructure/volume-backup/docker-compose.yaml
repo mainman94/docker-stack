@@ -314,3 +314,18 @@ services:
       - ${POCKET_ID_STACK_HOST_PATH}:/backup/pocket_id_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/pocket-id:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  opencloud_backup:
+    image: offen/docker-volume-backup:v2.48.0
+    container_name: opencloud_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: opencloud-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: opencloud-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: opencloud
+    volumes:
+      - ${OPENCLOUD_STACK_HOST_PATH}:/backup/opencloud_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/opencloud:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro

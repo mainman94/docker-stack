@@ -1,0 +1,143 @@
+services:
+  opencloud:
+    # renovate: depName=opencloudeu/opencloud-rolling
+    image: opencloudeu/opencloud-rolling:7.1.0
+    container_name: opencloud
+    restart: unless-stopped
+    user: "${OPENCLOUD_UID}:${OPENCLOUD_GID}"
+    labels:
+      - docker-volume-backup.stop-during-backup=opencloud
+    entrypoint:
+      - /bin/sh
+    # opencloud init generates secrets on first run; subsequent runs are ignored
+    command: ["-c", "opencloud init || true; opencloud server"]
+    environment:
+      TZ: ${OPENCLOUD_TZ}
+      OC_ADD_RUN_SERVICES: ${OPENCLOUD_ADDITIONAL_SERVICES}
+      OC_URL: ${OPENCLOUD_URL}
+      OC_LOG_LEVEL: ${OPENCLOUD_LOG_LEVEL}
+      OC_LOG_COLOR: "false"
+      OC_LOG_PRETTY: "false"
+      OC_DEFAULT_LANGUAGE: ${OPENCLOUD_DEFAULT_LANGUAGE}
+      # TLS terminated upstream by Cilium Gateway; OpenCloud serves plain HTTP
+      PROXY_TLS: "false"
+      OC_INSECURE: "false"
+      PROXY_ENABLE_BASIC_AUTH: "false"
+      IDM_CREATE_DEMO_USERS: "false"
+      IDM_ADMIN_PASSWORD: ${OPENCLOUD_ADMIN_PASSWORD}
+      FRONTEND_CHECK_FOR_UPDATES: "true"
+      FRONTEND_ARCHIVER_MAX_SIZE: "10000000000"
+      PROXY_CSP_CONFIG_FILE_LOCATION: /etc/opencloud/csp.yaml
+      OC_PASSWORD_POLICY_BANNED_PASSWORDS_LIST: banned-password-list.txt
+      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "true"
+      OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "false"
+      NOTIFICATIONS_SMTP_HOST: ${OPENCLOUD_SMTP_HOST}
+      NOTIFICATIONS_SMTP_PORT: ${OPENCLOUD_SMTP_PORT}
+      NOTIFICATIONS_SMTP_SENDER: ${OPENCLOUD_SMTP_SENDER}
+      NOTIFICATIONS_SMTP_USERNAME: ${OPENCLOUD_SMTP_USERNAME}
+      NOTIFICATIONS_SMTP_PASSWORD: ${OPENCLOUD_SMTP_PASSWORD}
+      NOTIFICATIONS_SMTP_INSECURE: "false"
+      NOTIFICATIONS_SMTP_AUTHENTICATION: ${OPENCLOUD_SMTP_AUTHENTICATION}
+      NOTIFICATIONS_SMTP_ENCRYPTION: ${OPENCLOUD_SMTP_ENCRYPTION}
+      # Collabora / WOPI integration
+      COLLABORA_DOMAIN: ${OPENCLOUD_COLLABORA_DOMAIN}
+      NATS_NATS_HOST: 0.0.0.0
+      GATEWAY_GRPC_ADDR: 0.0.0.0:9142
+      FRONTEND_APP_HANDLER_SECURE_VIEW_APP_ADDR: eu.opencloud.api.collaboration
+      GRAPH_AVAILABLE_ROLES: "b1e2218d-eef8-4d4c-b82d-0f1a1b48f3b5,a8d5fe5e-96e3-418d-825b-534dbdf22b99,fb6c3e19-e378-47e5-b277-9732f9de6e21,58c63c02-1d89-4572-916a-870abc5a1b7d,2d00ce52-1fc2-4dbc-8b95-a73b73395f5a,1c996275-f1c9-4e71-abdf-a42f6495e960,312c0871-5ef7-4b3a-85b6-0e4074c64049,aa97fe03-7980-45ac-9e50-b325749fd7e6"
+    volumes:
+      - ${OPENCLOUD_CONFIG_HOST_PATH}:/etc/opencloud
+      - ./config/opencloud/csp.yaml:/etc/opencloud/csp.yaml
+      - ./config/opencloud/banned-password-list.txt:/etc/opencloud/banned-password-list.txt
+      - ${OPENCLOUD_DATA_HOST_PATH}:/var/lib/opencloud
+    ports:
+      - "${OPENCLOUD_WEB_PORT}:9200"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9200/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    cpus: ${OPENCLOUD_CPUS}
+    mem_limit: ${OPENCLOUD_MEM_LIMIT}
+
+  collaboration:
+    # renovate: depName=opencloudeu/opencloud-rolling
+    image: opencloudeu/opencloud-rolling:7.1.0
+    container_name: opencloud-collaboration
+    restart: unless-stopped
+    user: "${OPENCLOUD_UID}:${OPENCLOUD_GID}"
+    labels:
+      - docker-volume-backup.stop-during-backup=opencloud
+    depends_on:
+      opencloud:
+        condition: service_healthy
+      collabora:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+    command: ["-c", "opencloud collaboration server"]
+    environment:
+      TZ: ${OPENCLOUD_TZ}
+      COLLABORATION_GRPC_ADDR: 0.0.0.0:9301
+      COLLABORATION_HTTP_ADDR: 0.0.0.0:9300
+      MICRO_REGISTRY: nats-js-kv
+      MICRO_REGISTRY_ADDRESS: opencloud:9233
+      COLLABORATION_WOPI_SRC: https://${OPENCLOUD_WOPISERVER_DOMAIN}
+      COLLABORATION_APP_NAME: CollaboraOnline
+      COLLABORATION_APP_PRODUCT: Collabora
+      COLLABORATION_APP_ADDR: https://${OPENCLOUD_COLLABORA_DOMAIN}
+      COLLABORATION_APP_ICON: https://${OPENCLOUD_COLLABORA_DOMAIN}/favicon.ico
+      COLLABORATION_APP_INSECURE: "false"
+      COLLABORATION_CS3API_DATAGATEWAY_INSECURE: "false"
+      COLLABORATION_LOG_LEVEL: ${OPENCLOUD_LOG_LEVEL}
+      OC_URL: ${OPENCLOUD_URL}
+    volumes:
+      - ${OPENCLOUD_CONFIG_HOST_PATH}:/etc/opencloud
+    ports:
+      - "${OPENCLOUD_WOPISERVER_PORT}:9300"
+    cpus: ${OPENCLOUD_COLLABORATION_CPUS}
+    mem_limit: ${OPENCLOUD_COLLABORATION_MEM_LIMIT}
+
+  collabora:
+    # renovate: depName=collabora/code
+    image: collabora/code:25.04.10.3.1
+    container_name: opencloud-collabora
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=opencloud
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp=unconfined
+      - apparmor:unconfined
+    environment:
+      # allow WOPI requests only from our collaboration service
+      aliasgroup1: https://${OPENCLOUD_WOPISERVER_DOMAIN}
+      DONT_GEN_SSL_CERT: "YES"
+      extra_params: |
+        --o:ssl.enable=false \
+        --o:ssl.termination=true \
+        --o:ssl.ssl_verification=true \
+        --o:welcome.enable=false \
+        --o:net.frame_ancestors=${OPENCLOUD_OC_DOMAIN} \
+        --o:net.lok_allow.host[14]=${OPENCLOUD_OC_DOMAIN} \
+        --o:home_mode.enable=false
+      username: ${OPENCLOUD_COLLABORA_ADMIN_USER}
+      password: ${OPENCLOUD_COLLABORA_ADMIN_PASSWORD}
+    entrypoint: ["/bin/bash", "-c"]
+    command: ["coolconfig generate-proof-key && /start-collabora-online.sh"]
+    ports:
+      - "${OPENCLOUD_COLLABORA_PORT}:9980"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9980/hosting/discovery"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpus: ${OPENCLOUD_COLLABORA_CPUS}
+    mem_limit: ${OPENCLOUD_COLLABORA_MEM_LIMIT}
+
+networks:
+  default:
+    name: opencloud_network
