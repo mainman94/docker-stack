@@ -136,7 +136,7 @@ services:
     ports:
       - "${OPENCLOUD_COLLABORA_PORT}:9980"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9980/hosting/discovery"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9980/hosting/discovery"]
       interval: 15s
       timeout: 10s
       retries: 5
