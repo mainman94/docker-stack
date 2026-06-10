@@ -1,6 +1,6 @@
 services:
   home-assistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.6.1
+    image: ghcr.io/home-assistant/home-assistant:2026.6.2
     container_name: home-assistant
     user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
     restart: unless-stopped
