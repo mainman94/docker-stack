@@ -15,7 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   adguard_home_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: adguard_home_volume_backup
     restart: unless-stopped
     env_file:
@@ -30,7 +30,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   firefly_iii_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: firefly_iii_volume_backup
     restart: unless-stopped
     env_file:
@@ -45,7 +45,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   bambuddy_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: bambuddy_volume_backup
     restart: unless-stopped
     env_file:
@@ -60,7 +60,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   jellyfin_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: jellyfin_volume_backup
     restart: unless-stopped
     env_file:
@@ -76,7 +76,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   swiparr_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: swiparr_volume_backup
     restart: unless-stopped
     env_file:
@@ -91,7 +91,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   sabnzbd_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: sabnzbd_volume_backup
     restart: unless-stopped
     env_file:
@@ -106,7 +106,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   seerr_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: seerr_volume_backup
     restart: unless-stopped
     env_file:
@@ -121,7 +121,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   radarr_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: radarr_volume_backup
     restart: unless-stopped
     env_file:
@@ -136,7 +136,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   sonarr_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: sonarr_volume_backup
     restart: unless-stopped
     env_file:
@@ -151,7 +151,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   tailscale_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: tailscale_volume_backup
     restart: unless-stopped
     env_file:
@@ -166,7 +166,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   jellystat_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: jellystat_volume_backup
     restart: unless-stopped
     env_file:
@@ -181,7 +181,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   home_assistant_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: home_assistant_volume_backup
     restart: unless-stopped
     env_file:
@@ -196,7 +196,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   umami_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: umami_volume_backup
     restart: unless-stopped
     env_file:
@@ -211,7 +211,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   gitea_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: gitea_volume_backup
     restart: unless-stopped
     env_file:
@@ -226,7 +226,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   authelia_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: authelia_volume_backup
     restart: unless-stopped
     env_file:
@@ -241,7 +241,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   paperless_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: paperless_volume_backup
     restart: unless-stopped
     env_file:
@@ -256,7 +256,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   vaultwarden_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: vaultwarden_volume_backup
     restart: unless-stopped
     env_file:
@@ -271,7 +271,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   audiobookshelf_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: audiobookshelf_volume_backup
     restart: unless-stopped
     env_file:
@@ -286,7 +286,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   navidrome_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: navidrome_volume_backup
     restart: unless-stopped
     env_file:
@@ -301,7 +301,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   pocket_id_backup:
-    image: offen/docker-volume-backup:v2.48.0
+    image: offen/docker-volume-backup:v2.48.1
     container_name: pocket_id_volume_backup
     restart: unless-stopped
     env_file:
