@@ -27,7 +27,7 @@ services:
       retries: 5
 
   jellystat:
-    image: cyfershepard/jellystat:1.1.10
+    image: cyfershepard/jellystat:1.1.11
     container_name: jellystat
     user: "${JELLYSTAT_UID}:${JELLYSTAT_GID}"
     restart: unless-stopped
