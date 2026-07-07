@@ -1,0 +1,26 @@
+services:
+  SERVICE:
+    image: REGISTRY/IMAGE:TAG
+    container_name: SERVICE
+    user: "${SERVICE_UID}:${SERVICE_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=SERVICE
+    environment:
+      TZ: ${SERVICE_TZ}
+    ports:
+      - "${SERVICE_WEB_PORT}:CONTAINER_PORT"
+    volumes:
+      - ${SERVICE_DATA_HOST_PATH}:${SERVICE_DATA_CONTAINER_PATH}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:CONTAINER_PORT/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${SERVICE_CPUS}
+    mem_limit: ${SERVICE_MEM_LIMIT}
+
+networks:
+  default:
+    name: SERVICE_network

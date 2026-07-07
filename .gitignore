@@ -1,4 +1,8 @@
 .idea
 eggenberg-services/firefly-iii/.env
 eggenberg-services/jellyfin/.env
-.claude
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
+!.claude/skills/
+!.claude/agents/

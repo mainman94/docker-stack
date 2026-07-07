@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | grep -Eq '(^|/)[^/]*\\.env$' && { echo 'Blocked: refusing to edit a real .env (tracked secrets are gitignored). Edit the matching .env.example instead.' >&2; exit 2; }; exit 0"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-compose.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
