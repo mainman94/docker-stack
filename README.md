@@ -16,6 +16,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | jellyfin | Media server | 30013 |
 | jellystat | Jellyfin analytics | 30176 |
 | navidrome | Music streaming server | 30043 |
+| openbao | Secrets manager (Vault fork) | 30020 |
 | opencloud | Cloud file storage | 30080 |
 | paperless-ngx | Document management | 30070 |
 | pocket-id | OIDC identity provider | 30411 |
@@ -25,6 +26,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | sonarr | TV series collection manager | 30113 |
 | swiparr | Jellyfin Tinder-style UI | 4321 |
 | tailscale | VPN mesh | — |
+| tfc-agent | HCP Terraform / app.terraform.io self-hosted agent | — |
 | umami | Web analytics | 30060 |
 | vaultwarden | Bitwarden-compatible password manager | 30032 |
 

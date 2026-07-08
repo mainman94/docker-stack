@@ -314,3 +314,18 @@ services:
       - ${POCKET_ID_STACK_HOST_PATH}:/backup/pocket_id_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/pocket-id:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  openbao_backup:
+    image: offen/docker-volume-backup:v2.48.2
+    container_name: openbao_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: openbao-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: openbao-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: openbao
+    volumes:
+      - ${OPENBAO_STACK_HOST_PATH}:/backup/openbao_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/openbao:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro

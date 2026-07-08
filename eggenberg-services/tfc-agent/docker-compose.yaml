@@ -1,0 +1,24 @@
+services:
+  tfc-agent:
+    image: hashicorp/tfc-agent:1.29.0
+    container_name: tfc-agent
+    restart: unless-stopped
+    # ponytail: stateless outbound-only agent — no ports, no persistent data,
+    # so no volume-backup wiring. Runs as the image's built-in tfc-agent user.
+    environment:
+      TZ: ${TFC_AGENT_TZ}
+      TFC_ADDRESS: ${TFC_ADDRESS}
+      TFC_AGENT_TOKEN: ${TFC_AGENT_TOKEN}
+      TFC_AGENT_NAME: ${TFC_AGENT_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f tfc-agent >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${TFC_AGENT_CPUS}
+    mem_limit: ${TFC_AGENT_MEM_LIMIT}
+
+networks:
+  default:
+    name: tfc_agent_network

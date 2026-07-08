@@ -1,0 +1,35 @@
+services:
+  openbao:
+    image: openbao/openbao:2.5.5
+    container_name: openbao
+    restart: unless-stopped
+    command: server -config=/openbao/config/openbao.hcl
+    user: "${OPENBAO_UID}:${OPENBAO_GID}"
+    labels:
+      - docker-volume-backup.stop-during-backup=openbao
+    cap_add:
+      # mlock: keep secrets out of swap
+      - IPC_LOCK
+    environment:
+      TZ: ${OPENBAO_TZ}
+      BAO_ADDR: http://127.0.0.1:8200
+    volumes:
+      - ./config/openbao.hcl:/openbao/config/openbao.hcl:ro
+      - ${OPENBAO_DATA_HOST_PATH}:/openbao/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${OPENBAO_WEB_PORT}:8200"
+    healthcheck:
+      # sealedcode/uninitcode=200 so the check passes before first unseal/init
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8200/v1/sys/health?sealedcode=200&uninitcode=200&standbyok=true"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${OPENBAO_CPUS}
+    mem_limit: ${OPENBAO_MEM_LIMIT}
+
+networks:
+  default:
+    name: openbao_network
