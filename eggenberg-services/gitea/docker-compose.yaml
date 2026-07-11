@@ -102,14 +102,15 @@ services:
       GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_REGISTRATION_TOKEN}
       GITEA_RUNNER_NAME: ${GITEA_RUNNER_NAME}
       GITEA_RUNNER_LABELS: ${GITEA_RUNNER_LABELS}
-      DOCKER_HOST: tcp://docker:2376
-      DOCKER_CERT_PATH: /certs/client
-      DOCKER_TLS_VERIFY: "1"
+      # act_runner spawns job containers on the HOST docker (via the socket
+      # below) so they can join gitea_network and reach dind via the "docker"
+      # alias. Jobs themselves build on dind over TLS (see config.yaml).
       CONFIG_FILE: /data/config.yaml
       TZ: ${GITEA_TZ}
     volumes:
       - ${GITEA_RUNNER_DATA_HOST_PATH}:/data
       - ${GITEA_RUNNER_CERTS_HOST_PATH}:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
     cpus: ${GITEA_RUNNER_CPUS}
     mem_limit: ${GITEA_RUNNER_MEM_LIMIT}
 

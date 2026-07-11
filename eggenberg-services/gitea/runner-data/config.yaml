@@ -1,10 +1,15 @@
 # act_runner config — loaded via CONFIG_FILE=/data/config.yaml
-# Injects the dind daemon + TLS certs into every job container so
-# docker/buildx works inside jobs (otherwise buildx falls back to the
-# nonexistent unix:///var/run/docker.sock).
+#
+# act_runner spawns job containers on the HOST docker daemon (the runner
+# mounts /var/run/docker.sock). Jobs join gitea_network so the "docker"
+# alias resolves to the dind container, and build via dind over TLS.
+#
+# The -v source below is a HOST path (dind's /certs is bind-mounted from
+# runner-certs on the host). Adjust to your deployment's absolute path.
 container:
   network: gitea_network
-  docker_host: tcp://docker:2376
-  valid_volumes:
-    - /certs/**
-  options: -v /certs/client:/certs/client:ro -e DOCKER_TLS_VERIFY=1 -e DOCKER_CERT_PATH=/certs/client
+  options: >-
+    -v /mnt/default_pool/dockge/stacks/Production/gitea/gitea/runner-certs/client:/certs/client:ro
+    -e DOCKER_HOST=tcp://docker:2376
+    -e DOCKER_TLS_VERIFY=1
+    -e DOCKER_CERT_PATH=/certs/client
