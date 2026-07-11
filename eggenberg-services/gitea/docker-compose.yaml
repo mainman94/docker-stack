@@ -45,6 +45,7 @@ services:
       GITEA__openid__ENABLE_OPENID_SIGNUP: ${GITEA_ENABLE_OPENID_SIGNUP}
       GITEA__openid__WHITELISTED_URIS: ${GITEA_OPENID_WHITELISTED_URIS}
       GITEA__openid__BLACKLISTED_URIS: ${GITEA_OPENID_BLACKLISTED_URIS}
+      GITEA__actions__ENABLED: ${GITEA_ACTIONS_ENABLED}
       TZ: ${GITEA_TZ}
     volumes:
       - ${GITEA_DATA_HOST_PATH}:${GITEA_DATA_CONTAINER_PATH}
@@ -61,6 +62,51 @@ services:
       start_period: 30s
     cpus: ${GITEA_CPUS}
     mem_limit: ${GITEA_MEM_LIMIT}
+
+  gitea-runner-dind:
+    image: docker:28.5.1-dind
+    container_name: gitea-runner-dind
+    restart: unless-stopped
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+      TZ: ${GITEA_TZ}
+    volumes:
+      - ${GITEA_RUNNER_CERTS_HOST_PATH}:/certs
+    healthcheck:
+      test: ["CMD-SHELL", "docker info >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    cpus: ${GITEA_RUNNER_DIND_CPUS}
+    mem_limit: ${GITEA_RUNNER_DIND_MEM_LIMIT}
+
+  gitea-runner:
+    image: gitea/act_runner:0.2.14
+    container_name: gitea-runner
+    restart: unless-stopped
+    depends_on:
+      gitea:
+        condition: service_healthy
+      gitea-runner-dind:
+        condition: service_healthy
+    labels:
+      - docker-volume-backup.stop-during-backup=gitea
+    environment:
+      GITEA_INSTANCE_URL: ${GITEA_RUNNER_INSTANCE_URL}
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_REGISTRATION_TOKEN}
+      GITEA_RUNNER_NAME: ${GITEA_RUNNER_NAME}
+      GITEA_RUNNER_LABELS: ${GITEA_RUNNER_LABELS}
+      DOCKER_HOST: tcp://gitea-runner-dind:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: "1"
+      TZ: ${GITEA_TZ}
+    volumes:
+      - ${GITEA_RUNNER_DATA_HOST_PATH}:/data
+      - ${GITEA_RUNNER_CERTS_HOST_PATH}:/certs
+    cpus: ${GITEA_RUNNER_CPUS}
+    mem_limit: ${GITEA_RUNNER_MEM_LIMIT}
 
 networks:
   default:
