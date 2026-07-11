@@ -73,6 +73,10 @@ services:
       TZ: ${GITEA_TZ}
     volumes:
       - ${GITEA_RUNNER_CERTS_HOST_PATH}:/certs
+    networks:
+      default:
+        aliases:
+          - docker
     healthcheck:
       test: ["CMD-SHELL", "docker info >/dev/null 2>&1 || exit 1"]
       interval: 10s
@@ -98,7 +102,7 @@ services:
       GITEA_RUNNER_REGISTRATION_TOKEN: ${GITEA_RUNNER_REGISTRATION_TOKEN}
       GITEA_RUNNER_NAME: ${GITEA_RUNNER_NAME}
       GITEA_RUNNER_LABELS: ${GITEA_RUNNER_LABELS}
-      DOCKER_HOST: tcp://gitea-runner-dind:2376
+      DOCKER_HOST: tcp://docker:2376
       DOCKER_CERT_PATH: /certs/client
       DOCKER_TLS_VERIFY: "1"
       TZ: ${GITEA_TZ}
