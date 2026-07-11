@@ -1,0 +1,10 @@
+# act_runner config — loaded via CONFIG_FILE=/data/config.yaml
+# Injects the dind daemon + TLS certs into every job container so
+# docker/buildx works inside jobs (otherwise buildx falls back to the
+# nonexistent unix:///var/run/docker.sock).
+container:
+  network: gitea_network
+  docker_host: tcp://docker:2376
+  valid_volumes:
+    - /certs/**
+  options: -v /certs/client:/certs/client:ro -e DOCKER_TLS_VERIFY=1 -e DOCKER_CERT_PATH=/certs/client
