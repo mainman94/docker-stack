@@ -83,7 +83,7 @@ services:
     mem_limit: ${GITEA_RUNNER_DIND_MEM_LIMIT}
 
   gitea-runner:
-    image: gitea/act_runner:0.2.14
+    image: gitea/act_runner:0.6.1
     container_name: gitea-runner
     restart: unless-stopped
     depends_on:
