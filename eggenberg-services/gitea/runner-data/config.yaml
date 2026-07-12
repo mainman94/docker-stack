@@ -4,12 +4,18 @@
 # mounts /var/run/docker.sock). Jobs join gitea_network so the "docker"
 # alias resolves to the dind container, and build via dind over TLS.
 #
-# The -v source below is a HOST path (dind's /certs is bind-mounted from
-# runner-certs on the host). Adjust to your deployment's absolute path.
+# valid_volumes MUST allow the -v source below — act_runner strips any
+# bind whose source isn't in this allow-list. The source is a HOST path
+# (dind's /certs is bind-mounted from runner-certs on the host).
+runner:
+  # Concurrent jobs this runner will execute. Default 1 = serial. Matrix and
+  # independent jobs parallelize up to this many (still gated by `needs:`).
+  # Each concurrent job = one job container on the host + one build on dind,
+  # so size dind/runner cpus+mem accordingly.
+  capacity: 4
+
 container:
   network: gitea_network
-  options: >-
-    -v /mnt/default_pool/dockge/stacks/Production/gitea/gitea/runner-certs/client:/certs/client:ro
-    -e DOCKER_HOST=tcp://docker:2376
-    -e DOCKER_TLS_VERIFY=1
-    -e DOCKER_CERT_PATH=/certs/client
+  valid_volumes:
+    - /mnt/default_pool/dockge/stacks/Production/gitea/gitea/runner-certs/**
+  options: -v /mnt/default_pool/dockge/stacks/Production/gitea/gitea/runner-certs/client:/certs/client -e DOCKER_HOST=tcp://docker:2376 -e DOCKER_TLS_VERIFY=1 -e DOCKER_CERT_PATH=/certs/client
