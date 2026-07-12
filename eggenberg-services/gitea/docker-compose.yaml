@@ -46,6 +46,10 @@ services:
       GITEA__openid__WHITELISTED_URIS: ${GITEA_OPENID_WHITELISTED_URIS}
       GITEA__openid__BLACKLISTED_URIS: ${GITEA_OPENID_BLACKLISTED_URIS}
       GITEA__actions__ENABLED: ${GITEA_ACTIONS_ENABLED}
+      # earl-grey theme — CSS must exist at
+      # <data>/gitea/public/assets/css/theme-earl-grey.css
+      GITEA__ui__DEFAULT_THEME: ${GITEA_DEFAULT_THEME}
+      GITEA__ui__THEMES: ${GITEA_THEMES}
       TZ: ${GITEA_TZ}
     volumes:
       - ${GITEA_DATA_HOST_PATH}:${GITEA_DATA_CONTAINER_PATH}
