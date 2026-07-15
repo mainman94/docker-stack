@@ -1,6 +1,6 @@
 services:
   openbao:
-    image: openbao/openbao:2.5.5
+    image: openbao/openbao:2.6.0
     container_name: openbao
     restart: unless-stopped
     command: server -config=/openbao/config/openbao.hcl
