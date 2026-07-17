@@ -123,6 +123,7 @@ services:
       OC_URL: ${OPENCLOUD_URL}
     volumes:
       - ${OPENCLOUD_CONFIG_HOST_PATH}:/etc/opencloud
+      - ${OPENCLOUD_DATA_HOST_PATH}:/var/lib/opencloud
     ports:
       - "${OPENCLOUD_WOPISERVER_PORT}:9300"
     cpus: ${OPENCLOUD_COLLABORATION_CPUS}
