@@ -1,0 +1,22 @@
+services:
+  recyclarr:
+    # renovate: depName=recyclarr/recyclarr
+    image: ghcr.io/recyclarr/recyclarr:8.7.0
+    container_name: recyclarr
+    restart: unless-stopped
+    user: "${RECYCLARR_UID}:${RECYCLARR_GID}"
+    environment:
+      TZ: ${RECYCLARR_TZ}
+      CRON_SCHEDULE: ${RECYCLARR_CRON_SCHEDULE}
+      RECYCLARR_SONARR_BASE_URL: ${RECYCLARR_SONARR_BASE_URL}
+      RECYCLARR_SONARR_API_KEY: ${RECYCLARR_SONARR_API_KEY}
+      RECYCLARR_RADARR_BASE_URL: ${RECYCLARR_RADARR_BASE_URL}
+      RECYCLARR_RADARR_API_KEY: ${RECYCLARR_RADARR_API_KEY}
+    volumes:
+      - ${RECYCLARR_CONFIG_HOST_PATH}:${RECYCLARR_CONFIG_CONTAINER_PATH}
+    cpus: ${RECYCLARR_CPUS}
+    mem_limit: ${RECYCLARR_MEM_LIMIT}
+
+networks:
+  default:
+    name: recyclarr_network
