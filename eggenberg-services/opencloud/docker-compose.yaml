@@ -146,26 +146,29 @@ services:
       # allow WOPI requests only from our collaboration service
       aliasgroup1: https://${OPENCLOUD_WOPISERVER_DOMAIN}
       DONT_GEN_SSL_CERT: "YES"
-      extra_params: |
-        --o:ssl.enable=false \
-        --o:ssl.termination=true \
-        --o:ssl.ssl_verification=true \
-        --o:welcome.enable=false \
-        --o:net.frame_ancestors=${OPENCLOUD_OC_DOMAIN} \
-        --o:net.lok_allow.host[14]=${OPENCLOUD_OC_DOMAIN} \
-        --o:home_mode.enable=false
       username: ${OPENCLOUD_COLLABORA_ADMIN_USER}
       password: ${OPENCLOUD_COLLABORA_ADMIN_PASSWORD}
-    entrypoint: ["/bin/bash", "-c"]
-    command: ["coolconfig generate-proof-key && /start-collabora-online.sh"]
+    # 26.04+ is distroless: the entrypoint is `coolwsd --use-env-vars` (no shell,
+    # no coolconfig / start script). The `extra_params` env var is ignored under
+    # --use-env-vars, so these tuning options are passed as command args, which
+    # are appended to the image entrypoint.
+    command:
+      - "--o:ssl.enable=false"
+      - "--o:ssl.termination=true"
+      - "--o:ssl.ssl_verification=true"
+      - "--o:welcome.enable=false"
+      - "--o:net.frame_ancestors=${OPENCLOUD_OC_DOMAIN}"
+      - "--o:net.lok_allow.host[14]=${OPENCLOUD_OC_DOMAIN}"
+      - "--o:home_mode.enable=false"
+    volumes:
+      # coolwsd no longer auto-generates the WOPI proof key (coolconfig is gone
+      # from the distroless image). Supply a pre-generated key; create it once:
+      #   openssl genrsa -out proof_key 4096
+      - ${OPENCLOUD_COLLABORA_PROOF_KEY_HOST_PATH}:/etc/coolwsd/proof_key:ro
     ports:
       - "${OPENCLOUD_COLLABORA_PORT}:9980"
-    healthcheck:
-      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/9980' 2>/dev/null"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+    # healthcheck: the image ships its own (`coolwsd --probe`, shell-free), so
+    # `collaboration`'s `depends_on: collabora: service_healthy` still works.
     cpus: ${OPENCLOUD_COLLABORA_CPUS}
     mem_limit: ${OPENCLOUD_COLLABORA_MEM_LIMIT}
 
