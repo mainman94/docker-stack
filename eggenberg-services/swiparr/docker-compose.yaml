@@ -1,6 +1,6 @@
 services:
   swiparr:
-    image: ghcr.io/m3sserstudi0s/swiparr:1.5.0
+    image: ghcr.io/m3sserstudi0s/swiparr:1.5.1
     container_name: swiparr
     user: "${SWIPARR_UID}:${SWIPARR_GID}"
     restart: unless-stopped
