@@ -119,6 +119,12 @@ services:
       COLLABORATION_APP_ADDR: https://${OPENCLOUD_COLLABORA_DOMAIN}
       COLLABORATION_APP_ICON: https://${OPENCLOUD_COLLABORA_DOMAIN}/favicon.ico
       COLLABORATION_APP_INSECURE: "false"
+      # distroless collabora 26.04 doesn't sign WOPI requests with the mounted
+      # proof_key (sends empty X-WOPI-Proof/TimeStamp), so host-side proof
+      # verification rejects every CheckFileInfo with 500 -> blank editor.
+      # Traffic is internal on opencloud_network behind gateway TLS; proof keys
+      # are MITM defense-in-depth not needed on a single-tenant docker net.
+      COLLABORATION_APP_PROOF_DISABLE: "true"
       COLLABORATION_CS3API_DATAGATEWAY_INSECURE: "false"
       COLLABORATION_LOG_LEVEL: ${OPENCLOUD_LOG_LEVEL}
       OC_URL: ${OPENCLOUD_URL}
