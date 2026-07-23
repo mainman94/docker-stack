@@ -45,7 +45,7 @@ services:
     mem_limit: ${PAPERLESS_POSTGRES_MEM_LIMIT}
 
   paperless:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.20
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.0
     container_name: paperless
     user: "${PAPERLESS_USERMAP_UID}:${PAPERLESS_USERMAP_GID}"
     restart: unless-stopped
