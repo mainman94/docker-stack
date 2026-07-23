@@ -167,8 +167,17 @@ services:
       - ${OPENCLOUD_COLLABORA_PROOF_KEY_HOST_PATH}:/etc/coolwsd/proof_key:ro
     ports:
       - "${OPENCLOUD_COLLABORA_PORT}:9980"
-    # healthcheck: the image ships its own (`coolwsd --probe`, shell-free), so
-    # `collaboration`'s `depends_on: collabora: service_healthy` still works.
+    # healthcheck: the image ships its own (`coolwsd --probe`, shell-free), but
+    # that probe runs as a fresh process WITHOUT the `command:` `--o:` args, so it
+    # falls back to the image default ssl.enable=true and probes https://:9980 —
+    # which fails, because we serve plain http (TLS terminated upstream). Override
+    # the probe with the same ssl.enable=false so it checks http.
+    healthcheck:
+      test: ["CMD", "/usr/bin/coolwsd", "--probe", "--o:ssl.enable=false"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
     cpus: ${OPENCLOUD_COLLABORA_CPUS}
     mem_limit: ${OPENCLOUD_COLLABORA_MEM_LIMIT}
 
