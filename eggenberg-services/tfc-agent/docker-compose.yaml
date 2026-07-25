@@ -1,6 +1,6 @@
 services:
   tfc-agent:
-    image: hashicorp/tfc-agent:1.29.0
+    image: hashicorp/tfc-agent:1.30.0
     container_name: tfc-agent
     restart: unless-stopped
     # ponytail: stateless outbound-only agent — no ports, no persistent data,
