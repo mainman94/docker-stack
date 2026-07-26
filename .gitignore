@@ -6,3 +6,4 @@ eggenberg-services/jellyfin/.env
 !.claude/hooks/
 !.claude/skills/
 !.claude/agents/
+mind.mv2.lock
