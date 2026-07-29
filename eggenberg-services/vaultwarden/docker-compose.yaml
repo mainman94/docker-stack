@@ -21,7 +21,7 @@ services:
     mem_limit: ${VAULTWARDEN_POSTGRES_MEM_LIMIT}
 
   vaultwarden:
-    image: ghcr.io/dani-garcia/vaultwarden:1.37.0
+    image: ghcr.io/dani-garcia/vaultwarden:1.37.1
     container_name: vaultwarden
     user: "${VAULTWARDEN_UID}:${VAULTWARDEN_GID}"
     restart: unless-stopped
