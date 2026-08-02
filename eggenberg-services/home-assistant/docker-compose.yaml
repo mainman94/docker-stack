@@ -4,7 +4,6 @@ services:
   hacs-install:
     image: alpine:3.20
     container_name: hacs-install
-    user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
     restart: "no"
     volumes:
       - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:${HOME_ASSISTANT_CONFIG_CONTAINER_PATH}
@@ -19,6 +18,7 @@ services:
         mkdir -p custom_components/hacs
         wget -qO /tmp/hacs.zip https://github.com/hacs/integration/releases/latest/download/hacs.zip
         unzip -oq /tmp/hacs.zip -d custom_components/hacs
+        chown -R ${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID} custom_components/hacs
         echo "HACS installed"
 
   home-assistant:
