@@ -21,6 +21,30 @@ services:
     cpus: ${HOME_ASSISTANT_CPUS}
     mem_limit: ${HOME_ASSISTANT_MEM_LIMIT}
 
+  matter-server:
+    image: ghcr.io/home-assistant-libs/python-matter-server:8.1.2
+    container_name: matter-server
+    restart: unless-stopped
+    # host network required: Matter/Thread commissioning needs mDNS + IPv6 link-local
+    network_mode: host
+    security_opt:
+      - apparmor=unconfined
+    labels:
+      - docker-volume-backup.stop-during-backup=home-assistant
+    environment:
+      TZ: ${HOME_ASSISTANT_TZ}
+    volumes:
+      - ${MATTER_SERVER_DATA_HOST_PATH}:/data
+      - /run/dbus:/run/dbus:ro
+    healthcheck:
+      test: python -c "import socket; socket.create_connection(('localhost', 5580), 3)" || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${MATTER_SERVER_CPUS}
+    mem_limit: ${MATTER_SERVER_MEM_LIMIT}
+
 networks:
   default:
     name: home_assistant_network
