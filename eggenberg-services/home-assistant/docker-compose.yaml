@@ -1,9 +1,34 @@
 services:
+  # One-shot: install HACS into the (persistent) config volume if missing.
+  # Idempotent — exits fast when custom_components/hacs already exists.
+  hacs-install:
+    image: alpine:3.20
+    container_name: hacs-install
+    user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
+    restart: "no"
+    volumes:
+      - ${HOME_ASSISTANT_CONFIG_HOST_PATH}:${HOME_ASSISTANT_CONFIG_CONTAINER_PATH}
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        set -e
+        cd ${HOME_ASSISTANT_CONFIG_CONTAINER_PATH}
+        if [ -d custom_components/hacs ]; then echo "HACS present, skip"; exit 0; fi
+        apk add --no-cache wget unzip >/dev/null
+        mkdir -p custom_components/hacs
+        wget -qO /tmp/hacs.zip https://github.com/hacs/integration/releases/latest/download/hacs.zip
+        unzip -oq /tmp/hacs.zip -d custom_components/hacs
+        echo "HACS installed"
+
   home-assistant:
     image: ghcr.io/home-assistant/home-assistant:2026.7.4
     container_name: home-assistant
     user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
     restart: unless-stopped
+    depends_on:
+      hacs-install:
+        condition: service_completed_successfully
     labels:
       - docker-volume-backup.stop-during-backup=home-assistant
     environment:
