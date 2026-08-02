@@ -22,7 +22,7 @@ services:
     mem_limit: ${HOME_ASSISTANT_MEM_LIMIT}
 
   matter-server:
-    image: ghcr.io/home-assistant-libs/python-matter-server:8.1.2
+    image: ghcr.io/home-assistant-libs/python-matter-server:8.0.0
     container_name: matter-server
     restart: unless-stopped
     # host network required: Matter/Thread commissioning needs mDNS + IPv6 link-local
