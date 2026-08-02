@@ -2,7 +2,7 @@ services:
   # One-shot: install HACS into the (persistent) config volume if missing.
   # Idempotent — exits fast when custom_components/hacs already exists.
   hacs-install:
-    image: alpine:3.20
+    image: alpine:3.24
     container_name: hacs-install
     restart: "no"
     volumes:
