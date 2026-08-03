@@ -135,6 +135,21 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/radarr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  bazarr_backup:
+    image: offen/docker-volume-backup:v2.48.2
+    container_name: bazarr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: bazarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: bazarr-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: bazarr
+    volumes:
+      - ${BAZARR_STACK_HOST_PATH}:/backup/bazarr_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bazarr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   sonarr_backup:
     image: offen/docker-volume-backup:v2.48.2
     container_name: sonarr_volume_backup

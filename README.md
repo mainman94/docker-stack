@@ -10,6 +10,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | audiobookshelf | Audiobook & podcast server | 30067 |
 | authelia | SSO / 2FA auth portal | 30091 |
 | bambuddy | Bambu Lab printer companion | 30669 |
+| bazarr | Subtitle manager for Sonarr/Radarr | 30068 |
 | firefly-iii | Personal finance manager | 30666 |
 | gitea | Self-hosted Git service | 30056 |
 | home-assistant | Home automation | 30123 |

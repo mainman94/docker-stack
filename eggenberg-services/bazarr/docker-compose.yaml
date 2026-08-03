@@ -1,0 +1,29 @@
+services:
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:v1.6.0-ls356
+    container_name: bazarr
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=bazarr
+    environment:
+      PUID: ${BAZARR_UID}
+      PGID: ${BAZARR_GID}
+      TZ: ${BAZARR_TZ}
+    ports:
+      - "${BAZARR_WEB_PORT}:6767"
+    volumes:
+      - ${BAZARR_CONFIG_HOST_PATH}:${BAZARR_CONFIG_CONTAINER_PATH}
+      - ${BAZARR_MOVIES_HOST_PATH}:${BAZARR_MOVIES_CONTAINER_PATH}
+      - ${BAZARR_SERIES_HOST_PATH}:${BAZARR_SERIES_CONTAINER_PATH}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:6767/ || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${BAZARR_CPUS}
+    mem_limit: ${BAZARR_MEM_LIMIT}
+
+networks:
+  default:
+    name: bazarr_network
