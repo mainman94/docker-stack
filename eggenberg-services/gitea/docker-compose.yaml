@@ -68,7 +68,7 @@ services:
     mem_limit: ${GITEA_MEM_LIMIT}
 
   gitea-runner-dind:
-    image: docker:29.7.0-dind
+    image: docker:29.7.1-dind
     container_name: gitea-runner-dind
     restart: unless-stopped
     privileged: true
