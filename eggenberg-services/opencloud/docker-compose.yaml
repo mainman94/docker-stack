@@ -1,7 +1,7 @@
 services:
   opencloud:
     # renovate: depName=opencloudeu/opencloud-rolling
-    image: opencloudeu/opencloud-rolling:7.3.0
+    image: opencloudeu/opencloud-rolling:7.4.0
     container_name: opencloud
     restart: unless-stopped
     user: "${OPENCLOUD_UID}:${OPENCLOUD_GID}"
@@ -92,7 +92,7 @@ services:
 
   collaboration:
     # renovate: depName=opencloudeu/opencloud-rolling
-    image: opencloudeu/opencloud-rolling:7.3.0
+    image: opencloudeu/opencloud-rolling:7.4.0
     container_name: opencloud-collaboration
     restart: unless-stopped
     user: "${OPENCLOUD_UID}:${OPENCLOUD_GID}"
