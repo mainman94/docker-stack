@@ -37,6 +37,10 @@ services:
       - RP_ID=${OPENGYM_RP_ID}
       - ORIGIN=${OPENGYM_ORIGIN}
       - RP_NAME=${OPENGYM_RP_NAME:-openGym}
+      # Registration gated behind invite codes; no open self-signup.
+      - INVITE_ONLY=${OPENGYM_INVITE_ONLY:-true}
+      # Comma-separated user IDs allowed to mint invites / admin.
+      - ADMIN_UIDS=${OPENGYM_ADMIN_UIDS:-}
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/ || exit 1"]
       interval: 30s
