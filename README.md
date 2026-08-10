@@ -8,7 +8,6 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 |---|---|---|
 | adguard-home | DNS ad-blocker | 30053 / 30054 |
 | audiobookshelf | Audiobook & podcast server | 30067 |
-| authelia | SSO / 2FA auth portal | 30091 |
 | bambuddy | Bambu Lab printer companion | 30669 |
 | bazarr | Subtitle manager for Sonarr/Radarr | 30068 |
 | firefly-iii | Personal finance manager | 30666 |
@@ -23,6 +22,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | paperless-ngx | Document management | 30070 |
 | pocket-id | OIDC identity provider | 30411 |
 | radarr | Movie collection manager | 30025 |
+| recyclarr | Sonarr/Radarr config sync (cron) | — |
 | sabnzbd | Usenet downloader | 30670 |
 | seerr | Media request manager | 30671 |
 | sonarr | TV series collection manager | 30113 |

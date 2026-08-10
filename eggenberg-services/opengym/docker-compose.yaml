@@ -16,6 +16,12 @@ services:
           git clone --depth 1 https://github.com/hasaneyldrm/exercises-dataset /tmp/ds
           cp /tmp/ds/images/*.jpg /out/img/ && cp /tmp/ds/videos/*.gif /out/gif/
           echo "✓ Exercise media ready ($$(ls /out/img | wc -l) images)."
+        fi
+        # nginx worker (unprivileged) must read/traverse the media dirs — copies land
+        # as OPENGYM_UID with a umask that can exclude 'other'. Force it every run.
+        chmod -R a+rX /out/img /out/gif
+        if false; then
+          :
         else
           echo "✓ Exercise media already present — skipping download."
         fi
