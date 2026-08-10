@@ -38,9 +38,11 @@ services:
       - ORIGIN=${OPENGYM_ORIGIN}
       - RP_NAME=${OPENGYM_RP_NAME:-openGym}
       # Registration gated behind invite codes; no open self-signup.
-      - INVITE_ONLY=${OPENGYM_INVITE_ONLY:-true}
+      - INVITE_ONLY=${OPENGYM_INVITE_ONLY:-1}
       # Comma-separated user IDs allowed to mint invites / admin.
       - ADMIN_UIDS=${OPENGYM_ADMIN_UIDS:-}
+      # Disable the "Continue without account" guest button (separate from INVITE_ONLY).
+      - ALLOW_GUEST=${OPENGYM_ALLOW_GUEST:-0}
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/ || exit 1"]
       interval: 30s
