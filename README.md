@@ -19,6 +19,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | navidrome | Music streaming server | 30043 |
 | openbao | Secrets manager (Vault fork) | 30020 |
 | opencloud | Cloud file storage | 30080 |
+| opengym | Self-hosted gym & workout tracker | 30781 |
 | paperless-ngx | Document management | 30070 |
 | pocket-id | OIDC identity provider | 30411 |
 | radarr | Movie collection manager | 30025 |

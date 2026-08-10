@@ -315,6 +315,21 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/navidrome:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  opengym_backup:
+    image: offen/docker-volume-backup:v2.48.2
+    container_name: opengym_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: opengym-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: opengym-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: opengym
+    volumes:
+      - ${OPENGYM_STACK_HOST_PATH}:/backup/opengym_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/opengym:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   pocket_id_backup:
     image: offen/docker-volume-backup:v2.48.2
     container_name: pocket_id_volume_backup
