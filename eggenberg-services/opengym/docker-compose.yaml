@@ -29,7 +29,7 @@ services:
 
   api:
     # main @ 35181af — admin dashboard + invite gating (not in any released tag; 1.3.0 predates it).
-    image: ghcr.io/duartesantos8/opengym-api@sha256:3494a4987b9cbd962d13a6b89985eaaf4325d9957589fca6b20361038d63e892
+    image: ghcr.io/duartesantos8/opengym-api@sha256:193d56f19c8876d1d2356631bd9db5e2a7068068ec03b8dd73c0277b79dc380d
     container_name: opengym_api
     labels:
       - docker-volume-backup.stop-during-backup=opengym
