@@ -62,7 +62,7 @@ services:
 
   web:
     # main @ 35181af — kept in lockstep with the api image above.
-    image: ghcr.io/duartesantos8/opengym-web@sha256:419fce701fa07aa372d6b15fe8bcbe2d7f39c3af4d952076ed3f19d717c182df
+    image: ghcr.io/duartesantos8/opengym-web@sha256:c8bf4802c4e2302ea54b84751fabeae7044dd950a95a9f4bc48c187eae2e7f3d
     container_name: opengym_web
     # nginx binds :80 inside the container, so this one stays root (no user: directive).
     depends_on:
