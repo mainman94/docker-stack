@@ -112,7 +112,7 @@ services:
     mem_limit: ${PAPERLESS_MEM_LIMIT}
 
   paperless-gotenberg:
-    image: gotenberg/gotenberg:8.35.0
+    image: gotenberg/gotenberg:8.36.0
     container_name: paperless-gotenberg
     restart: unless-stopped
     command:
