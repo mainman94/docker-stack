@@ -14,14 +14,13 @@ services:
     environment:
       POSTGRES_USER: ${JELLYSTAT_POSTGRES_USER}
       POSTGRES_PASSWORD: ${JELLYSTAT_POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
       POSTGRES_DB: ${JELLYSTAT_POSTGRES_DATABASE}
       TZ: ${JELLYSTAT_TZ}
     volumes:
-      # PG18 keeps its cluster in $PGDATA=/var/lib/postgresql/18/docker and
-      # declares VOLUME /var/lib/postgresql. Without this mount the cluster
-      # would land in an anonymous volume, outside the backed-up stack dir.
-      - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
-      # Pre-18 location, kept so an existing cluster is still found.
+      # Mounted at PGDATA. Do not mount /var/lib/postgresql instead: PG18's
+      # entrypoint would switch to 18/docker, create it as root and then
+      # re-exec as postgres, which cannot write the parent it does not own.
       - ${JELLYSTAT_POSTGRES_DATA_HOST_PATH}/data:/var/lib/postgresql/data
     healthcheck:
       test:

@@ -32,13 +32,12 @@ services:
       POSTGRES_DB: ${PAPERLESS_POSTGRES_DATABASE}
       POSTGRES_USER: ${PAPERLESS_POSTGRES_USER}
       POSTGRES_PASSWORD: ${PAPERLESS_POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
       TZ: ${PAPERLESS_TZ}
     volumes:
-      # PG18 keeps its cluster in $PGDATA=/var/lib/postgresql/18/docker and
-      # declares VOLUME /var/lib/postgresql. Without this mount the cluster
-      # would land in an anonymous volume, outside the backed-up stack dir.
-      - ${PAPERLESS_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
-      # Pre-18 location, kept so an existing cluster is still found.
+      # Mounted at PGDATA. Do not mount /var/lib/postgresql instead: PG18's
+      # entrypoint would switch to 18/docker, create it as root and then
+      # re-exec as postgres, which cannot write the parent it does not own.
       - ${PAPERLESS_POSTGRES_DATA_HOST_PATH}/data:/var/lib/postgresql/data
     shm_size: 128mb
     healthcheck:
