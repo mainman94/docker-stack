@@ -16,6 +16,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | jellyfin | Media server | 30013 |
 | jellystat | Jellyfin analytics | 30176 |
 | navidrome | Music streaming server | 30043 |
+| open-webui | LLM chat UI (LiteLLM router + mem0 memory) | 30081 / 30082 |
 | openbao | Secrets manager (Vault fork) | 30020 |
 | opencloud | Cloud file storage | 30080 |
 | opengym | Self-hosted gym & workout tracker | 30781 |

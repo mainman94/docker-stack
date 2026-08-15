@@ -1,0 +1,55 @@
+# LiteLLM proxy — model routing for Open WebUI.
+# Every `model_name` shows up in the Open WebUI model picker.
+#
+# Provider keys arrive as container env from the stack .env
+# (see the `environment:` block of the open-webui-litellm service).
+
+model_list:
+
+  # --- Straight at the provider (no OpenRouter markup) ---
+  - model_name: claude-opus
+    litellm_params:
+      model: anthropic/claude-opus-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: gpt-5
+    litellm_params:
+      model: openai/gpt-5
+      api_key: os.environ/OPENAI_API_KEY
+
+  # --- Via OpenRouter (everything without its own contract) ---
+  - model_name: kimi-k2
+    litellm_params:
+      model: openrouter/moonshotai/kimi-k2
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  # --- Cheap workhorse: chat titles, tags, autocomplete ---
+  # Select it in Open WebUI under Admin Panel -> Interface as the task model,
+  # otherwise the expensive main model generates every chat title.
+  - model_name: task-model
+    litellm_params:
+      model: openrouter/google/gemini-2.5-flash-lite
+      api_key: os.environ/OPENROUTER_API_KEY
+
+router_settings:
+  routing_strategy: simple-shuffle
+  redis_host: open-webui-redis
+  redis_port: 6379
+  # If a provider goes down, the request degrades instead of erroring out.
+  fallbacks:
+    - claude-opus: ["gpt-5"]
+    - gpt-5: ["claude-opus"]
+
+litellm_settings:
+  drop_params: true          # discard unknown params instead of erroring
+  request_timeout: 600
+  cache: true
+  cache_params:
+    type: redis
+    host: open-webui-redis
+    port: 6379
+    ttl: 3600
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL

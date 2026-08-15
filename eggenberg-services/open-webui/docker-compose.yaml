@@ -1,0 +1,230 @@
+# Open WebUI + LiteLLM + mem0. No local inference, no Ollama, no GPU.
+# Models come from external providers through LiteLLM, embeddings via an API.
+#
+# ponytail: own LiteLLM instead of the openclaw router. That one is
+# Anthropic-only and has no DB. Merge them once both stacks want the same
+# models and the same key management — then as an external network.
+
+services:
+
+  # -------------------------------------------------------------------------
+  # Postgres with pgvector — serves Open WebUI (chats, users, RAG),
+  # LiteLLM (keys, spend) and mem0 (memory embeddings).
+  # Three separate databases in one cluster, created by init-db.sql.
+  # A Postgres major upgrade is its own procedure, not just a tag bump.
+  #
+  # PG18 moved the data directory: PGDATA is /var/lib/postgresql/18/docker and
+  # the image declares VOLUME /var/lib/postgresql. Therefore the bind mount
+  # goes on /var/lib/postgresql, not on the pre-18 /var/lib/postgresql/data —
+  # that path would silently persist nothing.
+  # -------------------------------------------------------------------------
+  open-webui-db:
+    image: pgvector/pgvector:0.8.6-pg18
+    container_name: open-webui-db
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=open-webui
+    environment:
+      POSTGRES_USER: ${OPEN_WEBUI_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${OPEN_WEBUI_POSTGRES_PASSWORD}
+      POSTGRES_DB: openwebui
+      TZ: ${OPEN_WEBUI_TZ}
+    volumes:
+      - ${OPEN_WEBUI_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
+      # Runs only on the very first start, while the data dir is still empty.
+      - ./config/init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    shm_size: 128mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    cpus: ${OPEN_WEBUI_POSTGRES_CPUS}
+    mem_limit: ${OPEN_WEBUI_POSTGRES_MEM_LIMIT}
+
+  # -------------------------------------------------------------------------
+  # Redis — websockets and cache for Open WebUI, router cache for LiteLLM
+  # -------------------------------------------------------------------------
+  open-webui-redis:
+    image: valkey/valkey:9.1-alpine
+    container_name: open-webui-redis
+    user: "${OPEN_WEBUI_REDIS_UID}:${OPEN_WEBUI_REDIS_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=open-webui
+    command: >
+      valkey-server
+      --save 60 1
+      --appendonly no
+      --loglevel warning
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - ${OPEN_WEBUI_REDIS_DATA_HOST_PATH}:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    cpus: ${OPEN_WEBUI_REDIS_CPUS}
+    mem_limit: ${OPEN_WEBUI_REDIS_MEM_LIMIT}
+
+  # -------------------------------------------------------------------------
+  # LiteLLM — model-agnostic proxy. Internal only; Open WebUI reaches it over
+  # the stack network.
+  # -------------------------------------------------------------------------
+  open-webui-litellm:
+    image: ghcr.io/berriai/litellm-database:v1.80.5-stable
+    container_name: open-webui-litellm
+    restart: unless-stopped
+    depends_on:
+      open-webui-db:
+        condition: service_healthy
+      open-webui-redis:
+        condition: service_healthy
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      TZ: ${OPEN_WEBUI_TZ}
+      DATABASE_URL: postgresql://${OPEN_WEBUI_POSTGRES_USER}:${OPEN_WEBUI_POSTGRES_PASSWORD}@open-webui-db:5432/litellm
+      LITELLM_MASTER_KEY: ${OPEN_WEBUI_LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${OPEN_WEBUI_LITELLM_SALT_KEY}
+      REDIS_HOST: open-webui-redis
+      REDIS_PORT: "6379"
+      # Provider keys — only fill in what is actually used.
+      ANTHROPIC_API_KEY: ${OPEN_WEBUI_ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPEN_WEBUI_OPENAI_API_KEY}
+      OPENROUTER_API_KEY: ${OPEN_WEBUI_OPENROUTER_API_KEY}
+      GEMINI_API_KEY: ${OPEN_WEBUI_GEMINI_API_KEY}
+    volumes:
+      - ./config/litellm-config.yaml:/app/config.yaml:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4000/health/liveliness')"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    cpus: ${OPEN_WEBUI_LITELLM_CPUS}
+    mem_limit: ${OPEN_WEBUI_LITELLM_MEM_LIMIT}
+
+  # -------------------------------------------------------------------------
+  # mem0 — memory layer.
+  #
+  # ponytail: built, not pulled. The mem0/mem0-api-server image on Docker Hub
+  # is arm64-only and dead since September 2025 — it will not run on amd64.
+  # Renovate cannot track this build: maintain MEM0_REF by hand and read the
+  # release notes before every bump (schema breaks land in minor releases).
+  # Pin a release tag, never "main".
+  # -------------------------------------------------------------------------
+  open-webui-mem0:
+    build:
+      context: https://github.com/mem0ai/mem0.git#${OPEN_WEBUI_MEM0_REF}
+      dockerfile: server/Dockerfile
+    image: mem0-api-server:${OPEN_WEBUI_MEM0_REF}
+    container_name: open-webui-mem0
+    restart: unless-stopped
+    depends_on:
+      open-webui-db:
+        condition: service_healthy
+    environment:
+      TZ: ${OPEN_WEBUI_TZ}
+      POSTGRES_HOST: open-webui-db
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${OPEN_WEBUI_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${OPEN_WEBUI_POSTGRES_PASSWORD}
+      POSTGRES_DB: mem0
+      POSTGRES_COLLECTION_NAME: memories
+      JWT_SECRET: ${OPEN_WEBUI_MEM0_JWT_SECRET}
+      MEM0_TELEMETRY: "false"
+      # Extraction and embedding run against an OpenAI-compatible endpoint.
+      # Deliberately a cheap model — this runs on EVERY turn.
+      OPENAI_API_KEY: ${OPEN_WEBUI_MEM0_LLM_API_KEY}
+      OPENAI_BASE_URL: ${OPEN_WEBUI_MEM0_LLM_BASE_URL}
+      MEM0_DEFAULT_LLM_MODEL: ${OPEN_WEBUI_MEM0_LLM_MODEL}
+      MEM0_DEFAULT_EMBEDDER_MODEL: ${OPEN_WEBUI_MEM0_EMBEDDER_MODEL}
+    ports:
+      # Only needed for initial setup (admin account + API key in the dashboard).
+      - "${OPEN_WEBUI_MEM0_PORT}:8000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/docs')"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    cpus: ${OPEN_WEBUI_MEM0_CPUS}
+    mem_limit: ${OPEN_WEBUI_MEM0_MEM_LIMIT}
+
+  # -------------------------------------------------------------------------
+  # Open WebUI
+  # 0.11.0 ships database schema changes: back up Postgres before any upgrade.
+  # -------------------------------------------------------------------------
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:v0.11.0
+    container_name: open-webui
+    user: "${OPEN_WEBUI_UID}:${OPEN_WEBUI_GID}"
+    restart: unless-stopped
+    depends_on:
+      open-webui-db:
+        condition: service_healthy
+      open-webui-redis:
+        condition: service_healthy
+      open-webui-litellm:
+        condition: service_healthy
+    labels:
+      - docker-volume-backup.stop-during-backup=open-webui
+    environment:
+      TZ: ${OPEN_WEBUI_TZ}
+      WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
+      WEBUI_URL: ${OPEN_WEBUI_URL}
+
+      # --- Database (psycopg v3, since OWUI 0.9.2) ---
+      DATABASE_URL: postgresql://${OPEN_WEBUI_POSTGRES_USER}:${OPEN_WEBUI_POSTGRES_PASSWORD}@open-webui-db:5432/openwebui
+      VECTOR_DB: pgvector
+      PGVECTOR_DB_URL: postgresql://${OPEN_WEBUI_POSTGRES_USER}:${OPEN_WEBUI_POSTGRES_PASSWORD}@open-webui-db:5432/openwebui
+
+      # --- Redis: websockets, multi-worker ---
+      REDIS_URL: redis://open-webui-redis:6379/0
+      ENABLE_WEBSOCKET_SUPPORT: "true"
+      WEBSOCKET_MANAGER: redis
+      WEBSOCKET_REDIS_URL: redis://open-webui-redis:6379/1
+
+      # --- Ollama off, models arrive through LiteLLM ---
+      ENABLE_OLLAMA_API: "false"
+      OPENAI_API_BASE_URL: http://open-webui-litellm:4000/v1
+      OPENAI_API_KEY: ${OPEN_WEBUI_LITELLM_MASTER_KEY}
+
+      # --- Embeddings via API instead of local sentence-transformers ---
+      # Without this Open WebUI loads a model into the container and runs it
+      # on the CPU — the first bottleneck on this box.
+      RAG_EMBEDDING_ENGINE: openai
+      RAG_EMBEDDING_MODEL: ${OPEN_WEBUI_RAG_EMBEDDING_MODEL}
+      RAG_OPENAI_API_BASE_URL: ${OPEN_WEBUI_RAG_EMBEDDING_BASE_URL}
+      RAG_OPENAI_API_KEY: ${OPEN_WEBUI_RAG_EMBEDDING_API_KEY}
+
+      # --- Built-in memory off, mem0 takes over ---
+      # Two parallel memories contradict each other sooner or later.
+      ENABLE_MEMORIES: "false"
+
+      # First registered user becomes admin; set to "false" afterwards.
+      ENABLE_SIGNUP: ${OPEN_WEBUI_ENABLE_SIGNUP}
+    volumes:
+      - ${OPEN_WEBUI_DATA_HOST_PATH}:/app/backend/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${OPEN_WEBUI_WEB_PORT}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    cpus: ${OPEN_WEBUI_CPUS}
+    mem_limit: ${OPEN_WEBUI_MEM_LIMIT}
+
+networks:
+  default:
+    name: open_webui_network

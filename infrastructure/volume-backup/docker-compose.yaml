@@ -359,3 +359,18 @@ services:
       - ${OPENBAO_STACK_HOST_PATH}:/backup/openbao_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/openbao:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  open_webui_backup:
+    image: offen/docker-volume-backup:v2.48.2
+    container_name: open_webui_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: open-webui-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: open-webui-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: open-webui
+    volumes:
+      - ${OPEN_WEBUI_STACK_HOST_PATH}:/backup/open_webui_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/open-webui:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
