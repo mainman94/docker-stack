@@ -23,6 +23,28 @@ model_list:
       model: openrouter/moonshotai/kimi-k2
       api_key: os.environ/OPENROUTER_API_KEY
 
+  # --- Free tier, for trying things out ---
+  # OpenRouter's ":free" variants cost nothing but are rate limited, and their
+  # terms allow prompts to be used for training. Do not send anything from the
+  # homelab you would not post publicly.
+  - model_name: gpt-oss-20b-free
+    litellm_params:
+      model: openrouter/openai/gpt-oss-20b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: nemotron-ultra-free
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  # Passthrough so any OpenRouter id can be pinned without editing this file.
+  # It does not show up in the model picker — add it under Workspace -> Models
+  # with the exact id, e.g. openrouter/google/gemma-4-31b-it:free
+  - model_name: "openrouter/*"
+    litellm_params:
+      model: "openrouter/*"
+      api_key: os.environ/OPENROUTER_API_KEY
+
   # --- Cheap workhorse: chat titles, tags, autocomplete ---
   # Select it in Open WebUI under Admin Panel -> Interface as the task model,
   # otherwise the expensive main model generates every chat title.
