@@ -59,7 +59,7 @@ class Filter:
         )
         api_key: str = Field(
             default="",
-            description="X-API-Key from the mem0 dashboard",
+            description="X-API-Key: the stack's MEM0_ADMIN_API_KEY",
         )
         index_items: int = Field(
             default=40,

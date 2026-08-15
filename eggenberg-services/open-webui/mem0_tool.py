@@ -42,7 +42,7 @@ class Tools:
         )
         api_key: str = Field(
             default="",
-            description="X-API-Key from the mem0 dashboard",
+            description="X-API-Key: the stack's MEM0_ADMIN_API_KEY",
         )
         limit: int = Field(
             default=8,

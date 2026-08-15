@@ -116,35 +116,63 @@ services:
   # Renovate cannot track this build: maintain MEM0_REF by hand and read the
   # release notes before every bump (schema breaks land in minor releases).
   # Pin a release tag, never "main".
+  #
+  # The context points at the server/ subdirectory, not the repo root: its
+  # Dockerfile does COPY requirements.txt, which only resolves from there.
+  #
+  # ponytail: no dashboard service. Upstream ships one (a separate Next.js app
+  # on port 3000) purely to create users and API keys. ADMIN_API_KEY is
+  # accepted as an X-API-Key directly, which is all a single-user setup needs.
+  # Add the dashboard when you want per-user memory separation.
   # -------------------------------------------------------------------------
   open-webui-mem0:
     build:
-      context: https://github.com/mem0ai/mem0.git#${OPEN_WEBUI_MEM0_REF}
-      dockerfile: server/Dockerfile
+      context: https://github.com/mem0ai/mem0.git#${OPEN_WEBUI_MEM0_REF}:server
+      dockerfile: Dockerfile
     image: mem0-api-server:${OPEN_WEBUI_MEM0_REF}
     container_name: open-webui-mem0
     restart: unless-stopped
     depends_on:
       open-webui-db:
         condition: service_healthy
+    labels:
+      - docker-volume-backup.stop-during-backup=open-webui
+    # The image's own CMD serves without migrating and with --reload left on.
+    # Run alembic first, then serve for real.
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn main:app --host 0.0.0.0 --port 8000"
     environment:
       TZ: ${OPEN_WEBUI_TZ}
       POSTGRES_HOST: open-webui-db
       POSTGRES_PORT: "5432"
       POSTGRES_USER: ${OPEN_WEBUI_POSTGRES_USER}
       POSTGRES_PASSWORD: ${OPEN_WEBUI_POSTGRES_PASSWORD}
+      # Two databases: POSTGRES_DB holds the pgvector memories, APP_DB_NAME
+      # the users, API keys and request logs. init-db.sql creates both.
       POSTGRES_DB: mem0
+      APP_DB_NAME: mem0_app
       POSTGRES_COLLECTION_NAME: memories
+      # Doubles as the X-API-Key for the Open WebUI filter and tool.
+      ADMIN_API_KEY: ${OPEN_WEBUI_MEM0_ADMIN_API_KEY}
       JWT_SECRET: ${OPEN_WEBUI_MEM0_JWT_SECRET}
+      AUTH_DISABLED: "false"
       MEM0_TELEMETRY: "false"
       # Extraction and embedding run against an OpenAI-compatible endpoint.
       # Deliberately a cheap model — this runs on EVERY turn.
+      # OPENAI_BASE_URL is not read by mem0 itself; it reaches the provider
+      # through the openai SDK. Leave it on api.openai.com unless you have
+      # verified your endpoint works.
       OPENAI_API_KEY: ${OPEN_WEBUI_MEM0_LLM_API_KEY}
       OPENAI_BASE_URL: ${OPEN_WEBUI_MEM0_LLM_BASE_URL}
       MEM0_DEFAULT_LLM_MODEL: ${OPEN_WEBUI_MEM0_LLM_MODEL}
       MEM0_DEFAULT_EMBEDDER_MODEL: ${OPEN_WEBUI_MEM0_EMBEDDER_MODEL}
+      HISTORY_DB_PATH: /app/history/history.db
+    volumes:
+      # SQLite history sidecar, written on every extraction.
+      - ${OPEN_WEBUI_MEM0_HISTORY_HOST_PATH}:/app/history
     ports:
-      # Only needed for initial setup (admin account + API key in the dashboard).
+      # Not required in normal operation — handy for /docs while debugging.
       - "${OPEN_WEBUI_MEM0_PORT}:8000"
     healthcheck:
       test:
