@@ -11,6 +11,11 @@ services:
       POSTGRES_PASSWORD: ${UMAMI_POSTGRES_PASSWORD}
       TZ: ${UMAMI_TZ}
     volumes:
+      # PG18 keeps its cluster in $PGDATA=/var/lib/postgresql/18/docker and
+      # declares VOLUME /var/lib/postgresql. Without this mount the cluster
+      # would land in an anonymous volume, outside the backed-up stack dir.
+      - ${UMAMI_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
+      # Pre-18 location, kept so an existing cluster is still found.
       - ${UMAMI_POSTGRES_DATA_HOST_PATH}/data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
