@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     command: server -config=/openbao/config/openbao.hcl
     user: "${OPENBAO_UID}:${OPENBAO_GID}"
-    labels:
-      - docker-volume-backup.stop-during-backup=openbao
+    # No docker-volume-backup.stop-during-backup label: stopping the container
+    # reseals it (file storage, no auto-unseal), so it stayed sealed every night
+    # after the 03:30 backup. Data dir is backed up live instead.
     cap_add:
       # mlock: keep secrets out of swap
       - IPC_LOCK
