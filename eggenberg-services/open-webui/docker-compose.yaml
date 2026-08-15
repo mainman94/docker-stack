@@ -118,7 +118,12 @@ services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:v0.11.0
     container_name: open-webui
-    user: "${OPEN_WEBUI_UID}:${OPEN_WEBUI_GID}"
+    # No user override: the image writes branding assets into its own
+    # /app/backend/open_webui/static, which root owns inside the image. As 568
+    # every start floods the log with
+    #   ERROR [root] An error occurred: [Errno 13] Permission denied:
+    #   '/app/backend/open_webui/static/favicon.ico'
+    # Only /app/backend/data is bind-mounted, and root writes it fine.
     restart: unless-stopped
     depends_on:
       open-webui-db:
