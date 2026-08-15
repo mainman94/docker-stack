@@ -45,9 +45,26 @@ model_list:
       model: "openrouter/*"
       api_key: os.environ/OPENROUTER_API_KEY
 
+  # --- Groq free tier ---
+  # 30 RPM and up to 500k tokens/day at no cost. Tokens per minute are the
+  # binding limit (1.2k-15k per model), so keep long contexts off these.
+  - model_name: llama-3.3-70b
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+
   # --- Cheap workhorse: chat titles, tags, autocomplete ---
   # Select it in Open WebUI under Admin Panel -> Interface as the task model,
   # otherwise the expensive main model generates every chat title.
+  #
+  # Two deployments under one name: the router spreads load across both and,
+  # when one answers 429, drops it for cooldown_time seconds and uses the
+  # other. Groq is free, the OpenRouter entry is the safety net.
+  - model_name: task-model
+    litellm_params:
+      model: groq/llama-3.1-8b-instant
+      api_key: os.environ/GROQ_API_KEY
+
   - model_name: task-model
     litellm_params:
       model: openrouter/google/gemini-2.5-flash-lite
@@ -57,6 +74,11 @@ router_settings:
   routing_strategy: simple-shuffle
   redis_host: open-webui-redis
   redis_port: 6379
+  # Free tiers answer 429 rather than queueing. Take a failing deployment out
+  # briefly instead of retrying into the same wall.
+  allowed_fails: 1
+  cooldown_time: 60
+  num_retries: 2
   # If a provider goes down, the request degrades instead of erroring out.
   fallbacks:
     - claude-opus: ["gpt-5"]
