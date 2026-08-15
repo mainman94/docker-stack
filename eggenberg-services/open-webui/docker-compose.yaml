@@ -192,6 +192,48 @@ services:
     cpus: ${OPEN_WEBUI_CPUS}
     mem_limit: ${OPEN_WEBUI_MEM_LIMIT}
 
+  # -------------------------------------------------------------------------
+  # Open Terminal — sandbox the model can run commands in (code interpreter).
+  #
+  # This container executes what the model tells it to. A prompt injected via
+  # an uploaded document or a fetched web page reaches this shell, so treat it
+  # as hosting untrusted code, not as a normal service:
+  #   - never mount /var/run/docker.sock here (root on the host, and this host
+  #     also runs vaultwarden, openbao and gitea)
+  #   - never run the bare-metal/pip install variant on the NAS
+  #   - no host paths beyond its own home directory
+  # Egress to the LAN is deliberately left open — the owner asked for it, so
+  # the blast radius includes anything the NAS can reach. Put it on an
+  # `internal: true` network to take that away.
+  #
+  # ponytail: the full image (~4GB). Upstream ships smaller slim/alpine
+  # variants, but only as floating tags — no versioned slim/alpine exists, and
+  # this repo pins everything. Switch if disk matters more than pinning.
+  # -------------------------------------------------------------------------
+  open-webui-terminal:
+    image: ghcr.io/open-webui/open-terminal:0.10.2
+    container_name: open-webui-terminal
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=open-webui
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      TZ: ${OPEN_WEBUI_TZ}
+      # Without this one is generated at startup and changes on every restart,
+      # which silently breaks the connection configured in Open WebUI.
+      OPEN_TERMINAL_API_KEY: ${OPEN_WEBUI_TERMINAL_API_KEY}
+    volumes:
+      - ${OPEN_WEBUI_TERMINAL_HOME_HOST_PATH}:/home/user
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8000'"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    cpus: ${OPEN_WEBUI_TERMINAL_CPUS}
+    mem_limit: ${OPEN_WEBUI_TERMINAL_MEM_LIMIT}
+
 networks:
   default:
     name: open_webui_network
