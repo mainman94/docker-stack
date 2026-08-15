@@ -13,10 +13,12 @@ services:
   # Three separate databases in one cluster, created by init-db.sql.
   # A Postgres major upgrade is its own procedure, not just a tag bump.
   #
-  # PG18 moved the data directory: PGDATA is /var/lib/postgresql/18/docker and
-  # the image declares VOLUME /var/lib/postgresql. Therefore the bind mount
-  # goes on /var/lib/postgresql, not on the pre-18 /var/lib/postgresql/data —
-  # that path would silently persist nothing.
+  # PG18 moved its default data directory to /var/lib/postgresql/18/docker.
+  # Do NOT bind-mount /var/lib/postgresql to follow that: the entrypoint's root
+  # pass creates 18/docker but chowns only the leaf, then re-execs itself as
+  # the postgres user, which then cannot write the parent it does not own:
+  #   mkdir: cannot create directory '/var/lib/postgresql/18': Permission denied
+  # Pinning PGDATA to the pre-18 path keeps the layout the other stacks use.
   # -------------------------------------------------------------------------
   open-webui-db:
     image: pgvector/pgvector:0.8.6-pg18
@@ -28,9 +30,10 @@ services:
       POSTGRES_USER: ${OPEN_WEBUI_POSTGRES_USER}
       POSTGRES_PASSWORD: ${OPEN_WEBUI_POSTGRES_PASSWORD}
       POSTGRES_DB: openwebui
+      PGDATA: /var/lib/postgresql/data
       TZ: ${OPEN_WEBUI_TZ}
     volumes:
-      - ${OPEN_WEBUI_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
+      - ${OPEN_WEBUI_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql/data
       # Runs only on the very first start, while the data dir is still empty.
       - ./config/init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
     shm_size: 128mb
