@@ -123,6 +123,13 @@ services:
   # The context points at the server/ subdirectory, not the repo root: its
   # Dockerfile does COPY requirements.txt, which only resolves from there.
   #
+  # That Dockerfile is replaced by dockerfile_inline below. Upstream's own is
+  # not runnable: requirements.txt pins bare psycopg, python:3.12-slim ships
+  # no libpq, and nothing installs one, so every DB call dies with
+  #   ImportError: no pq wrapper available ... libpq library not found
+  # psycopg[binary] carries its own libpq. Drop the override once upstream
+  # fixes this; check server/Dockerfile on the tag you bump to.
+  #
   # ponytail: no dashboard service. Upstream ships one (a separate Next.js app
   # on port 3000) purely to create users and API keys. ADMIN_API_KEY is
   # accepted as an X-API-Key directly, which is all a single-user setup needs.
@@ -131,7 +138,14 @@ services:
   open-webui-mem0:
     build:
       context: https://github.com/mem0ai/mem0.git#${OPEN_WEBUI_MEM0_REF}:server
-      dockerfile: Dockerfile
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /app
+        COPY requirements.txt .
+        RUN pip install --no-cache-dir -r requirements.txt "psycopg[binary]"
+        COPY . .
+        EXPOSE 8000
+        ENV PYTHONUNBUFFERED=1
     image: mem0-api-server:${OPEN_WEBUI_MEM0_REF}
     container_name: open-webui-mem0
     restart: unless-stopped
