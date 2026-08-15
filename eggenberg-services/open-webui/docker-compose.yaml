@@ -1,4 +1,4 @@
-# Open WebUI + LiteLLM + mem0. No local inference, no Ollama, no GPU.
+# Open WebUI + LiteLLM. No local inference, no Ollama, no GPU.
 # Models come from external providers through LiteLLM, embeddings via an API.
 #
 # ponytail: own LiteLLM instead of the openclaw router. That one is
@@ -8,9 +8,9 @@
 services:
 
   # -------------------------------------------------------------------------
-  # Postgres with pgvector — serves Open WebUI (chats, users, RAG),
-  # LiteLLM (keys, spend) and mem0 (memory embeddings).
-  # Three separate databases in one cluster, created by init-db.sql.
+  # Postgres with pgvector — serves Open WebUI (chats, users, RAG, memories)
+  # and LiteLLM (keys, spend).
+  # Two separate databases in one cluster, created by init-db.sql.
   # A Postgres major upgrade is its own procedure, not just a tag bump.
   #
   # PG18 moved its default data directory to /var/lib/postgresql/18/docker.
@@ -112,97 +112,6 @@ services:
     mem_limit: ${OPEN_WEBUI_LITELLM_MEM_LIMIT}
 
   # -------------------------------------------------------------------------
-  # mem0 — memory layer.
-  #
-  # ponytail: built, not pulled. The mem0/mem0-api-server image on Docker Hub
-  # is arm64-only and dead since September 2025 — it will not run on amd64.
-  # Renovate cannot track this build: maintain MEM0_REF by hand and read the
-  # release notes before every bump (schema breaks land in minor releases).
-  # Pin a release tag, never "main".
-  #
-  # The context points at the server/ subdirectory, not the repo root: its
-  # Dockerfile does COPY requirements.txt, which only resolves from there.
-  #
-  # That Dockerfile is replaced by dockerfile_inline below. Upstream's own is
-  # not runnable: requirements.txt pins bare psycopg, python:3.12-slim ships
-  # no libpq, and nothing installs one, so every DB call dies with
-  #   ImportError: no pq wrapper available ... libpq library not found
-  # psycopg[binary] carries its own libpq. Drop the override once upstream
-  # fixes this; check server/Dockerfile on the tag you bump to.
-  #
-  # ponytail: no dashboard service. Upstream ships one (a separate Next.js app
-  # on port 3000) purely to create users and API keys. ADMIN_API_KEY is
-  # accepted as an X-API-Key directly, which is all a single-user setup needs.
-  # Add the dashboard when you want per-user memory separation.
-  # -------------------------------------------------------------------------
-  open-webui-mem0:
-    build:
-      context: https://github.com/mem0ai/mem0.git#${OPEN_WEBUI_MEM0_REF}:server
-      dockerfile_inline: |
-        FROM python:3.12-slim
-        WORKDIR /app
-        COPY requirements.txt .
-        RUN pip install --no-cache-dir -r requirements.txt "psycopg[binary]"
-        COPY . .
-        EXPOSE 8000
-        ENV PYTHONUNBUFFERED=1
-    image: mem0-api-server:${OPEN_WEBUI_MEM0_REF}
-    container_name: open-webui-mem0
-    restart: unless-stopped
-    depends_on:
-      open-webui-db:
-        condition: service_healthy
-    labels:
-      - docker-volume-backup.stop-during-backup=open-webui
-    # The image's own CMD serves without migrating and with --reload left on.
-    # Run alembic first, then serve for real.
-    command: >
-      sh -c "alembic upgrade head &&
-             uvicorn main:app --host 0.0.0.0 --port 8000"
-    environment:
-      TZ: ${OPEN_WEBUI_TZ}
-      POSTGRES_HOST: open-webui-db
-      POSTGRES_PORT: "5432"
-      POSTGRES_USER: ${OPEN_WEBUI_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${OPEN_WEBUI_POSTGRES_PASSWORD}
-      # Two databases: POSTGRES_DB holds the pgvector memories, APP_DB_NAME
-      # the users, API keys and request logs. init-db.sql creates both.
-      POSTGRES_DB: mem0
-      APP_DB_NAME: mem0_app
-      POSTGRES_COLLECTION_NAME: memories
-      # Doubles as the X-API-Key for the Open WebUI filter and tool.
-      ADMIN_API_KEY: ${OPEN_WEBUI_MEM0_ADMIN_API_KEY}
-      JWT_SECRET: ${OPEN_WEBUI_MEM0_JWT_SECRET}
-      AUTH_DISABLED: "false"
-      MEM0_TELEMETRY: "false"
-      # Extraction and embedding run against an OpenAI-compatible endpoint.
-      # Deliberately a cheap model — this runs on EVERY turn.
-      # OPENAI_BASE_URL is not read by mem0 itself; it reaches the provider
-      # through the openai SDK. Leave it on api.openai.com unless you have
-      # verified your endpoint works.
-      OPENAI_API_KEY: ${OPEN_WEBUI_MEM0_LLM_API_KEY}
-      OPENAI_BASE_URL: ${OPEN_WEBUI_MEM0_LLM_BASE_URL}
-      MEM0_DEFAULT_LLM_MODEL: ${OPEN_WEBUI_MEM0_LLM_MODEL}
-      MEM0_DEFAULT_EMBEDDER_MODEL: ${OPEN_WEBUI_MEM0_EMBEDDER_MODEL}
-      HISTORY_DB_PATH: /app/history/history.db
-    volumes:
-      # SQLite history sidecar, written on every extraction.
-      - ${OPEN_WEBUI_MEM0_HISTORY_HOST_PATH}:/app/history
-    ports:
-      # Not required in normal operation — handy for /docs while debugging.
-      - "${OPEN_WEBUI_MEM0_PORT}:8000"
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/docs')"
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    cpus: ${OPEN_WEBUI_MEM0_CPUS}
-    mem_limit: ${OPEN_WEBUI_MEM0_MEM_LIMIT}
-
-  # -------------------------------------------------------------------------
   # Open WebUI
   # 0.11.0 ships database schema changes: back up Postgres before any upgrade.
   # -------------------------------------------------------------------------
@@ -249,9 +158,11 @@ services:
       RAG_OPENAI_API_BASE_URL: ${OPEN_WEBUI_RAG_EMBEDDING_BASE_URL}
       RAG_OPENAI_API_KEY: ${OPEN_WEBUI_RAG_EMBEDDING_API_KEY}
 
-      # --- Built-in memory off, mem0 takes over ---
-      # Two parallel memories contradict each other sooner or later.
-      ENABLE_MEMORIES: "false"
+      # --- Built-in memory ---
+      # Open WebUI's own memory: visible and editable under Settings ->
+      # Personalization, stored in its Postgres. Weaker extraction than a
+      # dedicated memory service, but no extra service to keep alive.
+      ENABLE_MEMORIES: "true"
 
       # First registered user becomes admin; set to "false" afterwards.
       ENABLE_SIGNUP: ${OPEN_WEBUI_ENABLE_SIGNUP}
