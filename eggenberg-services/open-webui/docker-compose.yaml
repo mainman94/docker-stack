@@ -146,6 +146,11 @@ services:
       WEBSOCKET_REDIS_URL: redis://open-webui-redis:6379/1
 
       # --- Ollama off, models arrive through LiteLLM ---
+      # These two seed the connection on the FIRST start only. Open WebUI then
+      # owns them in its database and ignores the environment, so editing them
+      # here changes nothing on a running install — fix the entry under
+      # Admin Panel -> Connections instead. Set ENABLE_PERSISTENT_CONFIG=false
+      # if you would rather have the environment win on every start.
       ENABLE_OLLAMA_API: "false"
       OPENAI_API_BASE_URL: http://open-webui-litellm:4000/v1
       OPENAI_API_KEY: ${OPEN_WEBUI_LITELLM_MASTER_KEY}
