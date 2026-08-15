@@ -74,7 +74,7 @@ services:
   # the stack network.
   # -------------------------------------------------------------------------
   open-webui-litellm:
-    image: ghcr.io/berriai/litellm-database:v1.80.5-stable
+    image: ghcr.io/berriai/litellm-database:v1.83.14-stable
     container_name: open-webui-litellm
     restart: unless-stopped
     depends_on:
