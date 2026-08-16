@@ -25,7 +25,7 @@ violations, one line each: `path: <problem>. <fix>.` No praise, no scope creep.
    `mem_limit` are present.
 7. **README** — stack appears in the service table with its host port.
 8. **Orphans** — a backup service or `*_STACK_HOST_PATH` whose
-   `eggenberg-services/<stack>/` dir does not exist (known example: `authelia`).
+   `eggenberg-services/<stack>/` dir does not exist.
 
 ## Method
 

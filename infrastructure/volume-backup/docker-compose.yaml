@@ -240,21 +240,6 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/gitea:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  authelia_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
-    container_name: authelia_volume_backup
-    restart: unless-stopped
-    env_file:
-      - backup.env
-    environment:
-      BACKUP_FILENAME: authelia-backup-%Y-%m-%dT%H-%M-%S.tar.gz
-      BACKUP_PRUNING_PREFIX: authelia-backup-
-      BACKUP_STOP_DURING_BACKUP_LABEL: authelia
-    volumes:
-      - ${AUTHELIA_STACK_HOST_PATH}:/backup/authelia_stack:ro
-      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/authelia:/archive
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
   paperless_backup:
     image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
     container_name: paperless_volume_backup
@@ -373,4 +358,24 @@ services:
     volumes:
       - ${OPEN_WEBUI_STACK_HOST_PATH}:/backup/open_webui_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/open-webui:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  dockhand_backup:
+    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    container_name: dockhand_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: dockhand-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: dockhand-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: dockhand
+    volumes:
+      - ${DOCKHAND_STACK_HOST_PATH}:/backup/dockhand_stack:ro
+      # Dockhand's DATA_DIR is the whole dockge dataset (it also holds every
+      # other stack and the backup archives), so back up only its own state:
+      # the SQLite database and the credential encryption key.
+      - ${DOCKHAND_DATA_HOST_PATH}/db:/backup/dockhand_db:ro
+      - ${DOCKHAND_DATA_HOST_PATH}/.encryption_key:/backup/dockhand_encryption_key:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/dockhand:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
