@@ -1,6 +1,6 @@
 services:
   jellyfin:
-    image: ghcr.io/jellyfin/jellyfin:10.11.11
+    image: ghcr.io/jellyfin/jellyfin:10.11.11@sha256:45f648c382a0c8b552582fcea40e95cb17c5d475473a891cba0eb7523fb92112
     container_name: jellyfin
     user: "${JELLYFIN_UID}:${JELLYFIN_GID}"
     restart: unless-stopped

@@ -21,7 +21,7 @@ services:
   # Pinning PGDATA to the pre-18 path keeps the layout the other stacks use.
   # -------------------------------------------------------------------------
   open-webui-db:
-    image: pgvector/pgvector:0.8.6-pg18
+    image: pgvector/pgvector:0.8.6-pg18@sha256:2ba9ca5f2e7daa0f0e7723cba1ee9167bab54efd3640516a44ac1a928dd67e7a
     container_name: open-webui-db
     restart: unless-stopped
     labels:
@@ -49,7 +49,7 @@ services:
   # Redis — websockets and cache for Open WebUI, router cache for LiteLLM
   # -------------------------------------------------------------------------
   open-webui-redis:
-    image: valkey/valkey:9.1-alpine
+    image: valkey/valkey:9.1-alpine@sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
     container_name: open-webui-redis
     user: "${OPEN_WEBUI_REDIS_UID}:${OPEN_WEBUI_REDIS_GID}"
     restart: unless-stopped
@@ -77,7 +77,7 @@ services:
   # the stack network.
   # -------------------------------------------------------------------------
   open-webui-litellm:
-    image: ghcr.io/berriai/litellm-database:v1.83.14-stable
+    image: ghcr.io/berriai/litellm-database:v1.83.14-stable@sha256:da4ab06d9d57da205263877425544d6df8e78147737b0dd8dc1e9e93a6d8ac2e
     container_name: open-webui-litellm
     restart: unless-stopped
     depends_on:
@@ -117,7 +117,7 @@ services:
   # 0.11.0 ships database schema changes: back up Postgres before any upgrade.
   # -------------------------------------------------------------------------
   open-webui:
-    image: ghcr.io/open-webui/open-webui:v0.11.0
+    image: ghcr.io/open-webui/open-webui:v0.11.0@sha256:72c0ba641ba75e7aa52655cb242570906ececd09b1140fb736483038a22b3228
     container_name: open-webui
     # No user override: the image writes branding assets into its own
     # /app/backend/open_webui/static, which root owns inside the image. As 568
@@ -211,7 +211,7 @@ services:
   # this repo pins everything. Switch if disk matters more than pinning.
   # -------------------------------------------------------------------------
   open-webui-terminal:
-    image: ghcr.io/open-webui/open-terminal:0.11.35
+    image: ghcr.io/open-webui/open-terminal:0.11.35@sha256:8df3a502a5d35435547d037fa50b5f55323fc5fd0e1b97d2d3d2b5cb42538452
     container_name: open-webui-terminal
     restart: unless-stopped
     labels:

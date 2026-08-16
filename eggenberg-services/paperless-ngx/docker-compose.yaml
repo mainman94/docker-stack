@@ -1,6 +1,6 @@
 services:
   paperless-redis:
-    image: valkey/valkey:9.1-alpine
+    image: valkey/valkey:9.1-alpine@sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
     container_name: paperless-redis
     user: "${PAPERLESS_REDIS_UID}:${PAPERLESS_REDIS_GID}"
     restart: unless-stopped
@@ -118,7 +118,7 @@ services:
     mem_limit: ${PAPERLESS_MEM_LIMIT}
 
   paperless-gotenberg:
-    image: gotenberg/gotenberg:8.36.0
+    image: gotenberg/gotenberg:8.36.0@sha256:87c16b9f364279d321bc9772d31fa58aa6abe036423c270698bd636c3a8e9466
     container_name: paperless-gotenberg
     restart: unless-stopped
     command:
@@ -134,7 +134,7 @@ services:
     mem_limit: ${PAPERLESS_GOTENBERG_MEM_LIMIT}
 
   paperless-tika:
-    image: apache/tika:3.3.1.0
+    image: apache/tika:3.3.1.0@sha256:90b7fa1dc018434075fce9e1d9b88b1e3d0ea6979d0cf86e116c79a8073ae973
     container_name: paperless-tika
     restart: unless-stopped
     healthcheck:

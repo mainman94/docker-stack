@@ -1,7 +1,7 @@
 services:
   opencloud:
     # renovate: depName=opencloudeu/opencloud-rolling
-    image: opencloudeu/opencloud-rolling:7.4.0
+    image: opencloudeu/opencloud-rolling:7.4.0@sha256:e9df43040866c3587daae47af68bc3c412026bc99614686bf6869bdc72c52526
     container_name: opencloud
     restart: unless-stopped
     user: "${OPENCLOUD_UID}:${OPENCLOUD_GID}"
@@ -92,7 +92,7 @@ services:
 
   collaboration:
     # renovate: depName=opencloudeu/opencloud-rolling
-    image: opencloudeu/opencloud-rolling:7.4.0
+    image: opencloudeu/opencloud-rolling:7.4.0@sha256:e9df43040866c3587daae47af68bc3c412026bc99614686bf6869bdc72c52526
     container_name: opencloud-collaboration
     restart: unless-stopped
     user: "${OPENCLOUD_UID}:${OPENCLOUD_GID}"
@@ -138,7 +138,7 @@ services:
 
   collabora:
     # renovate: depName=collabora/code
-    image: collabora/code:26.04.3.1.1
+    image: collabora/code:26.04.3.1.1@sha256:6b70f91f0b6e9c76f75f162f58ef0a12cf9415d78e14713d33c0318ddc4a2cc0
     container_name: opencloud-collabora
     restart: unless-stopped
     labels:

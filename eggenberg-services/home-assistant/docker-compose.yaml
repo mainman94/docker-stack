@@ -2,7 +2,7 @@ services:
   # One-shot: install HACS into the (persistent) config volume if missing.
   # Idempotent — exits fast when custom_components/hacs already exists.
   hacs-install:
-    image: alpine:3.24
+    image: alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
     container_name: hacs-install
     restart: "no"
     volumes:
@@ -22,7 +22,7 @@ services:
         echo "HACS installed"
 
   home-assistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.8.2
+    image: ghcr.io/home-assistant/home-assistant:2026.8.2@sha256:56690a89c79a0de98035e1719f8324a92d5859c1192ff45adb0230ea81cb42a5
     container_name: home-assistant
     user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
     restart: unless-stopped
@@ -47,7 +47,7 @@ services:
     mem_limit: ${HOME_ASSISTANT_MEM_LIMIT}
 
   matter-server:
-    image: ghcr.io/home-assistant-libs/python-matter-server:8.1.0
+    image: ghcr.io/home-assistant-libs/python-matter-server:8.1.0@sha256:170aa093ce91c76cde4cc390918307590f0f5558fcec93f913af3cb019e6562a
     container_name: matter-server
     restart: unless-stopped
     # host network required: Matter/Thread commissioning needs mDNS + IPv6 link-local

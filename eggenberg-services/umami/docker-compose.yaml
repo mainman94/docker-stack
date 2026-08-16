@@ -27,7 +27,7 @@ services:
     mem_limit: ${UMAMI_POSTGRES_MEM_LIMIT}
 
   umami:
-    image: ghcr.io/umami-software/umami:3.3
+    image: ghcr.io/umami-software/umami:3.3@sha256:87312d334d009ee67ee0d2fba8fed01435547cc468e452243aef5133a9984d48
     container_name: umami
     init: true
     restart: unless-stopped

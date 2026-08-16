@@ -1,6 +1,6 @@
 services:
   sonarr:
-    image: linuxserver/sonarr:4.0.17.2952-ls312
+    image: linuxserver/sonarr:4.0.17.2952-ls312@sha256:0b5c4803f92456fb9b65bae8375716ea120b4ea17b3cced7da32b63f0085782b
     container_name: sonarr
     restart: unless-stopped
     labels:
