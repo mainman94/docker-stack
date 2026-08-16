@@ -1,0 +1,34 @@
+services:
+  dockhand:
+    image: fnsys/dockhand:v1.0.42@sha256:76dc36ea6ce7ed03fde7112b93ccb6bf172a33e42e79435553f18c503215ee4f
+    container_name: dockhand
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=dockhand
+    environment:
+      # The entrypoint starts as root, chowns DATA_DIR, then drops to PUID:PGID.
+      PUID: ${DOCKHAND_UID}
+      PGID: ${DOCKHAND_GID}
+      TZ: ${DOCKHAND_TZ}
+      DATA_DIR: /app/data
+      # Dockhand shells out to `docker compose` on the host daemon, so paths in
+      # the compose files it manages are resolved by the host, not by this
+      # container. HOST_DATA_DIR tells it how /app/data maps onto the host.
+      HOST_DATA_DIR: ${DOCKHAND_DATA_HOST_PATH}
+    volumes:
+      - ${DOCKHAND_DATA_HOST_PATH}:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    # PGID 568 does not own the docker socket; join the socket's group instead.
+    # Host GID: stat -c '%g' /var/run/docker.sock
+    group_add:
+      - ${DOCKHAND_DOCKER_GID}
+    ports:
+      - "${DOCKHAND_WEB_PORT}:3000"
+    cpus: ${DOCKHAND_CPUS}
+    mem_limit: ${DOCKHAND_MEM_LIMIT}
+
+networks:
+  default:
+    name: dockhand_network
