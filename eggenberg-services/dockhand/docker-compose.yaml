@@ -10,13 +10,14 @@ services:
       PUID: ${DOCKHAND_UID}
       PGID: ${DOCKHAND_GID}
       TZ: ${DOCKHAND_TZ}
-      DATA_DIR: /app/data
-      # Dockhand shells out to `docker compose` on the host daemon, so paths in
-      # the compose files it manages are resolved by the host, not by this
-      # container. HOST_DATA_DIR tells it how /app/data maps onto the host.
+      # Dockhand shells out to `docker compose` with cwd inside DATA_DIR, but
+      # the daemon resolving the relative bind mounts runs on the host. So the
+      # data dir must be mounted at the identical path inside the container,
+      # otherwise every managed stack tries to bind /app/data/... on the host.
+      DATA_DIR: ${DOCKHAND_DATA_HOST_PATH}
       HOST_DATA_DIR: ${DOCKHAND_DATA_HOST_PATH}
     volumes:
-      - ${DOCKHAND_DATA_HOST_PATH}:/app/data
+      - ${DOCKHAND_DATA_HOST_PATH}:${DOCKHAND_DATA_HOST_PATH}
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
