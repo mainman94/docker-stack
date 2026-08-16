@@ -9,13 +9,15 @@ services:
       POSTGRES_DB: ${GITEA_POSTGRES_DATABASE}
       POSTGRES_USER: ${GITEA_POSTGRES_USER}
       POSTGRES_PASSWORD: ${GITEA_POSTGRES_PASSWORD}
-      PGDATA: /var/lib/postgresql/data
       TZ: ${GITEA_TZ}
     volumes:
-      # Mounted at PGDATA. Do not mount /var/lib/postgresql instead: PG18's
-      # entrypoint would switch to 18/docker, create it as root and then
-      # re-exec as postgres, which cannot write the parent it does not own.
-      - ${GITEA_POSTGRES_DATA_HOST_PATH}/data:/var/lib/postgresql/data
+      # PG18 stores its cluster in $PGDATA=/var/lib/postgresql/18/docker and
+      # declares VOLUME /var/lib/postgresql. Mount the parent, as upstream
+      # recommends: the cluster then lives in <postgres-data>/18/docker, where
+      # it already is, and pg_upgrade --link works without crossing a mount
+      # boundary. Do not pin PGDATA at /var/lib/postgresql/data — the mount
+      # there is unused, and 18's entrypoint aborts on it.
+      - ${GITEA_POSTGRES_DATA_HOST_PATH}:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
