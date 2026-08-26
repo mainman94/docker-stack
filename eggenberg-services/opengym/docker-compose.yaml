@@ -29,7 +29,7 @@ services:
 
   api:
     # main @ 5314b342 — repo migrated ghcr.io → gitlab.com registry.
-    image: registry.gitlab.com/duartesantos8/opengym/api@sha256:e4548d6eb28d1685042e71212aa587e534354f00c63c6d1966c1ebb07972bfa8
+    image: registry.gitlab.com/duartesantos8/opengym/api@sha256:0b61857997ba6cfe62ed6196560fb6f7a3c2ac17378cd78573968a757cc726f4
     container_name: opengym_api
     labels:
       - docker-volume-backup.stop-during-backup=opengym
