@@ -7,3 +7,6 @@ eggenberg-services/jellyfin/.env
 !.claude/skills/
 !.claude/agents/
 mind.mv2.lock
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
