@@ -1,0 +1,33 @@
+services:
+  linkding:
+    image: ghcr.io/sissbruecker/linkding:1.46.2@sha256:0c0a9a04c7ebd644293c37f98710872fe7cdff0ea1ff7fd9be4d235e4c4678d2
+    container_name: linkding
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=linkding
+    environment:
+      TZ: ${LINKDING_TZ}
+      # Container starts as root to fix up ownership of the data folder, then
+      # drops to this UID/GID for the app itself.
+      LD_UID: ${LINKDING_UID}
+      LD_GID: ${LINKDING_GID}
+      LD_SUPERUSER_NAME: ${LINKDING_SUPERUSER_NAME}
+      LD_SUPERUSER_PASSWORD: ${LINKDING_SUPERUSER_PASSWORD}
+      LD_SERVER_PORT: 9090
+      LD_CSRF_TRUSTED_ORIGINS: ${LINKDING_CSRF_TRUSTED_ORIGINS}
+    volumes:
+      - ${LINKDING_DATA_HOST_PATH}:/etc/linkding/data
+    ports:
+      - "${LINKDING_WEB_PORT}:9090"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9090/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${LINKDING_CPUS}
+    mem_limit: ${LINKDING_MEM_LIMIT}
+
+networks:
+  default:
+    name: linkding_network

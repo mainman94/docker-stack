@@ -16,6 +16,7 @@ Services live in separate Compose stacks under `eggenberg-services/`.
 | home-assistant | Home automation | 30123 |
 | jellyfin | Media server | 30013 |
 | jellystat | Jellyfin analytics | 30176 |
+| linkding | Bookmark manager | 30044 |
 | navidrome | Music streaming server | 30043 |
 | open-webui | LLM chat UI with LiteLLM model router | 30081 |
 | openbao | Secrets manager (Vault fork) | 30020 |

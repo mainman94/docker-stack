@@ -379,3 +379,18 @@ services:
       - ${DOCKHAND_DATA_HOST_PATH}/.encryption_key:/backup/dockhand_encryption_key:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/dockhand:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  linkding_backup:
+    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    container_name: linkding_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: linkding-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: linkding-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: linkding
+    volumes:
+      - ${LINKDING_STACK_HOST_PATH}:/backup/linkding_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/linkding:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
