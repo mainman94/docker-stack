@@ -28,8 +28,8 @@ services:
     restart: "no"
 
   api:
-    # main @ 5314b342 — repo migrated ghcr.io → gitlab.com registry.
-    image: registry.gitlab.com/duartesantos8/opengym/api@sha256:6259e0886034d3c400720fe5be3acedc511b3ba1f2c04ddabc0b2ca79d533c77
+    # Release 1.2.13 — kept in lockstep with the web image below.
+    image: registry.gitlab.com/duartesantos8/opengym/api:1.2.13@sha256:5b8c77389954ebea1df452819f17a159afd92eaea9bcd054ee2c3436e8aacbf5
     container_name: opengym_api
     labels:
       - docker-volume-backup.stop-during-backup=opengym
@@ -61,8 +61,8 @@ services:
     restart: unless-stopped
 
   web:
-    # main @ 5314b342 — kept in lockstep with the api image above.
-    image: registry.gitlab.com/duartesantos8/opengym/web@sha256:eb7d0a6ef8501688ffaa7f0ae17f52c4639cdec42de43cb1b50e74aad22f5486
+    # Release 1.2.13 — kept in lockstep with the api image above.
+    image: registry.gitlab.com/duartesantos8/opengym/web:1.2.13@sha256:e70c2544f3a6e783c93950f062dbd6354e2e6167ea43f9401f99f75ddaade432
     container_name: opengym_web
     # nginx binds :80 inside the container, so this one stays root (no user: directive).
     depends_on:
