@@ -394,3 +394,18 @@ services:
       - ${LINKDING_STACK_HOST_PATH}:/backup/linkding_stack:ro
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/linkding:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  strapi_backup:
+    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    container_name: strapi_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: strapi-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: strapi-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: strapi
+    volumes:
+      - ${STRAPI_STACK_HOST_PATH}:/backup/strapi_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/strapi:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
