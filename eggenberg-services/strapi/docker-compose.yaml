@@ -33,6 +33,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      HOME: /srv/app
       DATABASE_CLIENT: ${STRAPI_DATABASE_CLIENT:-postgres}
       DATABASE_HOST: ${STRAPI_DATABASE_HOST:-db}
       DATABASE_PORT: ${STRAPI_DATABASE_PORT:-5432}
