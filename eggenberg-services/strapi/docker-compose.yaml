@@ -22,7 +22,7 @@ services:
     mem_limit: ${STRAPI_DB_MEM_LIMIT:-1024m}
 
   app:
-    image: vshadbolt/strapi:5.50.2-alpine@sha256:a69c30541648e6502f6438de3d47f36bbd42939d42596dab6c2f2465a36d7699
+    image: vshadbolt/strapi:5.50.2-alpine@sha256:04450cd60883838e45bd47c1a3278ffe9dffede1dcbd1c6ccccf0975a889f3a8
     container_name: strapi_app
     init: true
     restart: unless-stopped
