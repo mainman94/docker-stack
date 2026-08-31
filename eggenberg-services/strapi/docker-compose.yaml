@@ -42,6 +42,8 @@ services:
       NODE_ENV: ${STRAPI_NODE_ENV:-production}
       HOST: ${STRAPI_HOST:-0.0.0.0}
       PORT: ${STRAPI_PORT:-1337}
+      PUBLIC_URL: ${STRAPI_PUBLIC_URL:-http://localhost:30668}
+      ADMIN_URL: ${STRAPI_ADMIN_URL:-http://localhost:30668/admin}
       APP_KEYS: ${STRAPI_APP_KEYS}
       API_TOKEN_SALT: ${STRAPI_API_TOKEN_SALT}
       ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET}

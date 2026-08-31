@@ -1,6 +1,8 @@
 .idea
 eggenberg-services/firefly-iii/.env
 eggenberg-services/jellyfin/.env
+eggenberg-services/strapi/.env
+eggenberg-services/strapi/strapi/
 .claude/*
 !.claude/settings.json
 !.claude/hooks/
