@@ -22,7 +22,7 @@ services:
     mem_limit: ${STRAPI_DB_MEM_LIMIT:-1024m}
 
   app:
-    image: dockerha08/strapi:apline-5.52.2
+    image: dockerha08/strapi:alpine-5.52.2
     container_name: strapi_app
     init: true
     restart: unless-stopped
