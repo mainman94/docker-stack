@@ -57,13 +57,13 @@ services:
     ports:
       - "${STRAPI_WEB_PORT:-30668}:${STRAPI_PORT:-1337}"
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://127.0.0.1:$${PORT}/health"]
+      test: ["CMD-SHELL", "wget --spider -q http://127.0.0.1:$${PORT}/_health"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
     cpus: ${STRAPI_CPUS:-1.0}
-    mem_limit: ${STRAPI_MEM_LIMIT:-1024m}
+    mem_limit: ${STRAPI_MEM_LIMIT:-3072m}
 
 networks:
   default:
