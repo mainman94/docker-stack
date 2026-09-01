@@ -22,7 +22,7 @@ services:
     mem_limit: ${STRAPI_DB_MEM_LIMIT:-1024m}
 
   app:
-    image: dockerha08/strapi:alpine-5.52.2@sha256:47d70475622336ffdaef8484194f66fb7d1760314fea11b54f187254fd7dd2f6
+    image: dockerha08/strapi:alpine-5.52.2@sha256:c5b829a8ab76ae0d8fabc2fe7f61f7738ef6d7526d21fb7cabda19d6d9da323a
     container_name: strapi_app
     user: "${STRAPI_UID:-1000}:${STRAPI_GID:-1000}"
     init: true
@@ -50,13 +50,14 @@ services:
       ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET}
       JWT_SECRET: ${STRAPI_JWT_SECRET}
       TRANSFER_TOKEN_SALT: ${STRAPI_TRANSFER_TOKEN_SALT}
+      HOME: /srv/app
       TZ: ${STRAPI_TZ:-Europe/Vienna}
     volumes:
       - ${STRAPI_APP_HOST_PATH:-./strapi/app}:/srv/app
     ports:
       - "${STRAPI_WEB_PORT:-30668}:${STRAPI_PORT:-1337}"
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:1337/health"]
+      test: ["CMD-SHELL", "wget --spider -q http://127.0.0.1:$${PORT}/health"]
       interval: 30s
       timeout: 10s
       retries: 5
