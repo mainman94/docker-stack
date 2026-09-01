@@ -22,7 +22,7 @@ services:
     mem_limit: ${STRAPI_DB_MEM_LIMIT:-1024m}
 
   app:
-    image: dockerha08/strapi:alpine-5.52.2@sha256:c5b829a8ab76ae0d8fabc2fe7f61f7738ef6d7526d21fb7cabda19d6d9da323a
+    image: dockerha08/strapi:alpine-5.52.2@sha256:93744c0a43f7b615eca69159d00ec6d2774da758b6b8fe01e827ea4ae2006308
     container_name: strapi_app
     user: "${STRAPI_UID:-1000}:${STRAPI_GID:-1000}"
     init: true
