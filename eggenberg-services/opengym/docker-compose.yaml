@@ -29,7 +29,7 @@ services:
 
   api:
     # Release 1.2.13 — kept in lockstep with the web image below.
-    image: registry.gitlab.com/duartesantos8/opengym/api:1.3.0@sha256:e53d0473b667152485357056bf78d39bbd459926d1b8fcc255a1c55864333a87
+    image: registry.gitlab.com/duartesantos8/opengym/api:1.3.1@sha256:8e61d729c3b7c5af873637dba4e4d03c10893d428750cbd6bbe8fea5c4713fa4
     container_name: opengym_api
     labels:
       - docker-volume-backup.stop-during-backup=opengym
