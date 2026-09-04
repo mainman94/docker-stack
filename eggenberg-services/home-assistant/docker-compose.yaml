@@ -18,13 +18,13 @@ services:
         mkdir -p custom_components/hacs
         wget -qO /tmp/hacs.zip https://github.com/hacs/integration/releases/latest/download/hacs.zip
         unzip -oq /tmp/hacs.zip -d custom_components/hacs
-        chown -R ${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID} custom_components/hacs
         echo "HACS installed"
 
   home-assistant:
     image: ghcr.io/home-assistant/home-assistant:2026.9.0@sha256:372d991e58882a1d8c68c07e9aa3f3b509276e695355f73ccdb03baa70407293
     container_name: home-assistant
-    user: "${HOME_ASSISTANT_UID}:${HOME_ASSISTANT_GID}"
+    # must run as root: HA installs custom-integration Python requirements into
+    # /usr/local/lib/python3.x/site-packages at runtime, which fails as non-root
     restart: unless-stopped
     depends_on:
       hacs-install:
