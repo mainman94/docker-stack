@@ -26,10 +26,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Aqua's own installer rather than setup-trivy: this pins the same
+      # trivy version the portfolio repo's scan already runs.
       - name: Install trivy
-        uses: aquasecurity/setup-trivy@v0.2.3
-        with:
-          version: v0.69.1
+        env:
+          TRIVY_VERSION: v0.74.0
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sudo sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
+          trivy --version
 
       # Writes a per-image table to the job summary and always exits 0.
       - name: Sweep
