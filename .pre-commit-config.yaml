@@ -1,0 +1,94 @@
+# Local checks for the Compose stack repo.
+#
+# Scope rule: everything here must run offline against the working tree alone.
+# Checks that need the deploy host (real bind-mount sources, running
+# containers) belong in the Makefile — see `make backup-check`.
+#
+# Install once:  make hooks
+# Run manually:  make lint
+minimum_pre_commit_version: "3.5.0"
+
+exclude: |
+  (?x)^(
+    .*/\.env$
+  )$
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-added-large-files
+        args: [--maxkb=512]
+      - id: check-json
+        # devcontainer.json is JSONC by spec — the format allows the
+        # comments explaining each feature, which a strict JSON parser
+        # will not accept.
+        exclude: ^\.devcontainer/
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        # recyclarr's own config format uses the custom `!env_var` tag, which
+        # a plain YAML parser cannot resolve. recyclarr validates it itself.
+        exclude: ^eggenberg-services/recyclarr/config/
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      # A real .env is gitignored per stack; this catches one that slipped
+      # past .gitignore before it reaches a remote.
+      - id: detect-private-key
+
+  # House YAML style, shared with multi-k8s-infra.
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.21.0
+    hooks:
+      - id: yamlfmt
+        # `<stack>/config/` holds application config in each app's own format
+        # (recyclarr, litellm), usually copied from upstream docs. The house
+        # YAML style applies to the compose files, not to those.
+        exclude: ^eggenberg-services/[^/]+/config/
+
+  # shellcheck-py, not the upstream shellcheck repo: it ships the binary in a
+  # wheel, so the hook needs no Docker daemon.
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1-1
+    hooks:
+      - id: shellcheck
+        args: [--severity=warning]
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.13.1-1
+    hooks:
+      - id: shfmt-src
+        args: [-i, "2", -ci]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      # `docker compose config` on every touched stack, with the stack's own
+      # .env/.env.example passed as --env-file so ${VAR} interpolation
+      # resolves (AGENTS.md: service-level env_file does not do this).
+      - id: compose-config
+        name: docker compose config (per stack)
+        entry: scripts/validate-compose.sh
+        language: script
+        files: (^|/)docker-compose\.ya?ml$
+        exclude: ^\.claude/
+        pass_filenames: true
+
+      # Every stack must declare its own default network, and every compose
+      # ${VAR} must have a key in the stack's .env.example.
+      - id: stack-conventions
+        name: stack conventions (network name, .env.example coverage)
+        entry: scripts/check-stack-conventions.sh
+        language: script
+        files: ^eggenberg-services/[^/]+/(docker-compose\.ya?ml|\.env\.example)$
+        pass_filenames: true

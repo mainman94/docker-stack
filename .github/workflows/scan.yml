@@ -1,0 +1,41 @@
+name: Image CVE sweep
+
+# Advisory, not a gate: these are other people's images, and a new upstream
+# CVE is not something a commit here can fix. The point is a weekly answer to
+# "which of my services is currently exposed", in the run summary.
+on:
+  schedule:
+    # Mondays, 06:17 UTC — off the hour so it does not queue behind everyone
+    # else's cron.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "**/docker-compose.yaml"
+      - scripts/list-images.sh
+      - scripts/scan-images.sh
+
+permissions:
+  contents: read
+
+jobs:
+  images:
+    name: Scan every referenced image
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      # Aqua's own installer rather than setup-trivy: this pins the same
+      # trivy version the portfolio repo's scan already runs.
+      - name: Install trivy
+        env:
+          TRIVY_VERSION: v0.74.0
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sudo sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
+          trivy --version
+
+      # Writes a per-image table to the job summary and always exits 0.
+      - name: Sweep
+        run: scripts/scan-images.sh
