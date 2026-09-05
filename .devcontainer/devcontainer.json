@@ -5,7 +5,7 @@
     // docker-in-docker rather than -outside-of-docker: `make validate` and the
     // compose-config hook need a daemon, and an isolated one keeps a stray
     // `make up` from touching the host's real stacks.
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {
       "version": "latest",
       "dockerDashComposeVersion": "v2"
     },
