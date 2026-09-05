@@ -8,6 +8,16 @@ pipx install pre-commit 2>/dev/null || pip install --user --break-system-package
 
 export PATH="$HOME/.local/bin:$PATH"
 
+echo "==> installing trivy and jq (for make scan)"
+sudo apt-get update -qq
+sudo apt-get install -y -qq wget gnupg jq
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key \
+  | sudo gpg --dearmor -o /usr/share/keyrings/trivy.gpg
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
+  | sudo tee /etc/apt/sources.list.d/trivy.list >/dev/null
+sudo apt-get update -qq
+sudo apt-get install -y -qq trivy
+
 echo "==> installing the git hook"
 pre-commit install
 

@@ -53,6 +53,18 @@ conventions: ## Check network naming and .env.example coverage for every stack
 .PHONY: check
 check: lint validate conventions ## Everything a PR needs to pass
 
+.PHONY: images
+images: ## List every container image the stacks reference
+	@scripts/list-images.sh
+
+.PHONY: scan
+scan: ## CVE sweep across every referenced image (advisory)
+	scripts/scan-images.sh
+
+.PHONY: scan-strict
+scan-strict: ## Same sweep, but fail if anything CRITICAL is fixable
+	scripts/scan-images.sh --strict
+
 .PHONY: update-hooks
 update-hooks: ## Bump pinned hook revisions
 	pre-commit autoupdate

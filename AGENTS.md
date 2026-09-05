@@ -19,6 +19,8 @@ checks in this repo.
 | `make fmt`               | Reformat YAML and shell in place                          |
 | `make backup-check`      | Verify backup bind-mount sources exist (deploy host only) |
 | `make up STACK=jellyfin` | Start one stack                                           |
+| `make scan`              | CVE sweep across every referenced image (advisory)        |
+| `make images`            | List every image the stacks reference                     |
 
 `.devcontainer/` gives you Docker, Python and the hook toolchain if you would
 rather not install them locally.
@@ -44,6 +46,27 @@ What the hooks deliberately do **not** cover, because it needs the deploy host:
 
 - Whether a bind-mount source actually exists — that is `make backup-check`.
 - Whether an image tag resolves, or a container starts.
+
+## Scanning
+
+There is no CI deploy here, so CI is where the checks get a second run and
+where the CVE picture comes from.
+
+- **`.github/workflows/ci.yml`** runs every pre-commit hook on each PR. The
+  runner has a Docker daemon, so `compose-config` really validates there.
+- **`.github/workflows/scan.yml`** sweeps every image the stacks reference —
+  47 of them — with trivy, weekly and on demand, and writes a per-image table
+  to the run summary. `make scan` runs the same script locally.
+
+The sweep is **advisory on purpose**. These are other people's images; a new
+upstream CVE is not something a commit here can fix, and a red build nobody
+can clear is a build people stop reading. It uses `--ignore-unfixed` for the
+same reason — an unfixed CVE is not actionable, and burying the fixable ones
+under them is how a report stops being read. `make scan-strict` exits non-zero
+on fixable CRITICALs if you ever want a gate.
+
+Renovate already keeps the digest pins moving, so the usual fix for a finding
+is to let it bump the image, not to hand-edit a tag.
 
 ## Compose stack conventions
 
