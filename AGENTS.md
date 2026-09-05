@@ -1,5 +1,50 @@
 # AGENTS
 
+Docker Compose stacks for the eggenberg host. One directory per application
+under `eggenberg-services/`, plus a central backup stack in
+`infrastructure/volume-backup/`. There is no CI deploy — stacks are brought up
+on the host itself, so a mistake in a compose file is only caught by the
+checks in this repo.
+
+## Local workflow
+
+| Command                  | What it does                                              |
+| ------------------------ | --------------------------------------------------------- |
+| `make help`              | List every target                                         |
+| `make hooks`             | Install the git pre-commit hook (do this once)            |
+| `make check`             | Everything a change must pass: lint + validate + conventions |
+| `make validate`          | `docker compose config` every stack                       |
+| `make conventions`       | Network naming and `.env.example` coverage                |
+| `make lint`              | All pre-commit hooks over the whole tree                  |
+| `make fmt`               | Reformat YAML and shell in place                          |
+| `make backup-check`      | Verify backup bind-mount sources exist (deploy host only) |
+| `make up STACK=jellyfin` | Start one stack                                           |
+
+`.devcontainer/` gives you Docker, Python and the hook toolchain if you would
+rather not install them locally.
+
+## Automated checks
+
+`.pre-commit-config.yaml` runs on every commit. Two hooks are repo-specific:
+
+- **`compose-config`** — `docker compose config` per stack. It validates in a
+  scratch copy holding only the compose file and its env files, materialising
+  `<name>.example` as `<name>`, because the real `.env` / `backup.env` are
+  host-only and never committed. Nothing is written into the worktree.
+- **`stack-conventions`** — the default network is named `<stack>_network`,
+  and every mandatory `${VAR}` has a key in that stack's `.env.example`.
+  `${VAR:-default}` is treated as deliberately optional and is not required to
+  appear. `paperless-ngx` and `pocket-id` are grandfathered on the network
+  rule: renaming a live network restarts everything attached to it.
+
+Skipping a hook needs a reason in the commit message. Do not add `--no-verify`
+to a script.
+
+What the hooks deliberately do **not** cover, because it needs the deploy host:
+
+- Whether a bind-mount source actually exists — that is `make backup-check`.
+- Whether an image tag resolves, or a container starts.
+
 ## Compose stack conventions
 
 - Each application stack lives in its own directory under `eggenberg-services/<stack>/`.
@@ -21,4 +66,11 @@
 - Each backup service writes archives to `${BACKUP_ROOT}/<stack>/`.
 - If a stack uses external named Docker volumes, the real host volume names must be documented in `infrastructure/volume-backup/.env` and `.env.example`.
 - Re-creatable caches may still live under `./<service-name>/...` for consistency, but they should be excluded from backups unless there is a specific restore need.
-- Run `infrastructure/volume-backup/check-backup-paths.sh` before deploying backup changes to catch missing bind-mount sources.
+- Run `make backup-check` before deploying backup changes to catch missing bind-mount sources.
+
+## Secrets
+
+Real `.env` files, and `infrastructure/volume-backup/backup.env`, are host-only
+and gitignored. Only `*.env.example` is committed, and it holds placeholders —
+never a real credential. `gitleaks` and `detect-private-key` run on every
+commit, but they are a backstop, not the rule.

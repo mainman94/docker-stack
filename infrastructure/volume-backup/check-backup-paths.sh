@@ -1,12 +1,12 @@
 #!/usr/bin/env sh
 set -eu
 
-script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 
 if [ "${1:-}" ]; then
   case "$1" in
     /*) env_file=$1 ;;
-    *) env_file=$(CDPATH= cd -- "$(dirname -- "$1")" && pwd)/$(basename -- "$1") ;;
+    *) env_file=$(CDPATH='' cd -- "$(dirname -- "$1")" && pwd)/$(basename -- "$1") ;;
   esac
 else
   env_file=$script_dir/.env

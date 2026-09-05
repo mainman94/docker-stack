@@ -1,0 +1,13 @@
+# House YAML style, kept in step with multi-k8s-infra so the two repos format
+# the same way.
+#
+# retain_line_breaks: the compose files use blank lines to separate services.
+# scan_folded_as_literal: several stacks write a container `command:` as a
+# folded block, one flag per line; without this yamlfmt re-folds the whole
+# thing onto a single unreadable line.
+formatter:
+  indent: 2
+  line_ending: lf
+  retain_line_breaks: true
+  scan_folded_as_literal: true
+  trim_trailing_whitespace: true
