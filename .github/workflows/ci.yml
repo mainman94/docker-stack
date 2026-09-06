@@ -14,13 +14,20 @@ jobs:
     name: pre-commit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          python-version: "3.14"
+          persist-credentials: false
+
+      # python, pre-commit and the binaries the hooks shell out to, all at the
+      # versions in mise.toml — the same file the dev container installs from.
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
 
       # The compose-config hook shells out to `docker compose config`; the
       # runner already has a daemon, so nothing extra is needed here.
       - name: Run every hook
-        uses: pre-commit/action@v3.0.1
+        run: pre-commit run --all-files --show-diff-on-failure

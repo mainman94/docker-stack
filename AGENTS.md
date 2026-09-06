@@ -11,6 +11,7 @@ checks in this repo.
 | Command                  | What it does                                              |
 | ------------------------ | --------------------------------------------------------- |
 | `make help`              | List every target                                         |
+| `make tools`             | Install the pinned toolchain from `mise.toml`             |
 | `make hooks`             | Install the git pre-commit hook (do this once)            |
 | `make check`             | Everything a change must pass: lint + validate + conventions |
 | `make validate`          | `docker compose config` every stack                       |
@@ -22,8 +23,15 @@ checks in this repo.
 | `make scan`              | CVE sweep across every referenced image (advisory)        |
 | `make images`            | List every image the stacks reference                     |
 
-`.devcontainer/` gives you Docker, Python and the hook toolchain if you would
-rather not install them locally.
+`.devcontainer/` gives you Docker and, through mise, everything else.
+
+**Tool versions live in `mise.toml` and nowhere else.** python, pre-commit,
+trivy, jq, actionlint and shellcheck are pinned there; the dev container's
+post-create runs `mise install`, and CI installs from the same file with
+`jdx/mise-action`. trivy in particular used to arrive three different ways —
+an apt repo in the dev container, `curl … | sudo sh` in the scan workflow, and
+whatever was on PATH locally. Bump the version in `mise.toml` and all three
+move together; Renovate opens the PR.
 
 ## Automated checks
 
@@ -38,6 +46,17 @@ rather not install them locally.
   `${VAR:-default}` is treated as deliberately optional and is not required to
   appear. `paperless-ngx` and `pocket-id` are grandfathered on the network
   rule: renaming a live network restarts everything attached to it.
+
+Two more hooks run over `.github/workflows/`: **`actionlint`** (workflow
+schema, expression syntax, and the shell inside `run:` blocks — it uses the
+pinned shellcheck) and **`zizmor`** (CI/CD security patterns: unpinned
+actions, credentials left on disk by `actions/checkout`, template injection
+through `${{ }}` in a run block).
+
+Every action reference is pinned to a **commit SHA** with the tag in a
+trailing comment. A moving tag can be repointed at new code without the pin
+changing; Renovate keeps the digests current
+(`helpers:pinGitHubActionDigests`). Do not "tidy" a pin back to `@v7`.
 
 Skipping a hook needs a reason in the commit message. Do not add `--no-verify`
 to a script.
@@ -56,7 +75,8 @@ where the CVE picture comes from.
   runner has a Docker daemon, so `compose-config` really validates there.
 - **`.github/workflows/scan.yml`** sweeps every image the stacks reference —
   47 of them — with trivy, weekly and on demand, and writes a per-image table
-  to the run summary. `make scan` runs the same script locally.
+  to the run summary. `make scan` runs the same script locally, with the same
+  trivy: both take it from `mise.toml`.
 
 The sweep is **advisory on purpose**. These are other people's images; a new
 upstream CVE is not something a commit here can fix, and a red build nobody

@@ -14,6 +14,7 @@ on:
       - "**/docker-compose.yaml"
       - scripts/list-images.sh
       - scripts/scan-images.sh
+      - mise.toml
 
 permissions:
   contents: read
@@ -24,17 +25,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      # Aqua's own installer rather than setup-trivy: this pins the same
-      # trivy version the portfolio repo's scan already runs.
-      - name: Install trivy
-        env:
-          TRIVY_VERSION: v0.74.0
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
-            | sudo sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
-          trivy --version
+      # trivy and jq come from mise.toml, the same versions `make scan` uses
+      # locally. This replaces piping Aqua's installer into `sudo sh`, which
+      # ran whatever the script fetched at that moment.
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+
+      - name: Show trivy version
+        run: trivy --version
 
       # Writes a per-image table to the job summary and always exits 0.
       - name: Sweep

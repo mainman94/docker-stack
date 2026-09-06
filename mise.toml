@@ -1,0 +1,25 @@
+# The toolchain for this repo, in one place.
+#
+# The dev container, the git hooks and CI all install from here, so a bump
+# lands in all three at once and a version can never be pinned in CI while
+# the dev container quietly installs something else.
+#
+# Renovate keeps these pins current (mise manager). `mise install` after a
+# pull; the dev container's post-create does it for you.
+
+[tools]
+# pre-commit builds the rest of the hook toolchain — yamlfmt, shfmt,
+# gitleaks — into its own cached envs, so those are not pinned here.
+python = "3.14"
+pre-commit = "4.6.2"
+
+# scripts/scan-images.sh and `make scan` shell out to these. trivy used to be
+# installed by piping Aqua's installer into sudo sh in CI, and from an apt
+# repo in the dev container — two versions, neither pinned to the other.
+trivy = "0.74.0"
+jq = "1.8.2"
+
+# actionlint runs shellcheck over `run:` blocks when it is on PATH, which is
+# how the workflow shell gets the same treatment as scripts/.
+actionlint = "1.7.9"
+shellcheck = "0.11.0"

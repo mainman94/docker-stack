@@ -1,28 +1,33 @@
 #!/usr/bin/env bash
-# Provision the dev container: install pre-commit, wire up the git hook, and
-# warm the hook environments so the first commit is not a five-minute wait.
+# Provision the dev container. Every tool the repo needs is pinned in
+# mise.toml — python, pre-commit, trivy, jq, actionlint, shellcheck — so this
+# only installs mise and lets it do the rest, then wires up the git hook and
+# warms the hook environments so the first commit is not a five-minute wait.
+# CI installs from the same file.
 set -euo pipefail
 
-echo "==> installing pre-commit"
-pipx install pre-commit 2>/dev/null || pip install --user --break-system-packages pre-commit
-
+echo "==> installing mise"
+curl -fsSL https://mise.run | sh
 export PATH="$HOME/.local/bin:$PATH"
 
-echo "==> installing trivy and jq (for make scan)"
-sudo apt-get update -qq
-sudo apt-get install -y -qq wget gnupg jq
-wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key \
-  | sudo gpg --dearmor -o /usr/share/keyrings/trivy.gpg
-echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" \
-  | sudo tee /etc/apt/sources.list.d/trivy.list >/dev/null
-sudo apt-get update -qq
-sudo apt-get install -y -qq trivy
+# Activate for interactive shells so the pinned binaries are on PATH.
+for shell in bash zsh; do
+  rc="$HOME/.${shell}rc"
+  [ -f "$rc" ] || continue
+  grep -q "mise activate" "$rc" || echo "eval \"\$(mise activate $shell)\"" >> "$rc"
+done
+
+echo "==> installing the pinned toolchain (python, pre-commit, trivy, jq, actionlint, shellcheck)"
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+mise trust
+mise install
+eval "$(mise activate bash --shims)" 2>/dev/null || export PATH="$HOME/.local/share/mise/shims:$PATH"
 
 echo "==> installing the git hook"
-pre-commit install
+mise exec -- pre-commit install
 
-echo "==> warming hook environments (first run downloads yamlfmt, shellcheck, shfmt, gitleaks)"
-pre-commit install-hooks
+echo "==> warming hook environments (first run downloads yamlfmt, shfmt, gitleaks)"
+mise exec -- pre-commit install-hooks
 
 cat <<'MSG'
 
@@ -31,6 +36,8 @@ docker-stack dev container ready.
   make help          list every target
   make check         lint + compose validate + convention check
   make up STACK=...  start one stack against this container's own daemon
+
+Tool versions come from mise.toml — the same file CI installs from.
 
 The real per-stack .env files live on the deploy host and are not in the repo;
 read-only targets fall back to each stack's .env.example.
