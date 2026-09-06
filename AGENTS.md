@@ -88,6 +88,25 @@ on fixable CRITICALs if you ever want a gate.
 Renovate already keeps the digest pins moving, so the usual fix for a finding
 is to let it bump the image, not to hand-edit a tag.
 
+## Agent tooling
+
+`.claude/` is checked in, so every agent working here starts from the same
+setup:
+
+- **`agents/stack-consistency-reviewer.md`** — reviews a diff for convention
+  drift across the stacks. With this many near-identical Compose files, drift is
+  the failure mode, not bugs.
+- **`skills/new-stack/`** — scaffolds a stack and its central backup wiring from
+  `templates/`. It carries `disable-model-invocation: true`, so it runs only
+  when a person asks for it by name.
+- **`skills/backup-preflight/`** — the bind-mount path preflight, before
+  deploying a backup change.
+- **Hooks** (`settings.json`): a PreToolUse hook refuses to edit a real `.env` —
+  those are gitignored, so the edit would be invisible and unshippable; edit the
+  `.env.example` instead. A PostToolUse hook runs
+  `hooks/validate-compose.sh` on whatever was just written, so a broken Compose
+  file surfaces at the edit rather than at `make check`.
+
 ## Compose stack conventions
 
 - Each application stack lives in its own directory under `eggenberg-services/<stack>/`.
