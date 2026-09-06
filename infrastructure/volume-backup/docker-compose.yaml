@@ -15,7 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   adguard_home_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: adguard_home_volume_backup
     restart: unless-stopped
     env_file:
@@ -30,7 +30,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   firefly_iii_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: firefly_iii_volume_backup
     restart: unless-stopped
     env_file:
@@ -45,7 +45,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   bambuddy_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: bambuddy_volume_backup
     restart: unless-stopped
     env_file:
@@ -60,7 +60,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   jellyfin_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: jellyfin_volume_backup
     restart: unless-stopped
     env_file:
@@ -76,7 +76,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   swiparr_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: swiparr_volume_backup
     restart: unless-stopped
     env_file:
@@ -91,7 +91,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   sabnzbd_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: sabnzbd_volume_backup
     restart: unless-stopped
     env_file:
@@ -106,7 +106,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   seerr_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: seerr_volume_backup
     restart: unless-stopped
     env_file:
@@ -121,7 +121,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   radarr_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: radarr_volume_backup
     restart: unless-stopped
     env_file:
@@ -136,7 +136,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   bazarr_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: bazarr_volume_backup
     restart: unless-stopped
     env_file:
@@ -151,7 +151,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   sonarr_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: sonarr_volume_backup
     restart: unless-stopped
     env_file:
@@ -166,7 +166,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   tailscale_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: tailscale_volume_backup
     restart: unless-stopped
     env_file:
@@ -181,7 +181,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   jellystat_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: jellystat_volume_backup
     restart: unless-stopped
     env_file:
@@ -196,7 +196,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   home_assistant_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: home_assistant_volume_backup
     restart: unless-stopped
     env_file:
@@ -211,7 +211,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   umami_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: umami_volume_backup
     restart: unless-stopped
     env_file:
@@ -226,7 +226,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   gitea_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: gitea_volume_backup
     restart: unless-stopped
     env_file:
@@ -241,7 +241,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   paperless_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: paperless_volume_backup
     restart: unless-stopped
     env_file:
@@ -256,7 +256,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   vaultwarden_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: vaultwarden_volume_backup
     restart: unless-stopped
     env_file:
@@ -271,7 +271,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   audiobookshelf_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: audiobookshelf_volume_backup
     restart: unless-stopped
     env_file:
@@ -286,7 +286,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   navidrome_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: navidrome_volume_backup
     restart: unless-stopped
     env_file:
@@ -301,7 +301,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   opengym_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: opengym_volume_backup
     restart: unless-stopped
     env_file:
@@ -316,7 +316,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   pocket_id_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: pocket_id_volume_backup
     restart: unless-stopped
     env_file:
@@ -331,7 +331,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   openbao_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: openbao_volume_backup
     restart: unless-stopped
     env_file:
@@ -346,7 +346,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   open_webui_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: open_webui_volume_backup
     restart: unless-stopped
     env_file:
@@ -361,7 +361,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   dockhand_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: dockhand_volume_backup
     restart: unless-stopped
     env_file:
@@ -381,7 +381,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   linkding_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: linkding_volume_backup
     restart: unless-stopped
     env_file:
@@ -396,7 +396,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   strapi_backup:
-    image: offen/docker-volume-backup:v2.48.2@sha256:19102d8e59eb1d598cf8c647c2b21100abaadc5a1c808ac643fa612e323c3013
+    image: offen/docker-volume-backup:v2.49.0@sha256:ca882e494b409297885a8429af2c311e627d69dc8897857159a84ef5efc1a05b
     container_name: strapi_volume_backup
     restart: unless-stopped
     env_file:
