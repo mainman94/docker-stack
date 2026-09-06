@@ -21,5 +21,5 @@ jq = "1.8.2"
 
 # actionlint runs shellcheck over `run:` blocks when it is on PATH, which is
 # how the workflow shell gets the same treatment as scripts/.
-actionlint = "1.7.9"
+actionlint = "1.7.12"
 shellcheck = "0.11.0"
