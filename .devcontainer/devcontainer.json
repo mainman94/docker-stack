@@ -9,12 +9,9 @@
       "version": "latest",
       "dockerDashComposeVersion": "v2"
     },
-    // pre-commit is a Python tool and builds the rest of the hook toolchain
-    // (yamlfmt, shellcheck, shfmt, gitleaks) into its own cached envs.
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.14",
-      "installTools": false
-    },
+    // python, pre-commit, trivy, jq, actionlint and shellcheck are not
+    // features any more: mise.toml pins them and post-create runs
+    // `mise install`. One version list, shared with CI.
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
       "configureZshAsDefaultShell": true

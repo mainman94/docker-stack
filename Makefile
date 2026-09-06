@@ -29,6 +29,11 @@ help: ## Show this help
 
 # --- local checks ------------------------------------------------------------
 
+.PHONY: tools
+tools: ## Install the pinned toolchain from mise.toml
+	@command -v mise >/dev/null || { echo "mise not on PATH — see https://mise.jdx.dev or .devcontainer" >&2; exit 1; }
+	mise install
+
 .PHONY: hooks
 hooks: ## Install the git pre-commit hooks
 	pre-commit install

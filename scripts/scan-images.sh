@@ -19,7 +19,7 @@ strict=0
 
 if ! command -v trivy >/dev/null 2>&1; then
   echo "scan-images: trivy not on PATH — skipped." >&2
-  echo "  Install trivy, or open the repo in .devcontainer, to run this." >&2
+  echo "  Run make tools (mise.toml pins it), or open the repo in .devcontainer." >&2
   exit 0
 fi
 if ! command -v jq >/dev/null 2>&1; then
