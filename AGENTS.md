@@ -25,7 +25,7 @@ checks in this repo.
 
 `.devcontainer/` gives you Docker and, through mise, everything else.
 
-**Tool versions live in `mise.toml` and nowhere else.** python, pre-commit,
+**Tool versions live in `mise.toml` and nowhere else.** python, prek,
 trivy, jq, actionlint and shellcheck are pinned there; the dev container's
 post-create runs `mise install`, and CI installs from the same file with
 `jdx/mise-action`. trivy in particular used to arrive three different ways —
