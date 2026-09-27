@@ -8,10 +8,10 @@
 # pull; the dev container's post-create does it for you.
 
 [tools]
-# pre-commit builds the rest of the hook toolchain — yamlfmt, shfmt,
+# prek builds the rest of the hook toolchain — yamlfmt, shfmt,
 # gitleaks — into its own cached envs, so those are not pinned here.
 python = "3.14"
-pre-commit = "4.6.2"
+prek = "0.5.3"
 
 # scripts/scan-images.sh and `make scan` shell out to these. trivy used to be
 # installed by piping Aqua's installer into sudo sh in CI, and from an apt

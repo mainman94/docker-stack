@@ -36,16 +36,16 @@ tools: ## Install the pinned toolchain from mise.toml
 
 .PHONY: hooks
 hooks: ## Install the git pre-commit hooks
-	pre-commit install
+	prek install
 
 .PHONY: lint
 lint: ## Run every pre-commit hook over the whole tree
-	pre-commit run --all-files
+	prek run --all-files
 
 .PHONY: fmt
 fmt: ## Format YAML and shell in place
-	pre-commit run yamlfmt --all-files || true
-	pre-commit run shfmt-src --all-files || true
+	prek run yamlfmt --all-files || true
+	prek run shfmt-src --all-files || true
 
 .PHONY: validate
 validate: ## docker compose config every stack
@@ -72,7 +72,7 @@ scan-strict: ## Same sweep, but fail if anything CRITICAL is fixable
 
 .PHONY: update-hooks
 update-hooks: ## Bump pinned hook revisions
-	pre-commit autoupdate
+	prek update
 
 # --- deploy host -------------------------------------------------------------
 

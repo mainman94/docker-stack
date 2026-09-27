@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Provision the dev container. Every tool the repo needs is pinned in
-# mise.toml — python, pre-commit, trivy, jq, actionlint, shellcheck — so this
+# mise.toml — python, prek, trivy, jq, actionlint, shellcheck — so this
 # only installs mise and lets it do the rest, then wires up the git hook and
 # warms the hook environments so the first commit is not a five-minute wait.
 # CI installs from the same file.
@@ -17,17 +17,17 @@ for shell in bash zsh; do
   grep -q "mise activate" "$rc" || echo "eval \"\$(mise activate $shell)\"" >> "$rc"
 done
 
-echo "==> installing the pinned toolchain (python, pre-commit, trivy, jq, actionlint, shellcheck)"
+echo "==> installing the pinned toolchain (python, prek, trivy, jq, actionlint, shellcheck)"
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 mise trust
 mise install
 eval "$(mise activate bash --shims)" 2>/dev/null || export PATH="$HOME/.local/share/mise/shims:$PATH"
 
 echo "==> installing the git hook"
-mise exec -- pre-commit install
+mise exec -- prek install
 
 echo "==> warming hook environments (first run downloads yamlfmt, shfmt, gitleaks)"
-mise exec -- pre-commit install-hooks
+mise exec -- prek prepare-hooks
 
 cat <<'MSG'
 
