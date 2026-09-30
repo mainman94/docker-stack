@@ -10,6 +10,14 @@
         "patch"
       ],
       "automerge": true
+    },
+    {
+      "description": "Firefly III images tag releases as version-X.Y.Z, which the default docker versioning cannot parse",
+      "matchPackageNames": [
+        "fireflyiii/core",
+        "fireflyiii/data-importer"
+      ],
+      "versioning": "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     }
   ],
   "pre-commit": {
