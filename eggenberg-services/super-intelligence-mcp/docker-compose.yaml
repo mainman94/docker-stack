@@ -1,0 +1,37 @@
+# MCP server exposing the super-intelligence knowledge vault over HTTP.
+# Syncs the vault git repo into the data volume and serves it to MCP clients
+# with bearer-token auth (see .env.example / secrets/tokens.yaml.example).
+services:
+  super-intelligence-mcp:
+    image: ${SUPER_INTELLIGENCE_MCP_IMAGE:-ghcr.io/mainman94/super-intelligence-mcp:0.2.1}
+    container_name: super-intelligence-mcp
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=super-intelligence-mcp
+    env_file: .env
+    environment:
+      TZ: ${SUPER_INTELLIGENCE_MCP_TZ}
+    ports:
+      - "${SUPER_INTELLIGENCE_MCP_WEB_PORT}:8080"
+    volumes:
+      - ${SUPER_INTELLIGENCE_MCP_DATA_HOST_PATH}:/data
+      - ${SUPER_INTELLIGENCE_MCP_SECRETS_HOST_PATH}:/secrets:ro
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/readyz || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # mirrors the hardening from the upstream repo's local-testing compose
+    read_only: true
+    tmpfs:
+      - /tmp
+    user: "10001:10001"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    cpus: ${SUPER_INTELLIGENCE_MCP_CPUS}
+    mem_limit: ${SUPER_INTELLIGENCE_MCP_MEM_LIMIT}
+
+networks:
+  default:
+    name: super_intelligence_mcp_network

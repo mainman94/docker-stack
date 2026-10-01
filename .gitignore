@@ -3,6 +3,9 @@ eggenberg-services/firefly-iii/.env
 eggenberg-services/jellyfin/.env
 eggenberg-services/strapi/.env
 eggenberg-services/strapi/strapi/
+eggenberg-services/super-intelligence-mcp/.env
+eggenberg-services/super-intelligence-mcp/secrets/tokens.yaml
+eggenberg-services/super-intelligence-mcp/data/
 .claude/*
 !.claude/settings.json
 !.claude/hooks/
