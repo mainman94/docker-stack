@@ -22,11 +22,14 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    # mirrors the hardening from the upstream repo's local-testing compose
+    # mirrors the hardening from the upstream repo's local-testing compose,
+    # but runs as this repo's standard UID/GID (the image only hardcodes
+    # 10001 as its own default; /data and /tmp are bind/tmpfs mounts, so any
+    # UID works as long as the host dir is chowned to match)
     read_only: true
     tmpfs:
       - /tmp
-    user: "10001:10001"
+    user: "568:568"
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     cpus: ${SUPER_INTELLIGENCE_MCP_CPUS}
