@@ -48,6 +48,7 @@ same file — so a hook that passes locally passes in CI.
 | sabnzbd | Usenet downloader | 30670 |
 | seerr | Media request manager | 30671 |
 | sonarr | TV series collection manager | 30113 |
+| super-intelligence-mcp | MCP server for the super-intelligence knowledge vault | 30678 |
 | swiparr | Jellyfin Tinder-style UI | 4321 |
 | tailscale | VPN mesh | — |
 | tfc-agent | HCP Terraform / app.terraform.io self-hosted agent | — |
