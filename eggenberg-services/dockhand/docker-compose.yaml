@@ -5,10 +5,11 @@ services:
     restart: unless-stopped
     labels:
       - docker-volume-backup.stop-during-backup=dockhand
+    # Start non-root. With PUID/PGID the entrypoint starts as root and runs
+    # `chown -R` over DATA_DIR/stacks on every start, flipping every stack's
+    # postgres-data (uid 70) to 568 under the running db containers.
+    user: "${DOCKHAND_UID}:${DOCKHAND_GID}"
     environment:
-      # The entrypoint starts as root, chowns DATA_DIR, then drops to PUID:PGID.
-      PUID: ${DOCKHAND_UID}
-      PGID: ${DOCKHAND_GID}
       TZ: ${DOCKHAND_TZ}
       # Dockhand shells out to `docker compose` with cwd inside DATA_DIR, but
       # the daemon resolving the relative bind mounts runs on the host. So the
