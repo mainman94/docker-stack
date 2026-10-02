@@ -16,7 +16,7 @@ prek = "0.5.4"
 # scripts/scan-images.sh and `make scan` shell out to these. trivy used to be
 # installed by piping Aqua's installer into sudo sh in CI, and from an apt
 # repo in the dev container — two versions, neither pinned to the other.
-trivy = "0.74.0"
+trivy = "0.75.0"
 jq = "1.8.2"
 
 # actionlint runs shellcheck over `run:` blocks when it is on PATH, which is
