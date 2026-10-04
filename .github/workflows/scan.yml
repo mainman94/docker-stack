@@ -32,7 +32,7 @@ jobs:
       # trivy and jq come from mise.toml, the same versions `make scan` uses
       # locally. This replaces piping Aqua's installer into `sudo sh`, which
       # ran whatever the script fetched at that moment.
-      - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5
 
       - name: Show trivy version
         run: trivy --version
