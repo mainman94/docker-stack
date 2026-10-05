@@ -11,7 +11,7 @@
 # prek builds the rest of the hook toolchain — yamlfmt, shfmt,
 # gitleaks — into its own cached envs, so those are not pinned here.
 python = "3.14"
-prek = "0.5.4"
+prek = "0.5.5"
 
 # scripts/scan-images.sh and `make scan` shell out to these. trivy used to be
 # installed by piping Aqua's installer into sudo sh in CI, and from an apt
