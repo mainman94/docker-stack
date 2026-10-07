@@ -13,8 +13,5 @@ eggenberg-services/super-intelligence-mcp/data/
 !.claude/agents/
 mind.mv2.lock
 
-# graft's local graph cache — regenerable, not committed (run `graft build`).
-/graft/
-
 # Host-only backup credentials for the central volume-backup stack.
 infrastructure/volume-backup/backup.env
