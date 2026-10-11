@@ -17,7 +17,9 @@ services:
       - ${SUPER_INTELLIGENCE_MCP_DATA_HOST_PATH}:/data
       - ${SUPER_INTELLIGENCE_MCP_SECRETS_HOST_PATH}:/secrets:ro
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8080/readyz || exit 1
+      # the image has no wget/curl; python is there. urlopen raises on the 503 /readyz returns
+      # until the vault is cloned and indexed, so the exit code follows readiness.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/readyz', timeout=4)"]
       interval: 30s
       timeout: 5s
       retries: 5
