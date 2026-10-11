@@ -10,7 +10,7 @@
 [tools]
 # prek builds the rest of the hook toolchain — yamlfmt, shfmt,
 # gitleaks — into its own cached envs, so those are not pinned here.
-python = "3.14"
+python = "3.15.0"
 prek = "0.5.5"
 
 # scripts/scan-images.sh and `make scan` shell out to these. trivy used to be
