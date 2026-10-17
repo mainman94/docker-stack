@@ -20,7 +20,7 @@ jobs:
 
       # python, prek and the binaries the hooks shell out to, all at the
       # versions in mise.toml — the same file the dev container installs from.
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5
 
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
