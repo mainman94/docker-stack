@@ -2,7 +2,7 @@ services:
   # One-time init job: clones the exercise media dataset (~140 MB) into the
   # media bind mounts. Exits after first run; re-run is a no-op if img/ is populated.
   media:
-    image: alpine/git:v2.54.0@sha256:03228d7ded483b0b3e55e1de7fa660d70d3e1bb432fa7021d29e192640de11aa
+    image: alpine/git:v2.54.0@sha256:4fac439ee3b9204bec99c712b8a15942999632458f716ae8149fbb97cb760cd4
     container_name: opengym_media
     user: "${OPENGYM_UID}:${OPENGYM_GID}"
     volumes:
