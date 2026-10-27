@@ -54,7 +54,7 @@ same file — so a hook that passes locally passes in CI.
 | tfc-agent | HCP Terraform / app.terraform.io self-hosted agent | — |
 | umami | Web analytics | 30060 |
 | vaultwarden | Bitwarden-compatible password manager | 30032 |
-| wealthfolio | Portfolio tracker (OIDC via Pocket ID) | 30672 |
+| wealthfolio | Portfolio tracker (OIDC via Pocket ID) | 30673 |
 
 ## Backup
 
