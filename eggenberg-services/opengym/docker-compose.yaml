@@ -62,7 +62,7 @@ services:
 
   web:
     # Release 1.2.13 — kept in lockstep with the api image above.
-    image: registry.gitlab.com/duartesantos8/opengym/web:1.3.10@sha256:15e7c311932514801e403498c0264e2c3a52647727fd07c596d2ea25ffb7e029
+    image: registry.gitlab.com/duartesantos8/opengym/web:1.4.2@sha256:ba4c0ba9b2744fc991164b10818ccdca5c8c55ae7d7644f95c504cb45ee2300b
     container_name: opengym_web
     # nginx binds :80 inside the container, so this one stays root (no user: directive).
     depends_on:
