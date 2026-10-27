@@ -1,0 +1,46 @@
+services:
+  wealthfolio:
+    image: ghcr.io/wealthfolio/wealthfolio:3.11.0@sha256:3e996e9b3fbf9c945eca89e7b89eb03e0966beb1c51b977ccccb811f76ae2994
+    container_name: wealthfolio
+    # The image defaults to 1000:1000; the bind mount is owned by 568.
+    user: "${WEALTHFOLIO_UID}:${WEALTHFOLIO_GID}"
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=wealthfolio
+    environment:
+      TZ: ${WEALTHFOLIO_TZ}
+      WF_LISTEN_ADDR: 0.0.0.0:8088
+      WF_DB_PATH: /data/wealthfolio.db
+      # Encrypts stored secrets and signs JWTs: openssl rand -base64 32
+      WF_SECRET_KEY: ${WEALTHFOLIO_SECRET_KEY}
+      WF_CORS_ALLOW_ORIGINS: ${WEALTHFOLIO_ORIGIN}
+      WF_COOKIE_SECURE: "true"
+      WF_AUTH_TOKEN_TTL_MINUTES: ${WEALTHFOLIO_AUTH_TOKEN_TTL_MINUTES}
+      # Password login stays as fallback next to OIDC. Empty it (and set
+      # WF_AUTH_REQUIRED if needed) once OIDC is proven.
+      WF_AUTH_PASSWORD_HASH: ${WEALTHFOLIO_AUTH_PASSWORD_HASH}
+      WF_OIDC_ISSUER_URL: ${WEALTHFOLIO_OIDC_ISSUER_URL}
+      WF_OIDC_CLIENT_ID: ${WEALTHFOLIO_OIDC_CLIENT_ID}
+      WF_OIDC_CLIENT_SECRET: ${WEALTHFOLIO_OIDC_CLIENT_SECRET}
+      WF_OIDC_REDIRECT_URL: ${WEALTHFOLIO_ORIGIN}/api/v1/auth/oidc/callback
+      # Pocket ID user id (sub). Stronger than an email allowlist.
+      WF_OIDC_ALLOWED_SUBS: ${WEALTHFOLIO_OIDC_ALLOWED_SUBS}
+      WF_MCP_ENABLED: "true"
+    volumes:
+      - ${WEALTHFOLIO_DATA_HOST_PATH}:/data
+    ports:
+      - "${WEALTHFOLIO_WEB_PORT}:8088"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8088/api/v1/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    cpus: ${WEALTHFOLIO_CPUS}
+    mem_limit: ${WEALTHFOLIO_MEM_LIMIT}
+
+networks:
+  default:
+    name: wealthfolio_network
