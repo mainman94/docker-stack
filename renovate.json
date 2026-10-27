@@ -4,6 +4,7 @@
     "config:recommended",
     "helpers:pinGitHubActionDigests"
   ],
+  "prHourlyLimit": 5,
   "packageRules": [
     {
       "matchUpdateTypes": [
