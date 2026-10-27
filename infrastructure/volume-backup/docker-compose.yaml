@@ -395,6 +395,21 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/linkding:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  wealthfolio_backup:
+    image: offen/docker-volume-backup:v2.49.2@sha256:6630d1f122f42ada84566550e47647d2e7488ac3775176ee654b64e489ab6e40
+    container_name: wealthfolio_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: wealthfolio-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: wealthfolio-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: wealthfolio
+    volumes:
+      - ${WEALTHFOLIO_STACK_HOST_PATH}:/backup/wealthfolio_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/wealthfolio:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   strapi_backup:
     image: offen/docker-volume-backup:v2.49.2@sha256:6630d1f122f42ada84566550e47647d2e7488ac3775176ee654b64e489ab6e40
     container_name: strapi_volume_backup
