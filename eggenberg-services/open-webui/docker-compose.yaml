@@ -211,7 +211,7 @@ services:
   # this repo pins everything. Switch if disk matters more than pinning.
   # -------------------------------------------------------------------------
   open-webui-terminal:
-    image: ghcr.io/open-webui/open-terminal:0.15.1@sha256:a3402d52b517f538b2c46d31da4eb96d173bc924035f5b0d05da34d579a0113b
+    image: ghcr.io/open-webui/open-terminal:0.16.0@sha256:c72f959a1da167dafe0ac48d6c839007f3ab670cdd4e8e022f0643926f5526a7
     container_name: open-webui-terminal
     restart: unless-stopped
     labels:
