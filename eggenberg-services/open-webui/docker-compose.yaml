@@ -117,7 +117,7 @@ services:
   # 0.11.0 ships database schema changes: back up Postgres before any upgrade.
   # -------------------------------------------------------------------------
   open-webui:
-    image: ghcr.io/open-webui/open-webui:v0.13.0@sha256:2272b0fb7c8783a016bcc179abb467cfa34590c99c5e6560fe0e9155b4820a09
+    image: ghcr.io/open-webui/open-webui:v0.13.2@sha256:4f1dd4d81ef1445d4e4bfb4a7a55838dfb1de38a834a0fbe7615d92990333a71
     container_name: open-webui
     # No user override: the image writes branding assets into its own
     # /app/backend/open_webui/static, which root owns inside the image. As 568
