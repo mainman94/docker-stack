@@ -28,8 +28,8 @@ services:
     restart: "no"
 
   api:
-    # Release 1.2.13 — kept in lockstep with the web image below.
-    image: registry.gitlab.com/duartesantos8/opengym/api:1.4.2@sha256:395ffa41fe51db9959688370339b080931f5919a182ec7f7886d82b4c9a6bb5e
+    # Release 1.4.4 — kept in lockstep with the web image below.
+    image: ghcr.io/duartesantos8/opengym-api:1.4.4@sha256:7508ecca4ae16a917e6e58e3fd40961fbdf7d5fbfc54b7e6f434f741ddf41402
     container_name: opengym_api
     labels:
       - docker-volume-backup.stop-during-backup=opengym
@@ -61,8 +61,8 @@ services:
     restart: unless-stopped
 
   web:
-    # Release 1.2.13 — kept in lockstep with the api image above.
-    image: registry.gitlab.com/duartesantos8/opengym/web:1.4.2@sha256:ba4c0ba9b2744fc991164b10818ccdca5c8c55ae7d7644f95c504cb45ee2300b
+    # Release 1.4.4 — kept in lockstep with the api image above.
+    image: ghcr.io/duartesantos8/opengym-web:1.4.4@sha256:33575782762f6cc9181f5e33616d55bf718bcd56338b714f22cb5d01e1adc278
     container_name: opengym_web
     # nginx binds :80 inside the container, so this one stays root (no user: directive).
     depends_on:
