@@ -17,6 +17,10 @@ services:
       # otherwise every managed stack tries to bind /app/data/... on the host.
       DATA_DIR: ${DOCKHAND_DATA_HOST_PATH}
       HOST_DATA_DIR: ${DOCKHAND_DATA_HOST_PATH}
+      # Running as uid 568 leaves $HOME (/home/dockhand) unwritable, so
+      # `docker login` can't create ~/.docker. Keep the registry creds in the
+      # data dir instead, which 568 owns and which survives restarts.
+      DOCKER_CONFIG: ${DOCKHAND_DATA_HOST_PATH}/.docker
     volumes:
       - ${DOCKHAND_DATA_HOST_PATH}:${DOCKHAND_DATA_HOST_PATH}
       - /var/run/docker.sock:/var/run/docker.sock
