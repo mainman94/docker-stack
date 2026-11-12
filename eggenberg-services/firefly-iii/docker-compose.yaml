@@ -1,6 +1,6 @@
 services:
   db:
-    image: docker.io/library/mariadb:12.3.3-noble@sha256:d46e102fa8b9b72bfcdeb56f9dd538742092119dc8b11f31fe662605cd234cd9
+    image: docker.io/library/mariadb:12.3.3-noble@sha256:4ebbcf100a3ba320766dfa0e1af008df12261301db6ef72798c7650f70794aed
     container_name: firefly_iii_db
     restart: unless-stopped
     stop_grace_period: 60s
