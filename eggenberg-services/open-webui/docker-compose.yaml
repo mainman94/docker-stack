@@ -21,7 +21,7 @@ services:
   # Pinning PGDATA to the pre-18 path keeps the layout the other stacks use.
   # -------------------------------------------------------------------------
   open-webui-db:
-    image: pgvector/pgvector:0.8.7-pg18@sha256:c29f30688a9ad961691bdf0ec1650717cc132a5814619d80f80463d6e4c42e47
+    image: pgvector/pgvector:0.8.7-pg18@sha256:38681dc6eaf55308e2a4c6de392d131652dcfac70e1263e35cd9b5ea3fe39782
     container_name: open-webui-db
     restart: unless-stopped
     labels:
