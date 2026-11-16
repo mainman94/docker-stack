@@ -107,16 +107,20 @@ sonarr:
           - name: HD-720p (GER)
           - name: HD-720p (GER only)
 
+      # x265 (HD): TRaSH's German score set gives 0 (German groups encode HD
+      # in x265 a lot); the default -10000 would rank German x265 below
+      # English x264. -2000 prefers x264 among German releases while a German
+      # x265 still beats any English-only release.
+      - trash_ids:
+          - 47435ece6b99a0b477caf360e79ba0bb  # x265 (HD)
+        score: -2000
+        assign_scores_to:
+          - name: HD-1080p (GER)
+          - name: HD-720p (GER)
+          - name: HD-720p (GER only)
+
     custom_format_groups:
       add:
-        - trash_id: 158188097a58d7687dee647e04af0da3  # [Optional] Golden Rule HD
-          # Explicit list overrides the guide-backed default, so name all three.
-          assign_scores_to:
-            - name: HD-1080p (GER)
-            - name: HD-720p (GER)
-            - name: HD-720p (GER only)
-          select:
-            - 47435ece6b99a0b477caf360e79ba0bb  # x265 (HD)
         - trash_id: 59c3af66780d08332fdc64e68297098f  # [Unwanted] Unwanted Formats
           # German profile isn't in this group's compatibility list, so target
           # both profiles explicitly or the negative scores are silently skipped.
@@ -233,15 +237,20 @@ radarr:
           - name: HD-720p (GER)
           - name: HD-720p (GER only)
 
+      # x265 (HD): TRaSH's German score set gives 0 (German groups encode HD
+      # in x265 a lot); the default -10000 would rank German x265 below
+      # English x264. -2000 prefers x264 among German releases while a German
+      # x265 still beats any English-only release.
+      - trash_ids:
+          - dc98083864ea246d05a42df0d05f81cc  # x265 (HD)
+        score: -2000
+        assign_scores_to:
+          - name: HD-1080p (GER)
+          - name: HD-720p (GER)
+          - name: HD-720p (GER only)
+
     custom_format_groups:
       add:
-        - trash_id: f8bf8eab4617f12dfdbd16303d8da245  # [Optional] Golden Rule HD
-          assign_scores_to:
-            - name: HD-1080p (GER)
-            - name: HD-720p (GER)
-            - name: HD-720p (GER only)
-          select:
-            - dc98083864ea246d05a42df0d05f81cc  # x265 (HD)
         - trash_id: a3ac6af01d78e4f21fcb75f601ac96df  # [Unwanted] Unwanted Formats
           # German profile isn't in this group's compatibility list, so target
           # all profiles explicitly or the negative scores are silently skipped.
