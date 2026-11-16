@@ -1,0 +1,11 @@
+# zizmor configuration. Rule-level ignores live here rather than as inline
+# comments so the reason is written down once, next to the rule.
+
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # Floating major tag on purpose: a digest pin makes Renovate open a PR
+        # for every patch release. Everything else stays hash-pinned.
+        jdx/mise-action: ref-pin
+        "*": hash-pin
