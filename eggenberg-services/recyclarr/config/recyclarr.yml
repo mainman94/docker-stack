@@ -20,23 +20,21 @@ sonarr:
 
     # Three profiles, all on TRaSH's German scoring (German DL 11000 > German
     # 10000 > English-only ≤ ~3600):
-    #   HD-1080p (GER)       1080p, German preferred, English fallback
+    #   HD-1080p (GER)       720p+1080p (1080p preferred), German preferred, English fallback
     #   HD-720p (GER)        720p,  German preferred, English fallback
     #   HD-720p (GER only)   720p,  German mandatory, English track optional
     # "English fallback" = grab English if it is out first, upgrade to German.
     quality_profiles:
-      # TRaSH [German] HD Bluray + WEB, narrowed to 1080p. Renamed via `name`;
+      # TRaSH [German] HD Bluray + WEB, renamed via `name`;
       # recyclarr tracks the rename through its cache, Sonarr keeps assignments.
       - trash_id: dca7e5e9e99c703bcbdaaa471dd40e98  # [German] HD Bluray + WEB
         name: HD-1080p (GER)
         reset_unmatched_scores:
           enabled: true
-        qualities:
-          - name: Merged QPs
-            qualities:
-              - Bluray-1080p
-              - WEBRip-1080p
-              - WEBDL-1080p
+        # No `qualities` override on purpose: TRaSH merges 720p + 1080p into one
+        # group so the language score decides, and 1080p wins only among equal
+        # languages (+50 / German 1080p Booster). A 1080p-only list made an
+        # English 1080p a quality upgrade over a German 720p file.
 
       # 720p-only, so files are naturally smaller — for old/big series.
       - name: HD-720p (GER)
@@ -164,12 +162,10 @@ radarr:
         name: HD-1080p (GER)
         reset_unmatched_scores:
           enabled: true
-        qualities:
-          - name: Merged QPs
-            qualities:
-              - Bluray-1080p
-              - WEBRip-1080p
-              - WEBDL-1080p
+        # No `qualities` override on purpose: TRaSH merges 720p + 1080p into one
+        # group so the language score decides, and 1080p wins only among equal
+        # languages (+50 / German 1080p Booster). A 1080p-only list made an
+        # English 1080p a quality upgrade over a German 720p file.
 
       # 720p-only, so files are naturally smaller — for old/big movies.
       - name: HD-720p (GER)
