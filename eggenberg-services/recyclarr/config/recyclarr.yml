@@ -15,6 +15,12 @@ sonarr:
     base_url: !env_var RECYCLARR_SONARR_BASE_URL
     api_key: !env_var RECYCLARR_SONARR_API_KEY
 
+    # Propers/repacks are scored by the Repack/Proper CFs (+5/6/7). The app
+    # default "prefer and upgrade" ranks any PROPER/REPACK above CF scores, so
+    # an English-only REPACK replaced German DL files.
+    media_management:
+      propers_and_repacks: do_not_prefer
+
     quality_definition:
       type: series
 
@@ -140,6 +146,12 @@ radarr:
   radarr-ger:
     base_url: !env_var RECYCLARR_RADARR_BASE_URL
     api_key: !env_var RECYCLARR_RADARR_API_KEY
+
+    # Propers/repacks are scored by the Repack/Proper CFs (+5/6/7). The app
+    # default "prefer and upgrade" ranks any PROPER/REPACK above CF scores, so
+    # an English-only REPACK replaced German DL files.
+    media_management:
+      propers_and_repacks: do_not_prefer
 
     # Bandwidth cap: sizes are MB per MINUTE of runtime, not absolute GB.
     # 90 MB/min ≈ 10.3 GB for a 115 min movie (~11.7 GB at 130 min).
