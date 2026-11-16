@@ -1,9 +1,7 @@
 # Recyclarr config — TRaSH Guides German quality profiles (Sonarr + Radarr).
 # Written for recyclarr 8.7.0 native style: a `trash_id` quality profile +
-# `custom_format_groups`. The `[German] HD Bluray + WEB` profile trash_id pulls
-# the German custom formats and their scores automatically — German-primary,
-# English downloads first if it releases earlier, then upgrades to German once
-# available (default TRaSH behavior).
+# `custom_format_groups`. Sonarr and Radarr get the same three profiles:
+# HD-1080p (GER), HD-720p (GER) and HD-720p (GER only) — see the Sonarr block.
 #   Sonarr guide: https://trash-guides.info/Sonarr/sonarr-setup-quality-profiles-german-en/
 #   Radarr guide: https://trash-guides.info/Radarr/radarr-setup-quality-profiles-german-en/
 # Base URL + API key come from the container environment (see .env.example).
@@ -20,14 +18,27 @@ sonarr:
     quality_definition:
       type: series
 
+    # Three profiles, all on TRaSH's German scoring (German DL 11000 > German
+    # 10000 > English-only ≤ ~3600):
+    #   HD-1080p (GER)       1080p, German preferred, English fallback
+    #   HD-720p (GER)        720p,  German preferred, English fallback
+    #   HD-720p (GER only)   720p,  German mandatory, English track optional
+    # "English fallback" = grab English if it is out first, upgrade to German.
     quality_profiles:
+      # TRaSH [German] HD Bluray + WEB, narrowed to 1080p. Renamed via `name`;
+      # recyclarr tracks the rename through its cache, Sonarr keeps assignments.
       - trash_id: dca7e5e9e99c703bcbdaaa471dd40e98  # [German] HD Bluray + WEB
+        name: HD-1080p (GER)
         reset_unmatched_scores:
           enabled: true
+        qualities:
+          - name: Merged QPs
+            qualities:
+              - Bluray-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
 
-      # Selective 720p profile — assign it to old/big series manually in Sonarr.
-      # 720p-only, so files are naturally smaller. score_set: german shares the
-      # German scoring. See caveat below re: CF score assignment.
+      # 720p-only, so files are naturally smaller — for old/big series.
       - name: HD-720p (GER)
         reset_unmatched_scores:
           enabled: true
@@ -45,17 +56,74 @@ sonarr:
               - WEBDL-720p
               - WEBRip-720p
 
+      # German mandatory, English as a second track (DL) is fine.
+      # min_format_score 10000 = score of the `German` CF, so English-only
+      # releases are never grabbed — TRaSH's own "German only" advice.
+      - name: HD-720p (GER only)
+        reset_unmatched_scores:
+          enabled: true
+        score_set: german
+        upgrade:
+          allowed: true
+          until_quality: 720p
+          until_score: 35000
+        min_format_score: 10000
+        quality_sort: top
+        qualities:
+          - name: 720p
+            qualities:
+              - Bluray-720p
+              - WEBDL-720p
+              - WEBRip-720p
+
+    # The trash_id profile gets these automatically; name-based profiles get
+    # nothing unless assigned here (score_set alone only picks the scores).
+    # Same CF list as TRaSH's [German] HD Bluray + WEB.
+    custom_formats:
+      - trash_ids:
+          - 9aa0ca0d2d66b6f6ee51fc630f46cf6f  # German 1080p Booster
+          - 290078c8b266272a5cc8e251b5e2eb0b  # 1080p
+          - c99279ee27a154c2f20d1d505cc99e25  # 720p
+          - 8a9fcdbb445f2add0505926df3bb7b8a  # German
+          - ed51973a811f51985f14e2f6f290e47a  # German DL
+          - c5dd0fd675f85487ad5bdf97159180bd  # German DL (undefined)
+          - 133589380b89f8f8394320901529bac1  # Not German or English
+          - 7940b2fb0278f27cf4f70187f2be95d6  # German Bluray Tier 01
+          - 83b336a90d90d6b35ca673b007f80661  # German Bluray Tier 02
+          - d8f8e1539827967e0e564833e6c08d33  # German Bluray Tier 03
+          - 68be37323132b35cf333c81a2ac8fc16  # German Web Tier 01
+          - f51b96a50b0e6196cb69724b7833d837  # German Web Tier 02
+          - bda67c2c0aae257308a4723d92475b86  # German Web Tier 03
+          - c2eec878fa1989599c226ce4c287d6a7  # German Scene
+          - d6819cba26b1a6508138d25fb5e32293  # HD Bluray Tier 01
+          - c2216b7b8aa545dc1ce8388c618f8d57  # HD Bluray Tier 02
+          - e6258996055b9fbab7e9cb2f75819294  # WEB Tier 01
+          - 58790d4e2fdcd9733aa7ae68ba2bb503  # WEB Tier 02
+          - d84935abd3f8556dcd51d4f27e22d0a6  # WEB Tier 03
+          - ec8fa7296b64e8cd390a1600981f3923  # Repack/Proper
+          - eb3d5cc0a2be0db205fb823640db6a3c  # Repack2
+          - 44e7c4de10ae50265753082e5dc76047  # Repack3
+        assign_scores_to:
+          - name: HD-720p (GER)
+          - name: HD-720p (GER only)
+
     custom_format_groups:
       add:
         - trash_id: 158188097a58d7687dee647e04af0da3  # [Optional] Golden Rule HD
+          # Explicit list overrides the guide-backed default, so name all three.
+          assign_scores_to:
+            - name: HD-1080p (GER)
+            - name: HD-720p (GER)
+            - name: HD-720p (GER only)
           select:
             - 47435ece6b99a0b477caf360e79ba0bb  # x265 (HD)
         - trash_id: 59c3af66780d08332fdc64e68297098f  # [Unwanted] Unwanted Formats
           # German profile isn't in this group's compatibility list, so target
           # both profiles explicitly or the negative scores are silently skipped.
           assign_scores_to:
-            - name: "[German] HD Bluray + WEB"
+            - name: HD-1080p (GER)
             - name: HD-720p (GER)
+            - name: HD-720p (GER only)
           select:
             - 15a05bc7c1a36e2b57fd628f8977e2fc  # AV1
             - 32b367365729d530ca1c124a0b180c64  # Bad Dual Groups
@@ -86,12 +154,20 @@ radarr:
           max: 90
           preferred: 85
 
+    # Same three profiles as Sonarr — see the comment there.
     quality_profiles:
       - trash_id: 2b90e905c99490edc7c7a5787443748b  # [German] HD Bluray + WEB
+        name: HD-1080p (GER)
         reset_unmatched_scores:
           enabled: true
+        qualities:
+          - name: Merged QPs
+            qualities:
+              - Bluray-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
 
-      # Selective 720p profile — assign it to old/big movies manually in Radarr.
+      # 720p-only, so files are naturally smaller — for old/big movies.
       - name: HD-720p (GER)
         reset_unmatched_scores:
           enabled: true
@@ -109,17 +185,70 @@ radarr:
               - WEBDL-720p
               - WEBRip-720p
 
+      # German mandatory, English as a second track (DL) is fine.
+      - name: HD-720p (GER only)
+        reset_unmatched_scores:
+          enabled: true
+        score_set: german
+        upgrade:
+          allowed: true
+          until_quality: 720p
+          until_score: 35000
+        min_format_score: 10000
+        quality_sort: top
+        qualities:
+          - name: 720p
+            qualities:
+              - Bluray-720p
+              - WEBDL-720p
+              - WEBRip-720p
+
+    # Same CF list as TRaSH's [German] HD Bluray + WEB (Radarr trash_ids).
+    custom_formats:
+      - trash_ids:
+          - 3bc8df3a71baaac60a31ef696ea72d36  # German 1080p Booster
+          - 820b09bb9acbfde9c35c71e0e565dad8  # 1080p
+          - b2be17d608fc88818940cd1833b0b24c  # 720p
+          - 86bc3115eb4e9873ac96904a4a68e19e  # German
+          - f845be10da4f442654c13e1f2c3d6cd5  # German DL
+          - 6aad77771dabe9d3e9d7be86f310b867  # German DL (undefined)
+          - 4eadb75fb23d09dfc0a8e3f687e72287  # Not German or English
+          - 54795711b78ea87e56127928c423689b  # German Bluray Tier 01
+          - 1bfc773c53283d47c68e535811da30b7  # German Bluray Tier 02
+          - aee01d40cd1bf4bcded81ee62f0f3659  # German Bluray Tier 03
+          - a2ab25194f463f057a5559c03c84a3df  # German Web Tier 01
+          - 08d120d5a003ec4954b5b255c0691d79  # German Web Tier 02
+          - 439f9d71becaed589058ec949e037ff3  # German Web Tier 03
+          - 2d136d4e33082fe573d06b1f237c40dd  # German Scene
+          - ed27ebfef2f323e964fb1f61391bcb35  # HD Bluray Tier 01
+          - c20c8647f2746a1f4c4262b0fbbeeeae  # HD Bluray Tier 02
+          - 5608c71bcebba0a5e666223bae8c9227  # HD Bluray Tier 03
+          - c20f169ef63c5f40c2def54abaf4438e  # WEB Tier 01
+          - 403816d65392c79236dcb6dd591aeda4  # WEB Tier 02
+          - af94e0fe497124d1f9ce732069ec8c3b  # WEB Tier 03
+          - e7718d7a3ce595f289bfee26adc178f5  # Repack/Proper
+          - ae43b294509409a6a13919dedd4764c4  # Repack2
+          - 5caaaa1c08c1742aa4342d8c4cc463f2  # Repack3
+        assign_scores_to:
+          - name: HD-720p (GER)
+          - name: HD-720p (GER only)
+
     custom_format_groups:
       add:
         - trash_id: f8bf8eab4617f12dfdbd16303d8da245  # [Optional] Golden Rule HD
+          assign_scores_to:
+            - name: HD-1080p (GER)
+            - name: HD-720p (GER)
+            - name: HD-720p (GER only)
           select:
             - dc98083864ea246d05a42df0d05f81cc  # x265 (HD)
         - trash_id: a3ac6af01d78e4f21fcb75f601ac96df  # [Unwanted] Unwanted Formats
           # German profile isn't in this group's compatibility list, so target
-          # both profiles explicitly or the negative scores are silently skipped.
+          # all profiles explicitly or the negative scores are silently skipped.
           assign_scores_to:
-            - name: "[German] HD Bluray + WEB"
+            - name: HD-1080p (GER)
             - name: HD-720p (GER)
+            - name: HD-720p (GER only)
           select:
             - b8cd450cbfa689c0259a01d9e29ba3d6  # 3D
             - cae4ca30163749b891686f95532519bd  # AV1
