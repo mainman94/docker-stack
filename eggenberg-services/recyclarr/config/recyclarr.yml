@@ -11,7 +11,7 @@
 # a newer recyclarr release bumps the pinned templates commit.
 
 sonarr:
-  hd-bluray-web-ger:
+  sonarr-ger:  # instance names must be unique across services
     base_url: !env_var RECYCLARR_SONARR_BASE_URL
     api_key: !env_var RECYCLARR_SONARR_API_KEY
 
@@ -135,7 +135,7 @@ sonarr:
             - 23297a736ca77c0fc8e70f8edd7ee56c  # Upscaled
 
 radarr:
-  hd-bluray-web-ger:
+  radarr-ger:
     base_url: !env_var RECYCLARR_RADARR_BASE_URL
     api_key: !env_var RECYCLARR_RADARR_API_KEY
 
