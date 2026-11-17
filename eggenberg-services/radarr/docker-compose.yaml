@@ -14,7 +14,8 @@ services:
     volumes:
       - ${RADARR_CONFIG_HOST_PATH}:${RADARR_CONFIG_CONTAINER_PATH}
       - ${RADARR_MOVIES_HOST_PATH}:${RADARR_MOVIES_CONTAINER_PATH}
-      - ${RADARR_DOWNLOADS_HOST_PATH}:${RADARR_DOWNLOADS_CONTAINER_PATH}
+      # No separate downloads mount: SABnzbd completes into /movies/.downloads on
+      # the same dataset, so imports are a rename within this one mount.
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:7878/ || exit 1
       interval: 30s
