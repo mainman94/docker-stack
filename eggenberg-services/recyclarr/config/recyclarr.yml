@@ -43,6 +43,10 @@ sonarr:
         # English 1080p a quality upgrade over a German 720p file.
 
       # 720p-only, so files are naturally smaller — for old/big series.
+      # HDTV-720p sits in the same group on purpose: old shows (e.g. 80s/90s
+      # cartoons) often only exist in German as HDTV. In one group the language
+      # score decides; a separate, lower item would let an English WEB-DL beat
+      # a German HDTV release on quality alone.
       - name: HD-720p (GER)
         reset_unmatched_scores:
           enabled: true
@@ -59,6 +63,7 @@ sonarr:
               - Bluray-720p
               - WEBDL-720p
               - WEBRip-720p
+              - HDTV-720p
 
       # German mandatory, English as a second track (DL) is fine.
       # min_format_score 10000 = score of the `German` CF, so English-only
@@ -79,6 +84,7 @@ sonarr:
               - Bluray-720p
               - WEBDL-720p
               - WEBRip-720p
+              - HDTV-720p
 
     # The trash_id profile gets these automatically; name-based profiles get
     # nothing unless assigned here (score_set alone only picks the scores).
@@ -196,6 +202,7 @@ radarr:
               - Bluray-720p
               - WEBDL-720p
               - WEBRip-720p
+              - HDTV-720p
 
       # German mandatory, English as a second track (DL) is fine.
       - name: HD-720p (GER only)
@@ -214,6 +221,7 @@ radarr:
               - Bluray-720p
               - WEBDL-720p
               - WEBRip-720p
+              - HDTV-720p
 
     # Same CF list as TRaSH's [German] HD Bluray + WEB (Radarr trash_ids).
     custom_formats:
