@@ -1,6 +1,6 @@
 services:
   bazarr:
-    image: linuxserver/bazarr:v1.6.0-ls360@sha256:ac284d3fda9ee7da8b15197dc51f0d7a2a1da98549bee99a3d924d3e94a5e7ed
+    image: linuxserver/bazarr:v1.6.2-ls372@sha256:832820dec70bce9e912c6eee7a95baf6551e03dbc63325a7208daaa455423752
     container_name: bazarr
     restart: unless-stopped
     labels:
