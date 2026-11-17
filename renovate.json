@@ -32,6 +32,14 @@
         "linuxserver/radarr"
       ],
       "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)-ls(?<revision>\\d+)$"
+    },
+    {
+      "description": "linuxserver sabnzbd/bazarr tags are [v]X.Y.Z-lsN; same -lsN suffix problem as sonarr/radarr, one version segment fewer",
+      "matchPackageNames": [
+        "linuxserver/sabnzbd",
+        "linuxserver/bazarr"
+      ],
+      "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-ls(?<build>\\d+)$"
     }
   ],
   "pre-commit": {
