@@ -43,6 +43,7 @@ same file — so a hook that passes locally passes in CI.
 | opengym | Self-hosted gym & workout tracker | 30781 |
 | paperless-ngx | Document management | 30070 |
 | pocket-id | OIDC identity provider | 30411 |
+| prowlarr | Indexer manager for Sonarr/Radarr (per-indexer query limits) | 30696 |
 | radarr | Movie collection manager | 30025 |
 | recyclarr | Sonarr/Radarr config sync (cron) | — |
 | sabnzbd | Usenet downloader | 30670 |

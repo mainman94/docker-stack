@@ -1,0 +1,27 @@
+services:
+  prowlarr:
+    image: linuxserver/prowlarr:3.0.2.5780-ls169@sha256:45117ba8439e2337a92ffe38a451a4dafc0be771754d05d88cdf102419d09646
+    container_name: prowlarr
+    restart: unless-stopped
+    labels:
+      - docker-volume-backup.stop-during-backup=prowlarr
+    environment:
+      PUID: ${PROWLARR_UID}
+      PGID: ${PROWLARR_GID}
+      TZ: ${PROWLARR_TZ}
+    ports:
+      - "${PROWLARR_WEB_PORT}:9696"
+    volumes:
+      - ${PROWLARR_CONFIG_HOST_PATH}:${PROWLARR_CONFIG_CONTAINER_PATH}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9696/ping || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    cpus: ${PROWLARR_CPUS}
+    mem_limit: ${PROWLARR_MEM_LIMIT}
+
+networks:
+  default:
+    name: prowlarr_network
