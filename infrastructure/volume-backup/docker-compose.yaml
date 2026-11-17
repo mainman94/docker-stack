@@ -150,6 +150,21 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/bazarr:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  prowlarr_backup:
+    image: offen/docker-volume-backup:v2.50.1@sha256:06fccb4c6ff79c4d5e4a839ace17c174da82a9327f43594f8a2c6a15f43bc660
+    container_name: prowlarr_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: prowlarr-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: prowlarr-backup-
+      BACKUP_STOP_DURING_BACKUP_LABEL: prowlarr
+    volumes:
+      - ${PROWLARR_STACK_HOST_PATH}:/backup/prowlarr_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/prowlarr:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   sonarr_backup:
     image: offen/docker-volume-backup:v2.50.1@sha256:06fccb4c6ff79c4d5e4a839ace17c174da82a9327f43594f8a2c6a15f43bc660
     container_name: sonarr_volume_backup
