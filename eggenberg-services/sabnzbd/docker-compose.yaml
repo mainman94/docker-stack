@@ -14,6 +14,12 @@ services:
     volumes:
       - ${SABNZBD_CONFIG_HOST_PATH}:${SABNZBD_CONFIG_CONTAINER_PATH}
       - ${SABNZBD_DOWNLOADS_HOST_PATH}:${SABNZBD_DOWNLOADS_CONTAINER_PATH}
+      # Completed downloads land inside the media datasets (Series, Movies), so
+      # the Sonarr/Radarr import is a rename instead of a cross-dataset copy.
+      # Only the .downloads folders are mounted, not the libraries, and they use
+      # the same container paths as Sonarr/Radarr, so no remote path mapping.
+      - ${SABNZBD_SERIES_COMPLETE_HOST_PATH}:${SABNZBD_SERIES_COMPLETE_CONTAINER_PATH}
+      - ${SABNZBD_MOVIES_COMPLETE_HOST_PATH}:${SABNZBD_MOVIES_COMPLETE_CONTAINER_PATH}
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
       interval: 30s
