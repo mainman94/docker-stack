@@ -86,6 +86,30 @@ sonarr:
               - WEBRip-720p
               - HDTV-720p
 
+      # SD classics that only exist in German as DVD/TV rips (e.g. Pokémon
+      # 1997, TaleSpin, Dragon Ball GT). German mandatory like GER only; all SD
+      # qualities sit in one group so the language score decides, never the
+      # source (a separate lower item would let an English WEB-DL win).
+      - name: SD (GER only)
+        reset_unmatched_scores:
+          enabled: true
+        score_set: german
+        upgrade:
+          allowed: true
+          until_quality: SD
+          until_score: 35000
+        min_format_score: 10000
+        quality_sort: top
+        qualities:
+          - name: SD
+            qualities:
+              - Bluray-576p
+              - Bluray-480p
+              - WEBDL-480p
+              - WEBRip-480p
+              - DVD
+              - SDTV
+
     # The trash_id profile gets these automatically; name-based profiles get
     # nothing unless assigned here (score_set alone only picks the scores).
     # Same CF list as TRaSH's [German] HD Bluray + WEB.
@@ -116,6 +140,7 @@ sonarr:
         assign_scores_to:
           - name: HD-720p (GER)
           - name: HD-720p (GER only)
+          - name: SD (GER only)
 
       # x265 (HD): TRaSH's German score set gives 0 (German groups encode HD
       # in x265 a lot); the default -10000 would rank German x265 below
@@ -138,6 +163,7 @@ sonarr:
             - name: HD-1080p (GER)
             - name: HD-720p (GER)
             - name: HD-720p (GER only)
+            - name: SD (GER only)
           select:
             - 15a05bc7c1a36e2b57fd628f8977e2fc  # AV1
             - 32b367365729d530ca1c124a0b180c64  # Bad Dual Groups
