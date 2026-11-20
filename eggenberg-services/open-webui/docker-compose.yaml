@@ -49,7 +49,7 @@ services:
   # Redis — websockets and cache for Open WebUI, router cache for LiteLLM
   # -------------------------------------------------------------------------
   open-webui-redis:
-    image: valkey/valkey:9.2-alpine@sha256:cdcb7b1c7b6f1c9cb9442c71ac6275e78184657448407b2c1fdde7ee8024f4fb
+    image: valkey/valkey:9.2-alpine@sha256:c8e2d17498838af5d91e12eb7c11220b3434a7b7131a333e3af52ad5e0b80882
     container_name: open-webui-redis
     user: "${OPEN_WEBUI_REDIS_UID}:${OPEN_WEBUI_REDIS_GID}"
     restart: unless-stopped
