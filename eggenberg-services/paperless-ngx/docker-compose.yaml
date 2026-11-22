@@ -23,7 +23,7 @@ services:
     mem_limit: ${PAPERLESS_REDIS_MEM_LIMIT}
 
   paperless-db:
-    image: postgres:18.7-alpine3.24@sha256:ff64c9e3bdf8e2120107d3559de8db314e8305f7e38c5105903c6295876738ff
+    image: postgres:18.7-alpine3.24@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71
     # The image entrypoint chowns only $PGDATA (18/docker), not its parents.
     entrypoint: ["sh", "-c", "find /var/lib/postgresql ! -user postgres -exec chown postgres:postgres {} + && exec docker-entrypoint.sh postgres"]
     container_name: paperless-db
