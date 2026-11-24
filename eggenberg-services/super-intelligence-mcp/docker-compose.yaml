@@ -3,7 +3,7 @@
 # with bearer-token auth (see .env.example / secrets/tokens.yaml.example).
 services:
   super-intelligence-mcp:
-    image: ${SUPER_INTELLIGENCE_MCP_IMAGE:-ghcr.io/mainman94/super-intelligence-mcp:0.6.17@sha256:2fce42d2bd9da8aa4e2c5e0299f7faad3ee4648bbb4409a199eadb88d129d01d}
+    image: ${SUPER_INTELLIGENCE_MCP_IMAGE:-ghcr.io/mainman94/super-intelligence-mcp:0.6.18@sha256:8c3860eb25faa1a6b82360752e6236b1c9f059632bad6949ba1eb8e2eba6d6eb}
     container_name: super-intelligence-mcp
     restart: unless-stopped
     labels:
