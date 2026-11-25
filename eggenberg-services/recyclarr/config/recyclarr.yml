@@ -186,18 +186,20 @@ radarr:
       propers_and_repacks: do_not_prefer
 
     # Bandwidth cap: sizes are MB per MINUTE of runtime, not absolute GB.
-    # 90 MB/min ≈ 10.3 GB for a 115 min movie (~11.7 GB at 130 min).
+    # Max raised so German DL BluRays with DTS (often 12-19 GB) are not rejected:
+    # Bluray 160 MB/min ≈ 19 GB, WEB 130 MB/min ≈ 15.6 GB at 120 min.
+    # preferred stays 85 so equal-score ties still go to the smaller file.
     quality_definition:
       type: movie
       qualities:
         - name: Bluray-1080p
-          max: 90
+          max: 160
           preferred: 85
         - name: WEBDL-1080p
-          max: 90
+          max: 130
           preferred: 85
         - name: WEBRip-1080p
-          max: 90
+          max: 130
           preferred: 85
 
     # Same three profiles as Sonarr — see the comment there.
