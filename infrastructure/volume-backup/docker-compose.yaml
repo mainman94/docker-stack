@@ -425,6 +425,24 @@ services:
       - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/wealthfolio:/archive
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+  opencloud_backup:
+    image: offen/docker-volume-backup:v2.50.2@sha256:c0d241667212b3a50f6820e8c5e195627f8648520dd41cc3304e1b4c8041f95b
+    container_name: opencloud_volume_backup
+    restart: unless-stopped
+    env_file:
+      - backup.env
+    environment:
+      BACKUP_FILENAME: opencloud-backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: opencloud-backup-
+      # user files (storage/users/users) go to B2 by a separate TrueNAS cloud sync task;
+      # uploads are in-flight chunks, search index and thumbnails are rebuilt by OpenCloud
+      BACKUP_EXCLUDE_REGEXP: "^/backup/opencloud_stack/opencloud/data/(search|thumbnails|storage/users/(users|uploads))(/.*)?$"
+      BACKUP_STOP_DURING_BACKUP_LABEL: opencloud
+    volumes:
+      - ${OPENCLOUD_STACK_HOST_PATH}:/backup/opencloud_stack:ro
+      - ${BACKUP_ROOT:-/mnt/default_pool/dockge/back}/opencloud:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   strapi_backup:
     image: offen/docker-volume-backup:v2.50.2@sha256:c0d241667212b3a50f6820e8c5e195627f8648520dd41cc3304e1b4c8041f95b
     container_name: strapi_volume_backup
